@@ -1,0 +1,7 @@
+{
+    "ros.distro": "lunar",
+    "python.autoComplete.extraPaths": [
+        "/home/wimble/m_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/lunar/lib/python2.7/dist-packages"
+    ]
+}

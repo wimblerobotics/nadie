@@ -1,0 +1,23 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/wimble/m_ws/devel/include",
+        "/opt/ros/lunar/include",
+        "/home/wimble/m_ws/src/floorbot_cv/include",
+        "/home/wimble/m_ws/src/husky/husky_base/include",
+        "/home/wimble/m_ws/src/light_scan_sim/include",
+        "/home/wimble/m_ws/src/LMS1xx/include",
+        "/home/wimble/m_ws/src/lysander/lysander/include",
+        "/home/wimble/m_ws/src/lysander/motor_controller/include",
+        "/home/wimble/m_ws/src/twist_mux/include",
+        "/usr/include"
+      ],
+      "name": "Linux"
+    }
+  ]
+}
