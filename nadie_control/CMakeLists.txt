@@ -26,6 +26,11 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 
+if(CATKIN_ENABLE_TESTING)
+  find_package(GTest REQUIRED)
+  include_directories(${GTest_INCLUDE_DIRS})
+endif()
+
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
@@ -44,6 +49,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS dynamic_reconfigure geometry_msgs message_runtime rosconsole roscpp rospy sensor_msgs std_msgs tf urdf
+  LIBRARIES ${PROJECT_NAME}
 )
 
 ###########
@@ -53,19 +59,28 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${GTest_INCLUDE_DIRS}
+)
+
+## Declare a C++ library
+add_library (
+  ${PROJECT_NAME}
+  src/motor_controller.cpp
+  src/wimble_robotics_motor_controller.cpp  
 )
 
 ## Declare a C++ executable
 add_executable (
   nadie_motor_controller_node
 #  src/RoboClawDriver.cpp
-  src/motor_controller.cpp
+#  src/motor_controller.cpp
   src/motor_controller_node.cpp
-  src/wimble_robotics_motor_controller.cpp
+#  src/wimble_robotics_motor_controller.cpp
 )
 
 add_dependencies(
   nadie_motor_controller_node
+  ${PROJECT_NAME}
   ${${PROJECT_NAME}_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS}
 )
@@ -76,7 +91,24 @@ target_link_libraries(
   boost_system boost_thread
 )
 
+#catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
 
+#if(TARGET M1_test)
+#  target_link_libraries(
+#    ${PROJECT_NAME}-utest
+#    ${PROJECT_NAME}
+#    ${OpenCV_LIBRARIES}
+#  )
+#endif()
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
+  target_link_libraries(
+    ${PROJECT_NAME}-utest
+    ${PROJECT_NAME}
+    ${catkin_LIBRARIES}
+  )
+endif()
 
 ## Mark executables and/or libraries for installation
 #install(TARGETS motor_controller_node
