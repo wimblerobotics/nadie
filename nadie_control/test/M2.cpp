@@ -4,7 +4,7 @@
 
 
 // Declare a test
-TEST(TestSuite, testConstructorAndModelLoad)
+TEST(TestSuite_From_M2_cpp, testConstructorAndModelLoad)
 {
 	ros::NodeHandle nh;
 	MotorController* c = new MotorController(nh);

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(nadie_control)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" )
-set(ROS_BUILD_TYPE Debug)
+set (CMAKE_CXX_FLAGS "-g")
 
 ## Add support for C++11, supported in ROS Kinetic and newer
 add_definitions(-std=c++11)
@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
+  transmission_interface
   urdf
 )
 
@@ -49,7 +50,18 @@ generate_messages(
 
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS dynamic_reconfigure geometry_msgs message_runtime rosconsole roscpp rospy sensor_msgs std_msgs tf urdf
+  CATKIN_DEPENDS 
+  dynamic_reconfigure 
+  geometry_msgs 
+  message_runtime 
+  rosconsole 
+  roscpp 
+  rospy 
+  sensor_msgs 
+  std_msgs 
+  tf
+  transmission_interface
+  urdf
   LIBRARIES ${PROJECT_NAME}
 )
 
@@ -110,11 +122,17 @@ if(CATKIN_ENABLE_TESTING)
 #  )
 
   add_rostest_gtest(
-    ${PROJECT_NAME}-M2_test 
+    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
     test/launch/M2.test
     test/M2.cpp)
+  add_dependencies(
+    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
+    ${PROJECT_NAME}
+    ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+    ${catkin_EXPORTED_TARGETS}
+  )
   target_link_libraries(
-    ${PROJECT_NAME}-M2_test
+    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest
     ${PROJECT_NAME}
     ${catkin_LIBRARIES}
   )

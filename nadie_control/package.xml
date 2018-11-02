@@ -25,6 +25,7 @@
     <depend>sensor_msgs</depend>
     <depend>std_msgs</depend>
     <depend>tf</depend>
+    <depend>transmission_interface</depend>
     <depend>urdf</depend>
 
     <test_depend>rostest</test_depend>
