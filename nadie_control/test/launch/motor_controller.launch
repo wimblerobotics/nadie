@@ -1,0 +1,44 @@
+<launch>
+	<group ns="/ngroup">
+		<arg name="doDebug" default="false" />
+		<arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb -args" />
+		<arg unless="$(arg doDebug)" name="launchPrefix" value="" />
+		<arg name="do_odom_tf" default="true" />
+
+	    <param 
+	      name="/nadie/robot_description" 
+	      command="$(find xacro)/xacro --inorder $(find nadie_control)/test/urdf/nadie.xacro" />
+
+	    <!-- Load joint controller configurations from YAML file to parameter server -->
+	    <rosparam file="$(find nadie_control)/test/config/controller.yaml" command="load" ns="/" />
+
+	    <!-- load the controllers -->
+	    <node 
+	    	name="controller_spawner" 
+	    	pkg="controller_manager" 
+	    	type="spawner" 
+	    	respawn="false"
+	    	output="screen" 
+	    	args="
+		      --namespace=/nadie
+		      diff_drive_controller
+	          joint_state_controller
+		      "
+		     />
+
+		<!--node 
+			name="nadie_motor_controller_node" 
+			ns="/nadie"
+			pkg="nadie_control"  
+			type="nadie_motor_controller_node" 
+			output="screen" 
+			launch-prefix="$(arg launchPrefix)" 
+			respawn="false" >
+			
+			<remap from="odom" to="motor_odom" />
+			<rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
+			<param name="do_odom_tf" value="$(arg do_odom_tf)" />
+
+		</node-->
+	</group>
+</launch>

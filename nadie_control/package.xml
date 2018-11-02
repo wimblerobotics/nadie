@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>nadie_controller</name>
+    <name>nadie_control</name>
     <version>0.0.0</version>
-    <description>The nadie_controller package</description>
+    <description>The nadie_controll package</description>
     <maintainer email="mike@wimblerobotics.com">pi</maintainer>
     <license>MIT</license>
     <url type="website">https://github.com/wimblerobotics/nadie/wiki</url> -->
@@ -26,6 +26,8 @@
     <depend>std_msgs</depend>
     <depend>tf</depend>
     <depend>urdf</depend>
+
+    <test_depend>rostest</test_depend>
 
 
     <!-- The export tag contains other, unspecified, tags -->

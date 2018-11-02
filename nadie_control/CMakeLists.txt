@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 2.8.3)
-project(nadie_controller)
+project(nadie_control)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" )
 set(ROS_BUILD_TYPE Debug)
@@ -28,6 +28,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 
 if(CATKIN_ENABLE_TESTING)
   find_package(GTest REQUIRED)
+  find_package(rostest REQUIRED)
   include_directories(${GTest_INCLUDE_DIRS})
 endif()
 
@@ -72,10 +73,9 @@ add_library (
 ## Declare a C++ executable
 add_executable (
   nadie_motor_controller_node
-#  src/RoboClawDriver.cpp
-#  src/motor_controller.cpp
+  src/motor_controller.cpp
   src/motor_controller_node.cpp
-#  src/wimble_robotics_motor_controller.cpp
+  src/wimble_robotics_motor_controller.cpp
 )
 
 add_dependencies(
@@ -102,9 +102,19 @@ target_link_libraries(
 #endif()
 
 if(CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
+#  catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
+#  target_link_libraries(
+#    ${PROJECT_NAME}-utest
+#    ${PROJECT_NAME}
+#    ${catkin_LIBRARIES}
+#  )
+
+  add_rostest_gtest(
+    ${PROJECT_NAME}-M2_test 
+    test/launch/M2.test
+    test/M2.cpp)
   target_link_libraries(
-    ${PROJECT_NAME}-utest
+    ${PROJECT_NAME}-M2_test
     ${PROJECT_NAME}
     ${catkin_LIBRARIES}
   )

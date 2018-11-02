@@ -101,7 +101,7 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 	controller_manager_.reset(new controller_manager::ControllerManager(this, nh_));
 	expectedControlLoopDuration_ = ros::Duration(1 / controlLoopHz_);
 
-	openPort();
+	//#####openPort();
 
 	float M1_P =  8762.98571;
 	float M2_P = 9542.41265;

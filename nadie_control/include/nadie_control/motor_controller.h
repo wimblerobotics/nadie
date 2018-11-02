@@ -65,13 +65,15 @@ class MotorController : public hardware_interface::RobotHW {
 	*/
 	virtual void init();
 
+	virtual bool modelLoaded();
+
 	/**
 	  * Reads data from the robot HW
 	  *
 	  * \param time The current time
 	  * \param period The time passed since the last call to \ref read
 	  */
-	virtual void read(const ros::Time& time, const ros::Duration& period) = 0;
+	virtual void read(const ros::Time& time, const ros::Duration& period);
 
 	void reset();
 
@@ -81,7 +83,7 @@ class MotorController : public hardware_interface::RobotHW {
 	 * \param time The current time
 	 * \param period The time passed since the last call to \ref write
 	 */
-	virtual void write(const ros::Time& time, const ros::Duration& period) = 0;
+	virtual void write(const ros::Time& time, const ros::Duration& period);
 
  protected:
 	void loadURDF(ros::NodeHandle &nh, std::string param_name);

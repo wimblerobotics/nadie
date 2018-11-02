@@ -1,0 +1,14 @@
+<launch>
+  <!-- Load common test stuff -->
+  <include file="$(find nadie_control)/test/launch/motor_controller.launch" />
+
+  <!-- Controller test -->
+  <test test-name="M2_test"
+        pkg="nadie_control"
+        ns="/nadie"
+        type="nadie_control-M2_test"
+        time-limit="80.0">
+    <!--remap from="cmd_vel" to="skidsteerbot_controller/cmd_vel" /-->
+    <!--remap from="odom" to="skidsteerbot_controller/odom" /-->
+  </test>
+</launch>

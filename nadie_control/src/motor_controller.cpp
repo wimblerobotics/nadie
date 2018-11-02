@@ -4,12 +4,15 @@
 #include <regex>
 
 MotorController::MotorController(ros::NodeHandle &nh, urdf::Model *urdf_model) 
-  : nh_(nh)
+  : model_(NULL)
+  , nh_(nh)
   , useRosparamJointLimits_(false)
   , useSoftLimitsIfAvailable_(false) {
   if (urdf_model == NULL) {
+    ROS_INFO_STREAM("[MotorController::MotorController] NO urdf model is given, about to load");
     loadURDF(nh, "robot_description");
   } else {
+    ROS_INFO_STREAM("[MotorController::MotorController] urdf model is given");
     model_ = urdf_model;
   }  
 }
@@ -25,7 +28,8 @@ void MotorController::init() {
 void MotorController::loadURDF(ros::NodeHandle &nh, std::string param_name) {
   std::string urdf_string;
   model_ = new urdf::Model();
-  
+  ROS_INFO_STREAM("[MotorController::loadURDF] param_name:"
+      << param_name);
   // search and wait for robot_description on param server
   while (urdf_string.empty()/*### && ros::ok()###*/) {
     std::string search_param_name;
@@ -57,6 +61,10 @@ void MotorController::loadURDF(ros::NodeHandle &nh, std::string param_name) {
   } else {
     ROS_INFO_STREAM("[MotorController::loadURDF] URDF model successfully initialized");
   }
+}
+
+bool MotorController::modelLoaded() {
+  return model_ != NULL;
 }
 
 void MotorController::registerJointLimits(const hardware_interface::JointHandle &jointHandlePosition,
@@ -215,6 +223,9 @@ void MotorController::registerJointLimits(const hardware_interface::JointHandle 
   }
 }
 
+void MotorController::read(const ros::Time& time, const ros::Duration& period) {
+}
+
 void MotorController::reset() {
   // Reset joint limits state, in case of mode switch or e-stop
   ROS_INFO_STREAM("[MotorController::reset]");
@@ -223,3 +234,5 @@ void MotorController::reset() {
 }
 
 
+void MotorController::write(const ros::Time& time, const ros::Duration& period) {
+}
