@@ -2,7 +2,6 @@
 
 #include "nadie_control/motor_controller.h"
 #include <regex>
-#include "transmission_interface/transmission_parser.h"
 
 MotorController::MotorController(ros::NodeHandle &nh, urdf::Model *urdf_model)
     : model_(NULL)
@@ -64,14 +63,13 @@ void MotorController::loadURDF(ros::NodeHandle &nh, std::string param_name) {
     }
 
     transmission_interface::TransmissionParser parser;
-    std::vector<transmission_interface::TransmissionInfo> infos;
 
-    bool transmissions_parsed = parser.parse(urdf_string, infos);
+    bool transmissions_parsed = parser.parse(urdf_string, transmissions_);
     if (!transmissions_parsed) {
         ROS_ERROR_STREAM("[MotorController::loadURDF] could not parse URDF for transmissions");
     }
 
-    ROS_INFO_STREAM("[MotorController::loadURDF] transmissions found: " << infos.size());
+    ROS_INFO_STREAM("[MotorController::loadURDF] transmissions found: " << transmissions_.size());
 
 }
 

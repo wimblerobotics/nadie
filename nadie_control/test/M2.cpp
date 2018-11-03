@@ -10,6 +10,7 @@ TEST(TestSuite_From_M2_cpp, testConstructorAndModelLoad)
 	MotorController* c = new MotorController(nh);
 	ASSERT_TRUE(c) << "Unable to construct a MotorController object";
 	ASSERT_TRUE(c->modelLoaded()) << "Model failed to load";
+	ASSERT_EQ(c->getTransmissions().size(), 2) << "Wrong number of transmissions found";
 }
 
 // // Declare another test

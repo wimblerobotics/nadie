@@ -9,6 +9,7 @@
 #include <joint_limits_interface/joint_limits_interface.h>
 #include <joint_limits_interface/joint_limits_rosparam.h>
 #include <joint_limits_interface/joint_limits_urdf.h>
+#include <transmission_interface/transmission_parser.h>
 #include <urdf/model.h>
 
 class MotorController : public hardware_interface::RobotHW {
@@ -23,6 +24,9 @@ class MotorController : public hardware_interface::RobotHW {
 	// Modes
 	bool useRosparamJointLimits_;
 	bool useSoftLimitsIfAvailable_;
+
+	// Transmissions
+	std::vector<transmission_interface::TransmissionInfo> transmissions_;
 
 	// Hardware interfaces
 	hardware_interface::JointStateInterface jointStateInterface_;
@@ -61,10 +65,18 @@ class MotorController : public hardware_interface::RobotHW {
 	~MotorController();
 
 	/**
+	* Get the transmissions in the model.
+	*/
+	const std::vector<transmission_interface::TransmissionInfo>& getTransmissions() {
+		return transmissions_;
+	}
+
+	/**
 	* Initialize the robot hardware interface.
 	*/
 	virtual void init();
 
+	// Has the model been loaded?
 	virtual bool modelLoaded();
 
 	/**
