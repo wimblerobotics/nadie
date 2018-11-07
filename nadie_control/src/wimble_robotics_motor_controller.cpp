@@ -109,12 +109,13 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 	float M2_I = 1773.65086;
 	float M1_QPPS = 3562;
 	float M2_QPPS = 3340;
-
+/*#####
 	setM1PID(M1_P, M1_I, 0, M1_QPPS);
 	setM2PID(M2_P, M2_I, 0, M2_QPPS);
+	#####*/
 
 	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] Initialized");
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] RoboClaw software version: %s", getVersion().c_str());
+	//#####ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] RoboClaw software version: %s", getVersion().c_str());
 }
 
 
@@ -126,7 +127,7 @@ WimbleRoboticsMotorController::~WimbleRoboticsMotorController() {
 void WimbleRoboticsMotorController::controlLoop() {
 	ros::Rate rate(controlLoopHz_);
 	while(ros::ok()) {
-		update();
+//#####		update();
 		rate.sleep();
 	}
 }

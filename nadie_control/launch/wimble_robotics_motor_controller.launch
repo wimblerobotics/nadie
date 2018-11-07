@@ -1,7 +1,8 @@
 <launch>
 	<group ns="/ngroup">
 		<arg name="doDebug" default="false" />
-		<arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " />
+		<!--arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " /-->
+	    <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
 		<arg unless="$(arg doDebug)" name="launchPrefix" value="" />
 		<arg name="do_odom_tf" default="true" />
 

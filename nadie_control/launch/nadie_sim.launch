@@ -1,0 +1,59 @@
+<launch> 
+  <group ns="nadie">
+    <arg name="doDebug" default="true" />
+    <!--arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " /-->
+    <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
+    <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
+ 
+    <arg name="do_motor_controller" default="true" />
+    <arg name="do_odom_tf" default="true" />
+    <arg name="model" /> 
+
+    <!-- Parsing xacro and setting robot_description parameter --> 
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find nadie_control)/urdf/nadie.xacro" /> 
+
+    <!-- Setting gui parameter to true for display joint slider --> 
+    <param name="use_gui" value="true"/> 
+
+    <!-- Starting Joint state publisher node which will publish the joint values --> 
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> 
+    
+    <!-- Starting robot state publish which will publish tf --> 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" /> 
+    
+    <!-- Launch visualization in rviz --> 
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_control)/urdf/urdf.rviz" required="true" /> 
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find nadie_control)/config/controller.yaml" command="load" />
+
+    <!-- load the controllers -->
+    <node 
+      name="controller_spawner" 
+      pkg="controller_manager" 
+      type="spawner" 
+      respawn="false"
+      output="screen" 
+      args="
+        diff_drive_controller
+        joint_state_controller
+        "
+    />
+
+    <!-- Start the motor controller -->
+    <node 
+      launch-prefix="$(arg launchPrefix)" 
+      name="nadie_motor_controller_node" 
+      ns="/nadie"
+      pkg="nadie_control"  
+      type="nadie_motor_controller_node" 
+      output="screen" 
+      respawn="false" >
+      
+      <remap from="odom" to="motor_odom" />
+      <rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
+      <param name="do_odom_tf" value="$(arg do_odom_tf)" />
+    </node>
+
+  </group>
+</launch> 
