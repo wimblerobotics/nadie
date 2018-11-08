@@ -1,4 +1,4 @@
-wimble latest $ rostopic list
+wimble (betterMotorControl *) nadie_control $ rostopic list
 /clicked_point
 /clock
 /gazebo/link_states
@@ -16,6 +16,10 @@ wimble latest $ rostopic list
 /initialpose
 /move_base_simple/goal
 /nadie/cmd_vel
+/nadie/diff_drive_controller/cmd_vel
+/nadie/diff_drive_controller/odom
+/nadie/diff_drive_controller/parameter_descriptions
+/nadie/diff_drive_controller/parameter_updates
 /nadie/joint_states
 /nadie/odom
 /rosout
@@ -161,3 +165,23 @@ wimble latest $ rosparam list
 /run_id
 /use_gui
 /use_sim_time
+
+
+wimble (betterMotorControl) nadie_control $ rosservice call /nadie/controller_manager/list_controllers
+controller: 
+  - 
+    name: "joint_state_controller"
+    state: "running"
+    type: "joint_state_controller/JointStateController"
+    claimed_resources: 
+      - 
+        hardware_interface: "hardware_interface::JointStateInterface"
+        resources: []
+  - 
+    name: "diff_drive_controller"
+    state: "running"
+    type: "diff_drive_controller/DiffDriveController"
+    claimed_resources: 
+      - 
+        hardware_interface: "hardware_interface::VelocityJointInterface"
+        resources: [front_left_wheel, front_right_wheel]

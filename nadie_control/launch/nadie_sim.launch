@@ -39,9 +39,9 @@
 
 
   <!-- load the controllers -->
-  <!--node 
+  <node 
     name="controller_spawner" 
-    ns="/nadie"
+    ns="nadie"
     pkg="controller_manager" 
     type="spawner" 
     respawn="false"
@@ -50,7 +50,7 @@
       joint_state_controller
       diff_drive_controller
       "
-  /-->
+  />
 
   <!-- Start the motor controller -->
   <node 
