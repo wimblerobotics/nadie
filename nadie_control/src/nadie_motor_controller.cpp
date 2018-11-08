@@ -17,10 +17,11 @@
 
 #define SetDWORDval(arg) (uint8_t)(arg>>24),(uint8_t)(arg>>16),(uint8_t)(arg>>8),(uint8_t)arg
 
-WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh, urdf::Model *urdf_model)
+NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urdf_model)
 	: MotorController(nh, urdf_model)
 	, controlLoopMaxAllowedDurationDeviation_(1.0)
 	, nh_(nh)
+	, simulating(true)
 	, urdf_model_(urdf_model) {
 
 	assert(ros::param::get("motor_controller/control_loop_hz", controlLoopHz_));
@@ -31,13 +32,13 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 	assert(ros::param::get("motor_controller/quad_pulses_per_revolution", quadPulsesPerRevolution_));
 	assert(ros::param::get("motor_controller/usb_device_name", motorUSBPort_));
 	assert(ros::param::get("motor_controller/wheel_radius", wheelRadius_));
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/control_loop_hz: %6.3f", controlLoopHz_);
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/max_command_retries: %d", maxCommandRetries_);
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/max_seconds_uncommanded_travel: %6.3f", maxSecondsUncommandedTravel_);
-	ROS_INFO_STREAM("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/port_address: 0x" << std::hex << portAddress_);
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/quad_pulses_per_meter: %8.3f", quadPulsesPerMeter_);
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/quad_pulses_per_revolution: %8.3f", quadPulsesPerRevolution_);
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] motor_controller/usb_device_name: %s", motorUSBPort_.c_str());
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/control_loop_hz: %6.3f", controlLoopHz_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_command_retries: %d", maxCommandRetries_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_seconds_uncommanded_travel: %6.3f", maxSecondsUncommandedTravel_);
+	ROS_INFO_STREAM("[NadieMotorController::NadieMotorController] motor_controller/port_address: 0x" << std::hex << portAddress_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_meter: %8.3f", quadPulsesPerMeter_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_revolution: %8.3f", quadPulsesPerRevolution_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/usb_device_name: %s", motorUSBPort_.c_str());
 
 	now_ = ros::Time::now();
 	lastTime_ = now_;
@@ -63,7 +64,7 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 
 	// Initialize interfaces for each joint
 	for (std::size_t jointId = 0; jointId < jointNames_.size(); ++jointId) {
-		ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] Loading joint name: %s", jointNames_[jointId].c_str());
+		ROS_INFO("[NadieMotorController::NadieMotorController] Loading joint name: %s", jointNames_[jointId].c_str());
 
 		// Create joint state interface
 		jointStateInterface_.registerHandle
@@ -101,7 +102,15 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 	controller_manager_.reset(new controller_manager::ControllerManager(this, nh_));
 	expectedControlLoopDuration_ = ros::Duration(1 / controlLoopHz_);
 
-	//#####openPort();
+	if (!simulating) {
+		initHardware();
+	}
+
+	ROS_INFO("[NadieMotorController::NadieMotorController] Initialized");
+}
+
+void NadieMotorController::initHardware() {
+	openPort();	
 
 	float M1_P =  8762.98571;
 	float M2_P = 9542.41265;
@@ -109,31 +118,31 @@ WimbleRoboticsMotorController::WimbleRoboticsMotorController(ros::NodeHandle &nh
 	float M2_I = 1773.65086;
 	float M1_QPPS = 3562;
 	float M2_QPPS = 3340;
-/*#####
+
 	setM1PID(M1_P, M1_I, 0, M1_QPPS);
 	setM2PID(M2_P, M2_I, 0, M2_QPPS);
-	#####*/
-
-	ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] Initialized");
-	//#####ROS_INFO("[WimbleRoboticsMotorController::WimbleRoboticsMotorController] RoboClaw software version: %s", getVersion().c_str());
+	ROS_INFO("[NadieMotorController::NadieMotorController] RoboClaw software version: %s", getVersion().c_str());
 }
 
 
-WimbleRoboticsMotorController::~WimbleRoboticsMotorController() {
+NadieMotorController::~NadieMotorController() {
 
 }
 
 
-void WimbleRoboticsMotorController::controlLoop() {
+void NadieMotorController::controlLoop() {
 	ros::Rate rate(controlLoopHz_);
 	while(ros::ok()) {
-//#####		update();
+		if (!simulating) {
+			update();
+		}
+
 		rate.sleep();
 	}
 }
 
 
-WimbleRoboticsMotorController::EncodeResult WimbleRoboticsMotorController::getEncoderCommandResult(uint8_t command) {
+NadieMotorController::EncodeResult NadieMotorController::getEncoderCommandResult(uint8_t command) {
 	uint16_t crc = 0;
 	updateCrc(crc, portAddress_);
 	updateCrc(crc, command);
@@ -143,47 +152,47 @@ WimbleRoboticsMotorController::EncodeResult WimbleRoboticsMotorController::getEn
 	uint8_t datum = readByteWithTimeout();
 
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	result.value |= datum << 24;
 	updateCrc(crc, datum);
 	datum = readByteWithTimeout();
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	result.value |= datum << 16;
 	updateCrc(crc, datum);
 	datum = readByteWithTimeout();
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	result.value |= datum << 8;
 	updateCrc(crc, datum);
 	datum = readByteWithTimeout();
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	result.value |= datum;
 	updateCrc(crc, datum);
 	datum = readByteWithTimeout();
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	result.status |= datum;
 	updateCrc(crc, datum);
 	if (datum == -1) {
-		ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Received -1 instead of expected data");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::::getEncoderCommandResult] RECEIVED -1");
+		ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Received -1 instead of expected data");
+		throw new TRoboClawException("[NadieMotorController::::getEncoderCommandResult] RECEIVED -1");
 	}
 
 	uint16_t responseCrc = 0;
@@ -199,14 +208,14 @@ WimbleRoboticsMotorController::EncodeResult WimbleRoboticsMotorController::getEn
 		}
 	}
 
-	ROS_ERROR("[WimbleRoboticsMotorController::getEncoderCommandResult] Expected CRC of: 0x%X, but got: 0x%X"
+	ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Expected CRC of: 0x%X, but got: 0x%X"
 	    	  , int(crc)
 	    	  , int(responseCrc));
-	throw new TRoboClawException("[WimbleRoboticsMotorController::getEncoderCommandResult] INVALID CRC");
+	throw new TRoboClawException("[NadieMotorController::getEncoderCommandResult] INVALID CRC");
 }
 
 
-uint16_t WimbleRoboticsMotorController::getErrorStatus() {
+uint16_t NadieMotorController::getErrorStatus() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -239,18 +248,18 @@ uint16_t WimbleRoboticsMotorController::getErrorStatus() {
 				}
 			}
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::getErrorStatus] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::getErrorStatus] Exception: %s, retry number: %d", e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::getErrorStatus] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::getErrorStatus] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("<----- [WimbleRoboticsMotorController::getErrorStatus] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::getErrorStatus] RETRY COUNT EXCEEDED");
+	ROS_ERROR("<----- [NadieMotorController::getErrorStatus] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getErrorStatus] RETRY COUNT EXCEEDED");
 }
 
 
-std::string WimbleRoboticsMotorController::getErrorString() {
+std::string NadieMotorController::getErrorString() {
 	uint8_t errorStatus = getErrorStatus();
 	if (errorStatus == 0) return "normal";
 	else {
@@ -296,7 +305,7 @@ std::string WimbleRoboticsMotorController::getErrorString() {
 }
 
 
-int32_t WimbleRoboticsMotorController::getM1Encoder() {
+int32_t NadieMotorController::getM1Encoder() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -305,18 +314,18 @@ int32_t WimbleRoboticsMotorController::getM1Encoder() {
 			EncodeResult result = getEncoderCommandResult(kGETM1ENC);
 			return result.value;
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::getM1Encoder] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::getM1Encoder] Exception: %s, retry number: %d", e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::getM1Encoder] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::getM1Encoder] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("<----- [WimbleRoboticsMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
+	ROS_ERROR("<----- [NadieMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
 }
 
 
-int32_t WimbleRoboticsMotorController::getM2Encoder() {
+int32_t NadieMotorController::getM2Encoder() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -325,18 +334,18 @@ int32_t WimbleRoboticsMotorController::getM2Encoder() {
 			EncodeResult result = getEncoderCommandResult(kGETM2ENC);
 			return result.value;
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::getM2Encoder] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::getM2Encoder] Exception: %s, retry number: %d", e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::getM2Encoder] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::getM2Encoder] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("<----- [WimbleRoboticsMotorController::getM2Encoder] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::getM2Encoder] RETRY COUNT EXCEEDED");
+	ROS_ERROR("<----- [NadieMotorController::getM2Encoder] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getM2Encoder] RETRY COUNT EXCEEDED");
 }
 
 
-std::string WimbleRoboticsMotorController::getVersion() {
+std::string NadieMotorController::getVersion() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -375,30 +384,30 @@ std::string WimbleRoboticsMotorController::getVersion() {
 				}
 			}
 
-			ROS_ERROR("[WimbleRoboticsMotorController::getVersion] unexpected long string");
-			throw new TRoboClawException("[WimbleRoboticsMotorController::getVersion] unexpected long string");
+			ROS_ERROR("[NadieMotorController::getVersion] unexpected long string");
+			throw new TRoboClawException("[NadieMotorController::getVersion] unexpected long string");
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::getVersion] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::getVersion] Exception: %s, retry number: %d", e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::getVersion] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::getVersion] Uncaught exception !!!");
 		}
 	}
 
 
-	ROS_ERROR("[WimbleRoboticsMotorController::getVersion] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::getVersion] RETRY COUNT EXCEEDED");
+	ROS_ERROR("[NadieMotorController::getVersion] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getVersion] RETRY COUNT EXCEEDED");
 }
 
 
-void WimbleRoboticsMotorController::openPort() {
-	ROS_INFO("[WimbleRoboticsMotorController::openPort] about to open port: %s", motorUSBPort_.c_str());
+void NadieMotorController::openPort() {
+	ROS_INFO("[NadieMotorController::openPort] about to open port: %s", motorUSBPort_.c_str());
 	clawPort_ = open(motorUSBPort_.c_str(), O_RDWR | O_NOCTTY);
 	if (clawPort_ < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::openPort] Unable to open USB port: %s, errno: (%d) %s"
+		ROS_ERROR("[NadieMotorController::openPort] Unable to open USB port: %s, errno: (%d) %s"
 				  , motorUSBPort_.c_str()
 				  , errno
 				  , strerror(errno));
-		throw new TRoboClawException("[WimbleRoboticsMotorController::openPort] Unable to open USB port");
+		throw new TRoboClawException("[NadieMotorController::openPort] Unable to open USB port");
 	}
 
 
@@ -408,8 +417,8 @@ void WimbleRoboticsMotorController::openPort() {
 
  	ret = tcgetattr(clawPort_, &portOptions);
 	if (ret < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::openPort] Unable to get terminal options (tcgetattr), error: %d: %s", errno, strerror(errno));
-		// throw new TRoboClawException("[WimbleRoboticsMotorController::openPort] Unable to get terminal options (tcgetattr)");
+		ROS_ERROR("[NadieMotorController::openPort] Unable to get terminal options (tcgetattr), error: %d: %s", errno, strerror(errno));
+		// throw new TRoboClawException("[NadieMotorController::openPort] Unable to get terminal options (tcgetattr)");
 	}
 
     // c_cflag contains a few important things- CLOCAL and CREAD, to prevent
@@ -430,24 +439,24 @@ void WimbleRoboticsMotorController::openPort() {
     portOptions.c_cc[VTIME] = 2;
     
     if (cfsetispeed(&portOptions, B38400) < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
+		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
+		throw new TRoboClawException("[NadieMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
     }
 
     if (cfsetospeed(&portOptions, B38400) < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::openPort] Unable to set terminal speed (cfsetospeed)");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::openPort] Unable to set terminal speed (cfsetospeed)");
+		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal speed (cfsetospeed)");
+		throw new TRoboClawException("[NadieMotorController::openPort] Unable to set terminal speed (cfsetospeed)");
     }
 
     // Now that we've populated our options structure, let's push it back to the system.
     if (tcsetattr(clawPort_, TCSANOW, &portOptions) < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::openPort] Unable to set terminal options (tcsetattr)");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::openPort] Unable to set terminal options (tcsetattr)");
+		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal options (tcsetattr)");
+		throw new TRoboClawException("[NadieMotorController::openPort] Unable to set terminal options (tcsetattr)");
     }
 }
 
 
-void WimbleRoboticsMotorController::read(const ros::Time& time, const ros::Duration& period) {
+void NadieMotorController::read(const ros::Time& time, const ros::Duration& period) {
 	int32_t m1Encoder = getM1Encoder();
 	int32_t m2Encoder = getM2Encoder();
 	// double m1Distance = m1Encoder / quadPulsesPerMeter_;
@@ -464,7 +473,7 @@ void WimbleRoboticsMotorController::read(const ros::Time& time, const ros::Durat
 	for (int i = 0; i < jointVelocityCommand_.size(); i++) {
 		/*
 		ROS_INFO(
-		     "WimbleRoboticsMotorController::read joint: %d (%s), jointVelocityCommand_: %6.3f"
+		     "NadieMotorController::read joint: %d (%s), jointVelocityCommand_: %6.3f"
 		     ", jointPositionCommand_: %6.3f"
 		     ", jointEffortCommand_: %6.3f"
 		     ", jointPosition_: %6.3f"
@@ -479,48 +488,48 @@ void WimbleRoboticsMotorController::read(const ros::Time& time, const ros::Durat
 }
 
 
-uint8_t WimbleRoboticsMotorController::readByteWithTimeout() {
+uint8_t NadieMotorController::readByteWithTimeout() {
 	struct pollfd ufd[1];
 	ufd[0].fd = clawPort_;
 	ufd[0].events = POLLIN;
 
 	int retval = poll(ufd, 1, 11);
 	if (retval < 0) {
-		ROS_ERROR("[WimbleRoboticsMotorController::readByteWithTimeout] Poll failed (%d) %s", errno, strerror(errno));
-		throw new TRoboClawException("[WimbleRoboticsMotorController::readByteWithTimeout] Read error");
+		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Poll failed (%d) %s", errno, strerror(errno));
+		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] Read error");
 	} else if (retval == 0) {
 		std::stringstream ev;
-		ev << "[WimbleRoboticsMotorController::readByteWithTimeout] TIMEOUT revents: " << std::hex << ufd[0].revents;
+		ev << "[NadieMotorController::readByteWithTimeout] TIMEOUT revents: " << std::hex << ufd[0].revents;
 		ROS_ERROR_STREAM(ev.str());
-		throw new TRoboClawException("[WimbleRoboticsMotorController::readByteWithTimeout] TIMEOUT");
+		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] TIMEOUT");
 	} else if (ufd[0].revents & POLLERR) {
-		ROS_ERROR("[WimbleRoboticsMotorController::readByteWithTimeout] Error on socket");
+		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Error on socket");
 		restartPort();
-		throw new TRoboClawException("[WimbleRoboticsMotorController::readByteWithTimeout] Error on socket");
+		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] Error on socket");
 	} else if (ufd[0].revents & POLLIN) {
 		unsigned char buffer[1];
 		ssize_t bytesRead = ::read(clawPort_, buffer, sizeof(buffer));
 		if (bytesRead != 1) {
-			ROS_ERROR("[WimbleRoboticsMotorController::readByteWithTimeout] Failed to read 1 byte, read: %d", (int) bytesRead);
-			throw TRoboClawException("[WimbleRoboticsMotorController::readByteWithTimeout] Failed to read 1 byte");
+			ROS_ERROR("[NadieMotorController::readByteWithTimeout] Failed to read 1 byte, read: %d", (int) bytesRead);
+			throw TRoboClawException("[NadieMotorController::readByteWithTimeout] Failed to read 1 byte");
 		}
 
 		return buffer[0];
 	} else {
-		ROS_ERROR("[WimbleRoboticsMotorController::readByteWithTimeout] Unhandled case");
-		throw new TRoboClawException("[WimbleRoboticsMotorController::readByteWithTimeout] Unhandled case");
+		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Unhandled case");
+		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] Unhandled case");
 	}
 }
 
 
-void WimbleRoboticsMotorController::restartPort() {
+void NadieMotorController::restartPort() {
     close(clawPort_);
     usleep(200000);
     openPort();
 }
 
 
-void WimbleRoboticsMotorController::setM1PID(float p, float i, float d, uint32_t qpps) {
+void NadieMotorController::setM1PID(float p, float i, float d, uint32_t qpps) {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -536,18 +545,18 @@ void WimbleRoboticsMotorController::setM1PID(float p, float i, float d, uint32_t
 				   SetDWORDval(qpps));
 			return;
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::setM1PID] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::setM1PID] Exception: %s, retry number: %d", e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::setM1PID] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::setM1PID] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("<----- [WimbleRoboticsMotorController::setM1PID] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::setM1PID] RETRY COUNT EXCEEDED");
+	ROS_ERROR("<----- [NadieMotorController::setM1PID] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::setM1PID] RETRY COUNT EXCEEDED");
 }
 
 
-void WimbleRoboticsMotorController::setM2PID(float p, float i, float d, uint32_t qpps) {
+void NadieMotorController::setM2PID(float p, float i, float d, uint32_t qpps) {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
 
@@ -561,23 +570,23 @@ void WimbleRoboticsMotorController::setM2PID(float p, float i, float d, uint32_t
 				   SetDWORDval(kp),
 				   SetDWORDval(ki),
 				   SetDWORDval(qpps));
-        	//ROS_INFO_COND(DEBUG, "<----- [WimbleRoboticsMotorController::setM2PID]");
+        	//ROS_INFO_COND(DEBUG, "<----- [NadieMotorController::setM2PID]");
 			return;
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::setM2PID] Exception: %s, retry number: %d",  e->what(), retry);
+			ROS_ERROR("[NadieMotorController::setM2PID] Exception: %s, retry number: %d",  e->what(), retry);
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::setM2PID] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::setM2PID] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("<----- [WimbleRoboticsMotorController::setM2PID] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::setM2PID] RETRY COUNT EXCEEDED");
+	ROS_ERROR("<----- [NadieMotorController::setM2PID] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::setM2PID] RETRY COUNT EXCEEDED");
 }
 
 
-void WimbleRoboticsMotorController::stop() {
+void NadieMotorController::stop() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
-	//ROS_INFO("[WimbleRoboticsMotorController::stop]");
+	//ROS_INFO("[NadieMotorController::stop]");
 	int retry;
 
 	for (retry = 0; retry < maxCommandRetries_; retry++) {
@@ -590,19 +599,19 @@ void WimbleRoboticsMotorController::stop() {
 				  , SetDWORDval(0));
 			return;
 		} catch (TRoboClawException* e) {
-			ROS_ERROR("[WimbleRoboticsMotorController::stop] Exception: %s, retry number: %d", e->what(), retry);
+			ROS_ERROR("[NadieMotorController::stop] Exception: %s, retry number: %d", e->what(), retry);
 			restartPort();
 		} catch (...) {
-		    ROS_ERROR("[WimbleRoboticsMotorController::stop] Uncaught exception !!!");
+		    ROS_ERROR("[NadieMotorController::stop] Uncaught exception !!!");
 		}
 	}
 
-	ROS_ERROR("[WimbleRoboticsMotorController::stop] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::stop] RETRY COUNT EXCEEDED");
+	ROS_ERROR("[NadieMotorController::stop] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::stop] RETRY COUNT EXCEEDED");
 }
 
 
-void WimbleRoboticsMotorController::update() {
+void NadieMotorController::update() {
 	now_ = ros::Time::now();
 	elapsedTime_ = ros::Duration(now_.sec - 
       							 lastTime_.sec +
@@ -611,7 +620,7 @@ void WimbleRoboticsMotorController::update() {
 	const double controlLoopCycleDurationDeviation = (elapsedTime_ - expectedControlLoopDuration_).toSec();
 
 	if (controlLoopCycleDurationDeviation > controlLoopMaxAllowedDurationDeviation_) {
-		ROS_WARN_STREAM("[WimbleRoboticsMotorController::update] Control loop was too slow by "
+		ROS_WARN_STREAM("[NadieMotorController::update] Control loop was too slow by "
 						<< controlLoopCycleDurationDeviation
 						<< ", actual loop time: "
 						<< elapsedTime_
@@ -619,13 +628,15 @@ void WimbleRoboticsMotorController::update() {
 						<< controlLoopMaxAllowedDurationDeviation_);
 	}
 
-	read(ros::Time(now_.sec, now_.nsec), elapsedTime_);
-	controller_manager_->update(ros::Time(now_.sec, now_.nsec), elapsedTime_);
-	write(ros::Time(now_.sec, now_.nsec), elapsedTime_);
+	if (!simulating) {
+		read(ros::Time(now_.sec, now_.nsec), elapsedTime_);
+		controller_manager_->update(ros::Time(now_.sec, now_.nsec), elapsedTime_);
+		write(ros::Time(now_.sec, now_.nsec), elapsedTime_);
+	}
 }
 
 
-void WimbleRoboticsMotorController::updateCrc(uint16_t& crc, uint8_t data) {
+void NadieMotorController::updateCrc(uint16_t& crc, uint8_t data) {
 	crc = crc ^ ((uint16_t) data << 8);
 	for (int i = 0; i < 8; i++)	{
 		if (crc & 0x8000)
@@ -636,7 +647,7 @@ void WimbleRoboticsMotorController::updateCrc(uint16_t& crc, uint8_t data) {
 }
 
 
-void WimbleRoboticsMotorController::write(const ros::Time& time, const ros::Duration& period) {
+void NadieMotorController::write(const ros::Time& time, const ros::Duration& period) {
 	int retry;
 	int32_t leftMaxDistance;
 	int32_t rightMaxDistance;
@@ -652,7 +663,7 @@ void WimbleRoboticsMotorController::write(const ros::Time& time, const ros::Dura
 	if ((fabs(jointVelocityCommand_[0]) > 0.01) ||
 		(fabs(jointVelocityCommand_[1]) > 0.01)) {
 		/*
-		ROS_INFO("[WimbleRoboticsMotorController::write] left_command: %6.3f"
+		ROS_INFO("[NadieMotorController::write] left_command: %6.3f"
 			     ", leftMetersPerSecond: %7.3f"
 			     ", leftQuadPulsesPerSecond: %d"
 			     ", leftMaxDistance: %d"
@@ -682,34 +693,34 @@ void WimbleRoboticsMotorController::write(const ros::Time& time, const ros::Dura
 					   , SetDWORDval(rightMaxDistance)
 					   , 1 /* Cancel any previous command */
 					   );
-				//ROS_INFO("[WimbleRoboticsMotorController::write] Error status: %s", getErrorString().c_str());
+				//ROS_INFO("[NadieMotorController::write] Error status: %s", getErrorString().c_str());
 				return;
 			} catch (TRoboClawException* e) {
-				ROS_ERROR("[WimbleRoboticsMotorController::write] Exception: %s, retry number %d", e->what(), retry);
+				ROS_ERROR("[NadieMotorController::write] Exception: %s, retry number %d", e->what(), retry);
 			} catch (...) {
-			    ROS_ERROR("[WimbleRoboticsMotorController::write] Uncaught exception !!!");
+			    ROS_ERROR("[NadieMotorController::write] Uncaught exception !!!");
 			}
 		}
 	} else {
-		//ROS_INFO("[WimbleRoboticsMotorController::write] both commands are near zero");
+		//ROS_INFO("[NadieMotorController::write] both commands are near zero");
 		return;
 	}
 
-	ROS_ERROR("[WimbleRoboticsMotorController::write] RETRY COUNT EXCEEDED");
-	throw new TRoboClawException("[WimbleRoboticsMotorController::write] RETRY COUNT EXCEEDED");
+	ROS_ERROR("[NadieMotorController::write] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::write] RETRY COUNT EXCEEDED");
 }
 
 
-void WimbleRoboticsMotorController::writeByte(uint8_t byte) {
+void NadieMotorController::writeByte(uint8_t byte) {
 	ssize_t result = ::write(clawPort_, &byte, 1);
 	if (result != 1) {
-	  	ROS_ERROR("[WimbleRoboticsMotorController::writeByte] Unable to write one byte, result: %d, errno: %d)", (int) result,  errno);
+	  	ROS_ERROR("[NadieMotorController::writeByte] Unable to write one byte, result: %d, errno: %d)", (int) result,  errno);
 		restartPort();
-		throw new TRoboClawException("[WimbleRoboticsMotorController::writeByte] Unable to write one byte");
+		throw new TRoboClawException("[NadieMotorController::writeByte] Unable to write one byte");
 	}
 }
 
-void WimbleRoboticsMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
+void NadieMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
 	uint16_t crc = 0;
 	va_list marker;
 	va_start(marker, cnt);
@@ -731,8 +742,8 @@ void WimbleRoboticsMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
 
 		uint8_t response = readByteWithTimeout();
 		if (response != 0xFF) {
-			ROS_ERROR("[WimbleRoboticsMotorController::writeN] Invalid ACK response");
-			throw new TRoboClawException("[WimbleRoboticsMotorController::writeN] Invalid ACK response");
+			ROS_ERROR("[NadieMotorController::writeN] Invalid ACK response");
+			throw new TRoboClawException("[NadieMotorController::writeN] Invalid ACK response");
 		}
 	}
 
@@ -740,4 +751,4 @@ void WimbleRoboticsMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
 }
 
 
-const double WimbleRoboticsMotorController::kBILLION = 1000000000.0;
+const double NadieMotorController::kBILLION = 1000000000.0;

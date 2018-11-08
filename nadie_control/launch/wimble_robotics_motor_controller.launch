@@ -16,6 +16,7 @@
 	    <!-- load the controllers -->
 	    <node 
 	    	name="controller_spawner" 
+	    	ns="/nadie"
 	    	pkg="controller_manager" 
 	    	type="spawner" 
 	    	respawn="false"

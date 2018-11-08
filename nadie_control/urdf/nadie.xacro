@@ -40,24 +40,25 @@
   <!--xacro:include filename="$(find m1)/robots/m1.gazebo" /-->
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>$(arg robot_namespace)</robotNamespace>
+      <!--robotNamespace>$(arg robot_namespace)</robotNamespace-->
+      <robotNamespace>/nadie</robotNamespace>
       <legacyModeNS>true</legacyModeNS>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+]     <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
     </plugin>
   </gazebo>
   
-  <!--gazebo>
+  <gazebo>
     <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
       <alwaysOn>true</alwaysOn>
       <commandTopic>cmd_vel</commandTopic>
-      <leftJoint>base_to_lwheel_joint</leftJoint>
+      <leftJoint>front_left_wheel</leftJoint>
       <legacyMode>false</legacyMode>
       <odometryFrame>odom</odometryFrame>
       <odometryTopic>odom</odometryTopic>
       <publishOdomTF>true</publishOdomTF>
       <publishWheelJointState>false</publishWheelJointState>
       <publishWheelTF>true</publishWheelTF>
-      <rightJoint>base_to_rwheel_joint</rightJoint>
+      <rightJoint>front_right_wheel</rightJoint>
       <robotBaseFrame>base_link</robotBaseFrame>
       <rosDebugLevel>Debug</rosDebugLevel>
       <torque>0.1</torque>
@@ -65,7 +66,7 @@
       <wheelDiameter>${2*wheel_radius}</wheelDiameter>
       <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation>
     </plugin>
-  </gazebo-->
+  </gazebo>
 
   <!-- Parts -->
   <link name="base_link">

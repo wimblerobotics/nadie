@@ -1,6 +1,6 @@
 #include "ros/ros.h"
 
-#include "nadie_control/wimble_robotics_motor_controller.h"
+#include "nadie_control/nadie_motor_controller.h"
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "motor_controller_node");
@@ -10,19 +10,13 @@ int main(int argc, char** argv) {
 	ros::AsyncSpinner spinner(50);
 	spinner.start();
 
-  	boost::shared_ptr<WimbleRoboticsMotorController> hw;
+  boost::shared_ptr<NadieMotorController> hw;
 
-	bool simulate = false; //#####
+	hw.reset(new NadieMotorController(nh));
 
-  	if (simulate) {
-    	//###hw.reset(new btr::SimHWInterface(nh));
-  	} else {
-    	hw.reset(new WimbleRoboticsMotorController(nh));
-  	}
+	ROS_INFO("[motor_controller_node] about to call hw->init");
+	hw->init();
+	hw->controlLoop();
 
-  	ROS_INFO("[motor_controller_node] about to call hw->init");
-  	hw->init();
-  	hw->controlLoop();
-	
 	return 0;
 }

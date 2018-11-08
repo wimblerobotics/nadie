@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Grid1
         - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 349
@@ -89,25 +88,55 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
       Name: RobotModel
-      Robot Description: robot_description
+      Robot Description: nadie/robot_description
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
     - Class: rviz/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        caster_wheel_link:
+          Value: true
+        front_left_wheel_link:
+          Value: true
+        front_right_wheel_link:
+          Value: true
+        inertial_link:
+          Value: true
+        nadie/base_link:
+          Value: true
+        nadie/front_left_wheel_link:
+          Value: true
+        nadie/front_right_wheel_link:
+          Value: true
+        nadie/odom:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        base_link:
+          base_footprint:
+            {}
+          caster_wheel_link:
+            {}
+          front_left_wheel_link:
+            {}
+          front_right_wheel_link:
+            {}
+          inertial_link:
+            {}
       Update Interval: 0
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 122; 122; 122

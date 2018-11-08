@@ -79,7 +79,7 @@ include_directories(
 add_library (
   ${PROJECT_NAME}
   src/motor_controller.cpp
-  src/wimble_robotics_motor_controller.cpp  
+  src/nadie_motor_controller.cpp  
 )
 
 ## Declare a C++ executable
@@ -87,7 +87,7 @@ add_executable (
   nadie_motor_controller_node
   src/motor_controller.cpp
   src/motor_controller_node.cpp
-  src/wimble_robotics_motor_controller.cpp
+  src/nadie_motor_controller.cpp
 )
 
 add_dependencies(
