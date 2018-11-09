@@ -110,13 +110,7 @@ Visualization Manager:
           Value: true
         inertial_link:
           Value: true
-        nadie/base_link:
-          Value: true
-        nadie/front_left_wheel_link:
-          Value: true
-        nadie/front_right_wheel_link:
-          Value: true
-        nadie/odom:
+        odom:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -135,13 +129,15 @@ Visualization Manager:
             {}
           inertial_link:
             {}
+        odom:
+          {}
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 122; 122; 122
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -198,5 +194,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1301
-  X: 428
-  Y: 291
+  X: 526
+  Y: 62

@@ -9,6 +9,7 @@
   <arg name="model" /> 
 
   <!-- Parsing xacro and setting robot_description parameter --> 
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find nadie_control)/urdf/nadie.xacro" /> 
   <param name="nadie/robot_description" command="$(find xacro)/xacro --inorder $(find nadie_control)/urdf/nadie.xacro" /> 
 
   <!-- Setting gui parameter to true for display joint slider --> 
@@ -16,14 +17,17 @@
 
   <!-- Run joint state publisher (Gets robot_description from parameter server)-->
   <node pkg="joint_state_publisher"
-    ns="nadie"
     type="joint_state_publisher"
     name="joint_state_publisher" >
     <param name="rate" value="50" />
   </node>
 
   <!-- Starting robot state publish which will publish tf --> 
-  <node name="robot_state_publisher" ns="nadie" pkg="robot_state_publisher" type="state_publisher" /> 
+  <node name="robot_state_publisher" 
+    pkg="robot_state_publisher" 
+    type="state_publisher" >
+  </node>
+ 
   
   <!-- Launch visualization in rviz --> 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_control)/urdf/urdf.rviz" required="true" /> 
@@ -40,7 +44,7 @@
     <arg name="debug" value="false"/>
   </include>
 
-  <node name="spawn_urdf" ns="nadie" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nadie" />
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nadie" />
 
 
   <!-- load the controllers -->
@@ -55,7 +59,10 @@
       joint_state_controller
       diff_drive_controller
       "
-  />
+  >
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find nadie_control)/urdf/nadie.xacro" /> 
+  </node>
+
 
   <!-- Start the motor controller -->
   <node 
