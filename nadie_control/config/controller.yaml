@@ -28,17 +28,6 @@ nadie:
     type: joint_state_controller/JointStateController
     publish_rate: 50
 
-  # base_to_lwheel_velocity_controller:
-  #   type: effort_controllers/JointVelocityController  # From URDF <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-  #   joint: base_to_lwheel_joint                       # From URDF <joint name="base_to_lwheel_joint" type="continuous">
-  #   pid: {p: 8762.98571, i: 1535.49646, d: 0.0}       # From IonMotion setup program.
-
-  # base_to_rwheel_velocity_controller:
-  #   type: effort_controllers/JointVelocityController  # From URDF <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
-  #   joint: base_to_rwheel_joint                       # From URDF <joint name="base_to_rwheel_joint" type="continuous">
-  #   pid: {p: 9542.41265, i: 1773.65086, d: 0.0}       # From IonMotion setup program.
-
-  # joint_names: [base_to_lwheel_joint, base_to_rwheel_joint]
 
   diff_drive_controller:
     type        : "diff_drive_controller/DiffDriveController"
