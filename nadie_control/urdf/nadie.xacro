@@ -39,14 +39,36 @@
 
   <!--xacro:include filename="$(find m1)/robots/m1.gazebo" /-->
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <!--robotNamespace>$(arg robot_namespace)</robotNamespace-->
+
+    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <alwaysOn>true</alwaysOn>
+      <commandTopic>cmd_vel</commandTopic>
+      <legacyMode>false</legacyMode>
+      <leftJoint>front_left_wheel</leftJoint>
+      <odometryFrame>odom</odometryFrame>
+      <odometrySource>true</odometrySource>
+      <odometryTopic>odom</odometryTopic>
+      <publishOdomTF>true</publishOdomTF>
+      <publishTf>true</publishTf>
+      <publishWheelJointState>false</publishWheelJointState>
+      <publishWheelTF>true</publishWheelTF>
+      <rightJoint>front_right_wheel</rightJoint>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <rosDebugLevel>Debug</rosDebugLevel>
+      <torque>20</torque>
+      <updateRate>20</updateRate>
+      <wheelAcceleration>1</wheelAcceleration>
+      <wheelDiameter>${2*wheel_radius}</wheelDiameter>
+      <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation>
+      <wheelTorque>20</wheelTorque>
+    </plugin>
+    <!--plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <!- -robotNamespace>$(arg robot_namespace)</robotNamespace- ->
       <robotNamespace>/nadie</robotNamespace>
       <legacyModeNS>true</legacyModeNS>
-]     <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
-    </plugin>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin-->
   </gazebo>
-  
   <!--gazebo>
     <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
       <alwaysOn>true</alwaysOn>

@@ -6,6 +6,7 @@
 			<inertial>
 				<mass value="2.637" />
 				<origin xyz="0 0 0" />
+				<cylinder_inertia m="5" r="0.1" h="0.05"/>
 				<inertia  ixx="0.02467" ixy="0" ixz="0" iyy="0.04411" iyz="0" izz="0.02467" />
 			</inertial>
 			<visual>
@@ -36,6 +37,8 @@
 			<child link="${wheel_prefix}_wheel_link"/>
 			<xacro:insert_block name="joint_pose"/>
 			<axis xyz="0 1 0" rpy="0 0 0" />
+		    <limit effort="100" velocity="100"/>
+		    <joint_properties damping="0.0" friction="0.0"/>
 		</joint>
 
 		<transmission name="${wheel_prefix}_wheel_trans" type="SimpleTransmission">
