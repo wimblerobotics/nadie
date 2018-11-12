@@ -41,26 +41,21 @@
   <gazebo>
 
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <alwaysOn>true</alwaysOn>
-      <commandTopic>cmd_vel</commandTopic>
-      <legacyMode>false</legacyMode>
-      <leftJoint>front_left_wheel</leftJoint>
-      <odometryFrame>odom</odometryFrame>
-      <odometrySource>world</odometrySource>
-      <odometryTopic>odom</odometryTopic>
-      <publishOdomTF>true</publishOdomTF>
-      <publishTf>true</publishTf>
-      <publishWheelJointState>0</publishWheelJointState>
-      <publishWheelTF>0</publishWheelTF>
-      <rightJoint>front_right_wheel</rightJoint>
-      <robotBaseFrame>base_link</robotBaseFrame>
-      <rosDebugLevel>Debug</rosDebugLevel>
-      <torque>20</torque>
-      <updateRate>20</updateRate>
-      <wheelAcceleration>1</wheelAcceleration>
-      <wheelDiameter>${2*wheel_radius}</wheelDiameter>
-      <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation>
-      <wheelTorque>20</wheelTorque>
+      <commandTopic>cmd_vel</commandTopic> <!-- cmd_vel -->
+      <leftJoint>front_left_wheel</leftJoint> <!-- left_joint -->
+      <odometryFrame>odom</odometryFrame> <!-- odom -->
+      <odometryTopic>odom</odometryTopic> <!-- odom -->
+      <odometrySource>world</odometrySource> <!-- world (in {world, encoder} ) -->
+      <publishTf>true</publishTf> <!-- true, if true pub <odometryTopic> -->
+      <publishWheelJointState>false</publishWheelJointState> <!-- false, if true pub "joint_states" -->
+      <publishWheelTF>false</publishWheelTF> <!-- false -->
+      <rightJoint>front_right_wheel</rightJoint> <!-- right_joint -->
+      <robotBaseFrame>base_link</robotBaseFrame> <!-- base_footprint -->
+      <updateRate>20</updateRate> <!-- 100 -->
+      <wheelAcceleration>1</wheelAcceleration> <!-- 0.0 -->
+      <wheelDiameter>${2*wheel_radius}</wheelDiameter> <!-- 0.15 -->
+      <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation> <!-- 0.34 -->
+      <wheelTorque>20</wheelTorque> <!-- 5.0 -->
     </plugin>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>$(arg robot_namespace)</robotNamespace>
@@ -69,6 +64,7 @@
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
   </gazebo>
+
   <!--gazebo>
     <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
       <alwaysOn>true</alwaysOn>
