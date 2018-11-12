@@ -46,12 +46,12 @@
       <legacyMode>false</legacyMode>
       <leftJoint>front_left_wheel</leftJoint>
       <odometryFrame>odom</odometryFrame>
-      <odometrySource>true</odometrySource>
+      <odometrySource>world</odometrySource>
       <odometryTopic>odom</odometryTopic>
       <publishOdomTF>true</publishOdomTF>
       <publishTf>true</publishTf>
-      <publishWheelJointState>false</publishWheelJointState>
-      <publishWheelTF>true</publishWheelTF>
+      <publishWheelJointState>0</publishWheelJointState>
+      <publishWheelTF>0</publishWheelTF>
       <rightJoint>front_right_wheel</rightJoint>
       <robotBaseFrame>base_link</robotBaseFrame>
       <rosDebugLevel>Debug</rosDebugLevel>
@@ -62,12 +62,12 @@
       <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation>
       <wheelTorque>20</wheelTorque>
     </plugin>
-    <!--plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <!- -robotNamespace>$(arg robot_namespace)</robotNamespace- ->
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>$(arg robot_namespace)</robotNamespace>
       <robotNamespace>/nadie</robotNamespace>
       <legacyModeNS>true</legacyModeNS>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-    </plugin-->
+    </plugin>
   </gazebo>
   <!--gazebo>
     <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
