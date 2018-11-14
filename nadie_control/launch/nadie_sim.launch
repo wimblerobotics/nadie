@@ -1,10 +1,13 @@
 <launch> 
+  <arg name="do_amcl" default="true" />
   <arg name="doDebug" default="false" />
   <!--arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " /-->
   <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
   <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
 
+  <arg name="do_map" default="true" />
   <arg name="do_motor_controller" default="false" />
+  <arg name="do_move_base" default="true" />
   <arg name="do_odom_tf" default="true" />
   <arg name="model" /> 
 
@@ -37,12 +40,13 @@
   <!-- Note that controller.yaml has a subspace 'nadie' so need to cancel the effects of the 'group' tag ns here -->
   <rosparam file="$(find nadie_control)/config/controller.yaml" command="load" />
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+  <include file="$(find nadie_control)/launch/world.launch">
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
+    <arg name="world_name" value="$(find nadie_control)/world/world4.world" />
   </include>
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nadie" />
@@ -80,4 +84,19 @@
     <rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
     <param name="do_odom_tf" value="$(arg do_odom_tf)" />
   </node>
+
+  <!-- Load the map -->
+  <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
+
+  <!-- Bring up AMCL -->
+  <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/amcl.launch" />
+
+  <!-- Brunk up move_base -->
+  <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base.launch" />
+
+  <!-- The scan simulator -->
+  <!--node name="light_scan_sim" pkg="light_scan_sim" type="light_scan_sim_node" output="screen">
+    <rosparam file="$(find snowberry_map)/config/lidar_sim_config.yaml" command="load" />
+  </node-->
+
 </launch> 
