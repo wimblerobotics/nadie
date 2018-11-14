@@ -16,16 +16,17 @@
   <param name="use_gui" value="true"/> 
 
   <!-- Run joint state publisher (Gets robot_description from parameter server)-->
-  <node pkg="joint_state_publisher"
+  <!--node pkg="joint_state_publisher"
     type="joint_state_publisher"
     name="joint_state_publisher" >
     <param name="rate" value="50" />
-  </node>
+  </node-->
 
   <!-- Starting robot state publish which will publish tf --> 
   <node name="robot_state_publisher" 
     pkg="robot_state_publisher" 
     type="state_publisher" >
+    <remap from="joint_states" to="/nadie/joint_states" />
   </node>
  
   

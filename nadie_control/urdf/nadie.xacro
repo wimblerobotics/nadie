@@ -41,12 +41,13 @@
   <gazebo>
 
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <commandTopic>cmd_vel</commandTopic> <!-- cmd_vel -->
+      <commandTopic>/nadie/diff_drive_controller/cmd_vel</commandTopic> <!-- cmd_vel -->
+      <legacyMode>true</legacyMode> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
       <leftJoint>front_left_wheel</leftJoint> <!-- left_joint -->
       <odometryFrame>odom</odometryFrame> <!-- odom -->
-      <odometryTopic>odom</odometryTopic> <!-- odom -->
+      <odometryTopic>/nadie/diff_drive_controller/odom</odometryTopic> <!-- odom -->
       <odometrySource>world</odometrySource> <!-- world (in {world, encoder} ) -->
-      <publishTf>true</publishTf> <!-- true, if true pub <odometryTopic> -->
+      <publishTf>false</publishTf> <!-- true, if true pub <odometryTopic> -->
       <publishWheelJointState>false</publishWheelJointState> <!-- false, if true pub "joint_states" -->
       <publishWheelTF>false</publishWheelTF> <!-- false -->
       <rightJoint>front_right_wheel</rightJoint> <!-- right_joint -->
@@ -57,12 +58,16 @@
       <wheelSeparation>${body_width+(2*wheel_spacer)+wheel_width}</wheelSeparation> <!-- 0.34 -->
       <wheelTorque>20</wheelTorque> <!-- 5.0 -->
     </plugin>
+
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>$(arg robot_namespace)</robotNamespace>
-      <robotNamespace>/nadie</robotNamespace>
-      <legacyModeNS>true</legacyModeNS>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <!-- controlPeriod defaults to parent_model_->GetWorld()->Physics()->GetMaxStepSize() -->
+      <!-- eStopTopic if specified, subscribe to this topic and capture 'data' value --> 
+      <legacyModeNS>true</legacyModeNS> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
+      <robotNamespace>$(arg robot_namespace)</robotNamespace> <!-- parent_model_->GetName() -->
+      <robotParam>robot_description</robotParam> <!-- robot_description -->
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType> <!-- gazebo_ros_control/DefaultRobotHWSim, which becomes the controller manager -->
     </plugin>
+
   </gazebo>
 
   <!-- Parts -->
