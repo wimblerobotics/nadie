@@ -14,7 +14,7 @@ obstacle_layer:
   enabled: true                         # true/false
   footprint_clearing_enabled: true     # true/false
   inf_is_valid: true #false
-  laser_scan_sensor: { clearing: true, data_type: LaserScan, expected_update_rate: 2.0, marking: true, sensor_frame: 'scan', topic: '/lysander/scan' }
+  laser_scan_sensor: { clearing: true, data_type: LaserScan, expected_update_rate: 2.0, marking: true, sensor_frame: 'scan', topic: '/scan' }
   max_obstacle_height: 2.0              # 0.0 .. 50
   min_obstacle_height: 0.0
   observation_sources: laser_scan_sensor
@@ -29,7 +29,7 @@ static_map:
   cost_scaling_factor: 2.58
   first_map_only: false         # Only subscribe to the first message on the map topic, ignoring all subsequent message. (false)
   lethal_cost_threshold: 100    # The threshold value at which to consider a cost lethal when reading in a map from the map server. (100)
-  map_topic: /lysander/map      # The topic that the costmap subscribes to for the static map. (map)
+  map_topic: /map      # The topic that the costmap subscribes to for the static map. (map)
   subscribe_to_updates: false   # In addition to map_topic, also subscribe to map_topic + "_updates". (false)
   track_unknown_space: true     # If true, unknown values in the map messages are translated directly to the layer. (true)
   trinary_costmap: true         # If true, translates all map message values to NO_INFORMATION/FREE_SPACE/LETHAL_OBSTACLE (three values). 

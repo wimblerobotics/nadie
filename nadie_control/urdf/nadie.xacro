@@ -158,6 +158,43 @@
     </inertial>
   </link>
 
+
+  <!--gazebo reference="top">
+    <sensor name="sonar" type="ray">
+      <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>12</samples>
+            <resolution>1.0</resolution>
+            <min_angle>-3.14</min_angle>
+            <max_angle>3.14</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>2</samples>
+            <resolution>1.0</resolution>
+            <min_angle>-0.001</min_angle>
+            <max_angle>0</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.05</min>
+          <max>50.0</max>
+        </range>
+      </ray>
+      <plugin name="sonar_plugin" filename="libgazebo_ros_block_laser.so">
+        <gaussianNoise>0.00</gaussianNoise>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>100.0</updateRate>
+        <topicName>/output_point_cloud</topicName>
+        <frameName>sonar_ring</frameName>
+      </plugin>
+      <always_on>true</always_on>
+      <update_rate>100.0</update_rate>
+    </sensor>
+  </gazebo-->
+
+
   <gazebo reference="hokuyo_link">
     <sensor type="ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
@@ -187,10 +224,19 @@
           <stddev>0.01</stddev>
         </noise>
       </ray>
-      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+      <plugin name="laser" filename="libgazebo_ros_laser.so" >
+        <alwaysOn>true</alwaysOn>
+        <robotNamespace></robotNamespace>
         <topicName>/scan</topicName>
-        <frameName>hokuyo_link</frameName>
+        <updateRate>7.0</updateRate>
+        <frameName>scan</frameName>
       </plugin>
+          <!--
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">
+        <topicName>/scanx</topicName>
+        <frameName>scan</frameName>
+      </plugin>
+    -->
     </sensor>
   </gazebo>
 

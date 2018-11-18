@@ -1,3 +1,6 @@
+roslaunch nadie_control nadie_sim.launch
+
+
 wimble (betterMotorControl *) nadie_control $ rostopic list
 /clicked_point
 /clock

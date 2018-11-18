@@ -225,7 +225,7 @@
           </ray>
           <plugin name='gazebo_ros_head_hokuyo_controller' filename='libgazebo_ros_laser.so'>
             <topicName>/scan</topicName>
-            <frameName>hokuyo_link</frameName>
+            <frameName>scan</frameName>
             <robotNamespace>/</robotNamespace>
           </plugin>
           <pose frame=''>0.1449 0 0.13608 0 -0 0</pose>
