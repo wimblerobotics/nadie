@@ -46,7 +46,7 @@
     <arg name="gui" value="true"/>
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
-    <arg name="world_name" value="$(find nadie_control)/world/world4.world" />
+    <arg name="world_name" value="$(find nadie_control)/world/world5.world" />
   </include>
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nadie" />
