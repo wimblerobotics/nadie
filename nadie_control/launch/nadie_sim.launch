@@ -7,7 +7,7 @@
 
   <arg name="do_map" default="true" />
   <arg name="do_motor_controller" default="false" />
-  <arg name="do_move_base" default="true" />
+  <arg name="do_move_base" default="false" />
   <arg name="do_odom_tf" default="true" />
   <arg name="model" /> 
 
@@ -49,7 +49,11 @@
     <arg name="world_name" value="$(find nadie_control)/world/Home3" />
   </include>
 
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model nadie" />
+  <node name="spawn_urdf" 
+    args="-param robot_description -unpause -urdf -model nadie"
+    pkg="gazebo_ros" 
+    type="spawn_model" 
+  />
 
 
   <!-- load the controllers -->
