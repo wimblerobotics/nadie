@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>nadie_rviz</name>
+  <version>1.0.0</version>
+  <description>Nadie riz configurations</description>
+
+  <author email="mike@wimblerobotics.com">Michael Wimble</author>
+  <license>MIT</license>
+  <maintainer email="mike@wimblerobotics.com">Michael Wimble</maintainer>
+  <url type="website">http://wimblerobotics.com</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+  </export>
+</package>
