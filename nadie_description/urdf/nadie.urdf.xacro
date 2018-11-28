@@ -27,7 +27,7 @@ SOFTWARE.
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <legacyModeNS>true</legacyModeNS> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
-      <robotNamespace>$(arg robot_namespace)</robotNamespace> <!-- parent_model_->GetName() -->
+      <!--robotNamespace>$(arg robot_namespace)</robotNamespace-->
     </plugin>
   </gazebo>
 

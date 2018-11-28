@@ -30,7 +30,7 @@ SOFTWARE.
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
-  <arg name="do_motor_controller" default="false" />
+  <arg name="do_motor_controller" default="true" />
   <arg name="do_move_base" default="false" />
   <arg name="do_odom_tf" default="true" />
   <arg name="do_robot_state_publisher" default="true" />
@@ -88,7 +88,9 @@ SOFTWARE.
       type="spawner" 
       respawn="false"
       output="screen" 
+      ns="/nadie"
       args="
+        --namespace=/nadie
         joint_state_controller
         diff_drive_controller
         "
