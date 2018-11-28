@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-  <arg name="do_amcl" default="false" />
+  <arg name="do_amcl" default="true" />
   <arg name="doDebug" default="false" />
   <!--arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " /-->
   <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
@@ -31,7 +31,7 @@ SOFTWARE.
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
   <arg name="do_motor_controller" default="true" />
-  <arg name="do_move_base" default="false" />
+  <arg name="do_move_base" default="true" />
   <arg name="do_odom_tf" default="true" />
   <arg name="do_robot_state_publisher" default="true" />
   <arg name="do_rviz" default="false" />
