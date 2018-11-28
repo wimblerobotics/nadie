@@ -20,23 +20,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-
+  <arg name="doDebug" default="false" />
+  <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
+  <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
+  <arg name="do_odom_tf" default="true" />
+  <arg name="do_load_urdf" default="false" />
   <arg name="robot_namespace" default="/nadie" />
-  <!--group ns="$(arg robot_namespace)"-->
-  <group ns="/">
-    <!-- Start the main LIDAR -->
+
+  <group ns="$(arg robot_namespace)">
+    <!-- load the controller yaml -->
+    <rosparam file="$(find nadie_control)/config/controller.yaml" command="load" />
+
+
+    <!-- Load the URDF -->
+    <include 
+      if="$(arg do_load_urdf)"
+      file="$(find nadie_description)/launch/description.launch" >
+      <arg name="robot_namespace" value="$(arg robot_namespace)" />
+    </include>
+
+    <!-- Start the motor controller -->
     <node 
-      name="neato_lidar" 
-      pkg="xv_11_laser_driver" 
-      type="neato_laser_publisher" >
-      <param name="port" value="/dev/neato_lidar" />
-      <param name="frame_id" value="scan" />
+      launch-prefix="$(arg launchPrefix)" 
+      name="nadie_motor_controller_node" 
+      pkg="nadie_control"  
+      type="nadie_motor_controller_node" 
+      output="screen" 
+      respawn="false" >
+      
+      <remap from="odom" to="motor_odom" />
+      <rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
+      <param name="do_odom_tf" value="$(arg do_odom_tf)" />
     </node>
 
-    <node
-      name="lidar_inverter_transform" 
-      pkg="tf" 
-      type="static_transform_publisher" 
-      args="0.0 0 0.0 3.14159 0 0 neato scan 100" />
   </group>
 </launch>

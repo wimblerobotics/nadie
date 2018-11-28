@@ -21,7 +21,7 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	: MotorController(nh, urdf_model)
 	, controlLoopMaxAllowedDurationDeviation_(1.0)
 	, nh_(nh)
-	, simulating(true)
+	, simulating(false)
 	, urdf_model_(urdf_model) {
 
 	assert(ros::param::get("motor_controller/control_loop_hz", controlLoopHz_));
