@@ -21,17 +21,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="nadie">
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <!-- controlPeriod defaults to parent_model_->GetWorld()->Physics()->GetMaxStepSize() -->
-      <!-- eStopTopic if specified, subscribe to this topic and capture 'data' value --> 
-      <legacyModeNS>false</legacyModeNS> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
-      <robotNamespace>$(arg robot_namespace)</robotNamespace> <!-- parent_model_->GetName() -->
-      <!--robotParam>robot_description</robotParam--> <!-- robot_description -->
-      <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType--> <!-- gazebo_ros_control/DefaultRobotHWSim, which becomes the controller manager -->
-    </plugin>
-
-  </gazebo>
 
   <gazebo reference="hokuyo_link">
     <sensor type="ray" name="head_hokuyo_sensor">

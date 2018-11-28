@@ -24,7 +24,14 @@ SOFTWARE.
 
   <xacro:arg name="robot_namespace" default="/nadie" />
 
-  <xacro:include filename="$(find nadie_description)/urdf/caster.urdf.xacro" />
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <legacyModeNS>true</legacyModeNS> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
+      <robotNamespace>$(arg robot_namespace)</robotNamespace> <!-- parent_model_->GetName() -->
+    </plugin>
+  </gazebo>
+
+ <xacro:include filename="$(find nadie_description)/urdf/caster.urdf.xacro" />
   <xacro:include filename="$(find nadie_description)/urdf/wheel.urdf.xacro" />
   <!--xacro:include filename="$(find nadie_description)/urdf/lidar_sim.xacro" /-->
 
@@ -116,37 +123,7 @@ SOFTWARE.
     <origin xyz="${fwheel_offset} 0 ${wheel_vertical_offset}" rpy="0 0 0" />
   </xacro:caster>
 
-  <!-- Hokuyo Laser -->
-  <link name="hokuyo_link">
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.1 0.1 0.1"/>
-      </geometry>
-    </collision>
-
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://nadie_description/meshes/hokuyo.dae"/>
-      </geometry>
-    </visual>
-
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-  </link>
-
-  <joint name="hokuyo_joint" type="fixed">
-    <axis xyz="0 1 0" />
-    <origin xyz="${lidar_x_offset} 0 ${lidar_z_offset}" rpy="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="hokuyo_link"/>
-  </joint>
-
-  <!--link name="neato">
+  <link name="neato">
     <collision>
       <geometry>
         <box size="${lidar_width} ${lidar_length} ${lidar_height}"/>
@@ -176,6 +153,6 @@ SOFTWARE.
     <parent link="base_link"/>
     <child link="neato"/>
     <origin xyz="${lidar_x_offset} 0  ${lidar_z_offset}" rpy="0 0 0"/>
-  </joint-->
+  </joint>
   
 </robot>

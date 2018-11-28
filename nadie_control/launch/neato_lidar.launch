@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<launch> 
 <!--
 Copyright (c) 2018 Michael Wimble
 
@@ -20,13 +20,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<launch>
 
-  <arg name="robot_namespace" default="" />
+  <!-- Start the main LIDAR -->
+  <node 
+    name="neato_lidar" 
+    pkg="xv_11_laser_driver" 
+    type="neato_laser_publisher" >
+    <param name="port" value="/dev/neato_lidar" />
+    <param name="frame_id" value="scan" />
+  </node>
 
-  <param name="$(arg robot_namespace)/robot_description" command="$(find xacro)/xacro '$(find nadie_description)/urdf/nadie.urdf.xacro'
-    --inorder
-    robot_namespace:=$(arg robot_namespace)
-    " />
-
+  <node
+    name="lidar_inverter_transform" 
+    pkg="tf" 
+    type="static_transform_publisher" 
+    args="0.0 0 0.0 3.14159 0 0 neato scan 100" />
+  
 </launch>

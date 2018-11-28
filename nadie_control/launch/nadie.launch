@@ -20,99 +20,116 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-  <arg name="do_amcl" default="true" />
+  <arg name="do_amcl" default="false" />
   <arg name="doDebug" default="false" />
   <!--arg if="$(arg doDebug)" name="launchPrefix" value="gnome-terminal -e gdb " /-->
   <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
   <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
 
+  <arg name="do_controller_manager" default="true" />
+  <arg name="do_joint_state_publisher" default="true" />
+  <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
   <arg name="do_motor_controller" default="false" />
   <arg name="do_move_base" default="false" />
   <arg name="do_odom_tf" default="true" />
+  <arg name="do_robot_state_publisher" default="true" />
   <arg name="do_rviz" default="false" />
-  <arg name="model" /> 
+  <arg name="use_joint_state_publisher_gui" value="false" />
 
-   <!-- Load the URDF -->
-  <include file="$(find nadie_description)/launch/description.launch" />
+  <arg name="robot_namespace" default="/nadie" />
 
-  <!-- Run joint state publisher (Gets robot_description from parameter server)-->
-  <node pkg="joint_state_publisher"
-    type="joint_state_publisher"
-    name="joint_state_publisher" >
-    <param name="rate" value="50" />
-  </node>
+  <group ns="$(arg robot_namespace)">
 
-  <!-- Starting robot state publish which will publish tf --> 
-  <node name="robot_state_publisher" 
-    pkg="robot_state_publisher" 
-    type="state_publisher" >
-    <remap from="joint_states" to="/nadie/joint_states" />
-  </node>
- 
-  
-  <!-- Launch visualization in rviz --> 
-  <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
+    <!-- Load the URDF -->
+    <include file="$(find nadie_description)/launch/description.launch" >
+      <arg name="robot_namespace" value="$(arg robot_namespace)" />
+    </include>
 
-  <!-- Load joint controller configurations from YAML file to parameter server -->
-  <!-- Note that controller.yaml has a subspace 'nadie' so need to cancel the effects of the 'group' tag ns here -->
-  <rosparam file="$(find nadie_control)/config/controller.yaml" command="load" />
+    <!-- Run joint state publisher -->
+    <node 
+      if="$(arg do_joint_state_publisher)"
+      pkg="joint_state_publisher"
+      type="joint_state_publisher"
+      name="joint_state_publisher" >
+      <param name="rate" value="50" />
+      <param name="use_gui" value="$(arg use_joint_state_publisher_gui)"/>
+    </node>
 
-  <!--include file="$(find nadie_control)/launch/world.launch">
-    <arg name="paused" value="false"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/>
-    <arg name="debug" value="false"/>
-    <arg name="world_name" value="$(find nadie_control)/world/Home3" />
-  </include-->
-
-
-  <!-- load the controllers -->
-  <node 
-    name="controller_spawner" 
-    ns="nadie"
-    pkg="controller_manager" 
-    type="spawner" 
-    respawn="false"
-    output="screen" 
-    args="
-      joint_state_controller
-      diff_drive_controller
-      "
-  >
-    <!--param name="robot_description" command="$(find xacro)/xacro - -inorder $(find nadie_control)/urdf/nadie.xacro" /--> 
-  </node>
-
-
-  <!-- Start the motor controller -->
-  <node 
-    if="$(arg do_motor_controller)"
-    launch-prefix="$(arg launchPrefix)" 
-    name="nadie_motor_controller_node" 
-    ns="/nadie"
-    pkg="nadie_control"  
-    type="nadie_motor_controller_node" 
-    output="screen" 
-    respawn="false" >
+    <!-- Starting robot state publish which will publish tf --> 
+    <node 
+      if="$(arg do_robot_state_publisher)"
+      name="robot_state_publisher" 
+      pkg="robot_state_publisher" 
+      type="state_publisher" >
+      <remap from="joint_states" to="/$(arg robot_namespace)/joint_states" />
+    </node>
+   
     
-    <remap from="odom" to="motor_odom" />
-    <rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
-    <param name="do_odom_tf" value="$(arg do_odom_tf)" />
-  </node>
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <!-- Note that controller.yaml has a subspace 'nadie' so need to cancel the effects of the 'group' tag ns here -->
+    <rosparam file="$(find nadie_control)/config/controller.yaml" command="load" />
 
-  <!-- Load the map -->
-  <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
+    <!--include file="$(find nadie_control)/launch/world.launch">
+      <arg name="paused" value="false"/>
+      <arg name="use_sim_time" value="true"/>
+      <arg name="gui" value="true"/>
+      <arg name="headless" value="false"/>
+      <arg name="debug" value="false"/>
+      <arg name="world_name" value="$(find nadie_control)/world/Home3" />
+    </include-->
 
-  <!-- Bring up AMCL -->
-  <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/amcl.launch" />
 
-  <!-- Brunk up move_base -->
-  <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base.launch" />
+    <!-- load the controllers -->
+    <node 
+      if="$(arg do_controller_manager)"
+      name="controller_spawner" 
+      pkg="controller_manager" 
+      type="spawner" 
+      respawn="false"
+      output="screen" 
+      args="
+        joint_state_controller
+        diff_drive_controller
+        "
+    >
+      <!--param name="robot_description" command="$(find xacro)/xacro - -inorder $(find nadie_control)/urdf/nadie.urdf.xacro" /--> 
+    </node>
 
-  <!-- The scan simulator -->
-  <!--node name="light_scan_sim" pkg="light_scan_sim" type="light_scan_sim_node" output="screen">
-    <rosparam file="$(find snowberry_map)/config/lidar_sim_config.yaml" command="load" />
-  </node-->
 
-</launch> 
+    <!-- Start the motor controller -->
+    <node 
+      if="$(arg do_motor_controller)"
+      launch-prefix="$(arg launchPrefix)" 
+      name="nadie_motor_controller_node" 
+      pkg="nadie_control"  
+      type="nadie_motor_controller_node" 
+      output="screen" 
+      respawn="false" >
+      
+      <remap from="odom" to="motor_odom" />
+      <rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/>
+      <param name="do_odom_tf" value="$(arg do_odom_tf)" />
+    </node>
+
+    <!-- Bring up the LIDAR -->
+    <include
+      if="$(arg do_lidar)"
+      file="$(find nadie_control)/launch/neato_lidar.launch"
+      />
+
+    <!-- Load the map -->
+    <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
+
+    <!-- Bring up AMCL -->
+    <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/amcl.launch" />
+
+    <!-- Brunk up move_base -->
+    <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base.launch" />
+
+    <!-- Launch visualization in rviz --> 
+    <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
+
+  </group>
+
+ </launch> 
