@@ -1,6 +1,73 @@
+roslaunch nadie_control nadie.launch
 roslaunch nadie_control nadie_sim.launch
 
+[ INFO] [1543526204.032190950]: Setting pose (1543526204.032094): -0.393 0.033 1.571
 
+// Real robot
+wimble@up1a:~/nadie_ws$ rostopic list
+/diagnostics
+/nadie/amcl/parameter_descriptions
+/nadie/amcl/parameter_updates
+/nadie/amcl_pose
+/nadie/arduino_sensors
+/nadie/diff_drive_controller/cmd_vel
+/nadie/diff_drive_controller/odom
+/nadie/diff_drive_controller/parameter_descriptions
+/nadie/diff_drive_controller/parameter_updates
+/nadie/initialpose
+/nadie/joint_states
+/nadie/map
+/nadie/map_metadata
+/nadie/move_base/DWAPlannerROS/cost_cloud
+/nadie/move_base/DWAPlannerROS/global_plan
+/nadie/move_base/DWAPlannerROS/local_plan
+/nadie/move_base/DWAPlannerROS/parameter_descriptions
+/nadie/move_base/DWAPlannerROS/parameter_updates
+/nadie/move_base/DWAPlannerROS/trajectory_cloud
+/nadie/move_base/GlobalPlanner/parameter_descriptions
+/nadie/move_base/GlobalPlanner/parameter_updates
+/nadie/move_base/GlobalPlanner/plan
+/nadie/move_base/GlobalPlanner/potential
+/nadie/move_base/cancel
+/nadie/move_base/current_goal
+/nadie/move_base/feedback
+/nadie/move_base/global_costmap/costmap
+/nadie/move_base/global_costmap/costmap_updates
+/nadie/move_base/global_costmap/footprint
+/nadie/move_base/global_costmap/inflation_layer/parameter_descriptions
+/nadie/move_base/global_costmap/inflation_layer/parameter_updates
+/nadie/move_base/global_costmap/obstacle_layer/parameter_descriptions
+/nadie/move_base/global_costmap/obstacle_layer/parameter_updates
+/nadie/move_base/global_costmap/parameter_descriptions
+/nadie/move_base/global_costmap/parameter_updates
+/nadie/move_base/global_costmap/static_map/parameter_descriptions
+/nadie/move_base/global_costmap/static_map/parameter_updates
+/nadie/move_base/goal
+/nadie/move_base/local_costmap/costmap
+/nadie/move_base/local_costmap/costmap_updates
+/nadie/move_base/local_costmap/footprint
+/nadie/move_base/local_costmap/inflation_layer/parameter_descriptions
+/nadie/move_base/local_costmap/inflation_layer/parameter_updates
+/nadie/move_base/local_costmap/obstacle_layer/parameter_descriptions
+/nadie/move_base/local_costmap/obstacle_layer/parameter_updates
+/nadie/move_base/local_costmap/parameter_descriptions
+/nadie/move_base/local_costmap/parameter_updates
+/nadie/move_base/parameter_descriptions
+/nadie/move_base/parameter_updates
+/nadie/move_base/result
+/nadie/move_base/status
+/nadie/move_base_simple/goal
+/nadie/odom
+/nadie/particlecloud
+/rosout
+/rosout_agg
+/rpms
+/scan
+/tf
+/tf_static
+
+
+// Under simulation
 wimble (betterMotorControl *) nadie_control $ rostopic list
 /clicked_point
 /clock
