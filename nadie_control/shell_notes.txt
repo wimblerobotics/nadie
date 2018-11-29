@@ -2,6 +2,7 @@ roslaunch nadie_control nadie.launch
 roslaunch nadie_control nadie_sim.launch
 
 [ INFO] [1543526204.032190950]: Setting pose (1543526204.032094): -0.393 0.033 1.571
+Setting goal: Frame:map, Position(-0.481, 0.505, 0.000), Orientation(0.000, 0.000, -0.693, 0.721) = Angle: -1.532
 
 // Real robot
 wimble@up1a:~/nadie_ws$ rostopic list
