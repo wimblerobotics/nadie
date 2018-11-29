@@ -159,10 +159,8 @@ private:
 	urdf::Model *urdf_model_;
 
 	// Time.
-	ros::Duration elapsedTime_;
 	ros::Duration expectedControlLoopDuration_;
 	ros::Time lastTime_;
-	double controlLoopMaxAllowedDurationDeviation_;
 	ros::Time now_;
 
 

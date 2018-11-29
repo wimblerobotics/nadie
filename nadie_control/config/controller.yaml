@@ -10,7 +10,7 @@ gazebo_ros_control:
       d: 0
 
 motor_controller:
-  control_loop_hz: 10.0
+  control_loop_hz: 50.0
   max_command_retries: 4
   max_seconds_uncommanded_travel: 0.5
   port_address: 128

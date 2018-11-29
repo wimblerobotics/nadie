@@ -19,7 +19,6 @@
 
 NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urdf_model)
 	: MotorController(nh, urdf_model)
-	, controlLoopMaxAllowedDurationDeviation_(1.0)
 	, nh_(nh)
 	, simulating(false)
 	, urdf_model_(urdf_model) {
@@ -613,25 +612,22 @@ void NadieMotorController::stop() {
 
 void NadieMotorController::update() {
 	now_ = ros::Time::now();
-	elapsedTime_ = ros::Duration(now_.sec - 
-      							 lastTime_.sec +
-      							 (now_.nsec - lastTime_.nsec) / kBILLION);
+	ros::Duration elapsedDuration = now_ - lastTime_;
+	double elapsedTime = (now_ - lastTime_).toSec();
 	lastTime_ = now_;
-	const double controlLoopCycleDurationDeviation = (elapsedTime_ - expectedControlLoopDuration_).toSec();
+	double controlLoopCycleDurationDeviation = elapsedTime - expectedControlLoopDuration_.toSec();
 
-	if (controlLoopCycleDurationDeviation > controlLoopMaxAllowedDurationDeviation_) {
+	if (controlLoopCycleDurationDeviation > (expectedControlLoopDuration_.toSec() / 2.0)) {
 		ROS_WARN_STREAM("[NadieMotorController::update] Control loop was too slow by "
 						<< controlLoopCycleDurationDeviation
 						<< ", actual loop time: "
-						<< elapsedTime_
-						<< ", allowed deviation: "
-						<< controlLoopMaxAllowedDurationDeviation_);
+						<< elapsedTime);
 	}
 
 	if (!simulating) {
-		read(ros::Time(now_.sec, now_.nsec), elapsedTime_);
-		controller_manager_->update(ros::Time(now_.sec, now_.nsec), elapsedTime_);
-		write(ros::Time(now_.sec, now_.nsec), elapsedTime_);
+		read(ros::Time(now_.sec, now_.nsec), elapsedDuration);
+		controller_manager_->update(ros::Time(now_.sec, now_.nsec), elapsedDuration);
+		write(ros::Time(now_.sec, now_.nsec), elapsedDuration);
 	}
 }
 
