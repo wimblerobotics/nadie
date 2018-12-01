@@ -36,6 +36,7 @@ endif()
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  ArduinoSensors.msg
   RoboClawStatus.msg
 )
 
@@ -113,7 +114,7 @@ target_link_libraries(
 #  )
 #endif()
 
-if(CATKIN_ENABLE_TESTING)
+#if(CATKIN_ENABLE_TESTING)
 #  catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
 #  target_link_libraries(
 #    ${PROJECT_NAME}-utest
@@ -121,22 +122,22 @@ if(CATKIN_ENABLE_TESTING)
 #    ${catkin_LIBRARIES}
 #  )
 
-  add_rostest_gtest(
-    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
-    test/launch/M2.test
-    test/M2.cpp)
-  add_dependencies(
-    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
-    ${PROJECT_NAME}
-    ${${PROJECT_NAME}_EXPORTED_TARGETS} 
-    ${catkin_EXPORTED_TARGETS}
-  )
-  target_link_libraries(
-    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest
-    ${PROJECT_NAME}
-    ${catkin_LIBRARIES}
-  )
-endif()
+#  add_rostest_gtest(
+#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
+#    test/launch/M2.test
+#    test/M2.cpp)
+#  add_dependencies(
+#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
+#    ${PROJECT_NAME}
+#    ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+#    ${catkin_EXPORTED_TARGETS}
+#  )
+#  target_link_libraries(
+#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest
+#    ${PROJECT_NAME}
+#    ${catkin_LIBRARIES}
+#  )
+#endif()
 
 ## Mark executables and/or libraries for installation
 #install(TARGETS motor_controller_node

@@ -68,7 +68,7 @@ SOFTWARE.
   <link name="base_link">
     <collision>
       <geometry>
-        <box size="${body_length} ${body_width} 0.0508"/>
+        <box size="${body_length+0.16} ${body_width+0.16} 0.0508"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 ${body_center_height}"/>
     </collision>
