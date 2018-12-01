@@ -2,10 +2,7 @@ rm -rf /home/wimble/Arduino/libraries/ros_lib
 rosrun rosserial_arduino make_libraries.py /home/wimble/Arduino/libraries/
 
 #TODO
-* No global costmap received
-* DWA planner failed to produce path
-* Local costmap not including laser
-* Costmaps not showing inflation
+* Rotational odom is out of whack
 
 [DEBUG] [1543558497.343347766]: Initializing controller 'diff_drive_controller'
 [DEBUG] [1543558497.350513933]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/do_beamskip] is not set]
