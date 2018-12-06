@@ -3,57 +3,6 @@ rosrun rosserial_arduino make_libraries.py /home/wimble/Arduino/libraries/
 
 #TODO
 * Rotational odom is out of whack
-
-[DEBUG] [1543558497.343347766]: Initializing controller 'diff_drive_controller'
-[DEBUG] [1543558497.350513933]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/do_beamskip] is not set]
-[DEBUG] [1543558497.353707797]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/beam_skip_distance] is not set]
-[DEBUG] [1543558497.357766508]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/beam_skip_threshold] is not set]
-[DEBUG] [1543558497.363100084]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/tf_broadcast] is not set]
-[ INFO] [1543558497.368553118]: Controller state will be published at 50Hz.
-[DEBUG] [1543558497.376481449]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/save_pose_rate] is not set]
-[ INFO] [1543558497.383203349]: Wheel separation will be multiplied by 1.
-[DEBUG] [1543558497.388475391]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/amcl/first_map_only] is not set]
-
-
-[DEBUG] [1543560618.329681316]: XML-RPC call [searchParam] returned an error (-1): [Cannot find parameter [footprint_topic] in an upwards search]
-[DEBUG] [1543560618.346835728]: Publisher update for [/nadie/move_base/global_costmap/footprint]:  already have these connections: 
-[DEBUG] [1543560618.349463291]: XML-RPC call [searchParam] returned an error (-1): [Cannot find parameter [published_footprint_topic] in an upwards search]
-[DEBUG] [1543560618.362783534]: InflationLayer::onFootprintChanged(): num footprint points: 5, inscribed_radius_ = 0.290, inflation_radius_ = 0.076
-[DEBUG] [1543560618.380121762]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/global_costmap/transform_tolerance] is not set]
-[DEBUG] [1543560618.381738795]: Received update for topic [/nadie/move_base/global_costmap/footprint] (1 publishers)
-[DEBUG] [1543560618.381861238]: Publisher update for [/nadie/move_base/global_costmap/footprint]: http://192.168.0.102:34975/,  already have these connections: 
-[DEBUG] [1543560618.381932871]: Skipping myself (/nadie/move_base/global_costmap/footprint, http://192.168.0.102:34975/)
-[DEBUG] [1543560618.396657597]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/global_costmap/origin_x] is not set]
-[DEBUG] [1543560618.399467425]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/global_costmap/origin_y] is not set]
-[DEBUG] [1543560618.404400882]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/global_costmap/robot_radius] is not set]
-
-[DEBUG] [1543560618.528901669]: XML-RPC call [searchParam] returned an error (-1): [Cannot find parameter [tf_prefix] in an upwards search]
-
-[DEBUG] [1543560618.991163099]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/odom_topic] is not set]
-[DEBUG] [1543560619.029040872]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/acc_lim_theta] is not set]
-[DEBUG] [1543560619.031595414]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/acc_limit_trans] is not set]
-[DEBUG] [1543560619.045259475]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/rot_stopped_vel] is not set]
-[DEBUG] [1543560619.052836745]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/angular_sim_granularity] is not set]
-[DEBUG] [1543560619.064862799]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/twirling_scale] is not set]
-[DEBUG] [1543560619.073102006]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/oscillation_reset_angle] is not set]
-[DEBUG] [1543560619.090324202]: Map update time: 0.000000954
-[DEBUG] [1543560619.093004900]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/use_dwa] is not set]
-[DEBUG] [1543560619.096865193]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/DWAPlannerROS/restore_defaults] is not set]
-
-[DEBUG] [1543560619.614939845]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/planner_frequency] is not set]
-[DEBUG] [1543560619.617638754]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/controller_frequency] is not set]
-[DEBUG] [1543560619.620165685]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/planner_patience] is not set]
-[DEBUG] [1543560619.622629020]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/controller_patience] is not set]
-[DEBUG] [1543560619.625075069]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/max_planning_retries] is not set]
-[DEBUG] [1543560619.627535404]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/conservative_reset_dist] is not set]
-[DEBUG] [1543560619.630017725]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/recovery_behavior_enabled] is not set]
-[DEBUG] [1543560619.632294671]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/clearing_rotation_allowed] is not set]
-[DEBUG] [1543560619.634953670]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/shutdown_costmaps] is not set]
-[DEBUG] [1543560619.637314361]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/oscillation_timeout] is not set]
-[DEBUG] [1543560619.639554646]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/oscillation_distance] is not set]
-[DEBUG] [1543560619.642138587]: XML-RPC call [getParam] returned an error (-1): [Parameter [/nadie/move_base/restore_defaults] is not set]
-
-
 roslaunch nadie_control nadie.launch
 roslaunch nadie_control nadie_sim.launch
 

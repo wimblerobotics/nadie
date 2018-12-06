@@ -1,13 +1,9 @@
-/*
- * rosserial Publisher Example
- * Prints "hello world!"
- */
-
 #include <ros.h>
 #include <std_msgs/String.h>
-#include "lysander/ArduinoSensors.h"
+#include "nadie_control/ArduinoSensors.h"
 #include <i2c_t3.h>
 #include <VL53L0X.h>
+#include "TMP102.h"
 
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055_t3.h>
@@ -24,8 +20,44 @@ Adafruit_BNO055 bno = Adafruit_BNO055(WIRE1_BUS, -1, BNO055_ADDRESS_A, I2C_MASTE
 
 ros::NodeHandle  nh;
 
-lysander::ArduinoSensors arduinoSensors;
+nadie_control::ArduinoSensors arduinoSensors;
 ros::Publisher pub("arduino_sensors", &arduinoSensors);
+
+TMP102 sensor48(0x48); // Initialize sensor at I2C address 0x48
+TMP102 sensor49(0x49);
+
+void initTemperatureSensor(TMP102& sensor) {
+  sensor.begin();  // Join I2C bus
+
+  // Initialize sensor settings
+  // These settings are saved in the sensor, even if it loses power
+  
+  // set the number of consecutive faults before triggering alarm.
+  // 0-3: 0:1 fault, 1:2 faults, 2:4 faults, 3:6 faults.
+  sensor.setFault(0);  // Trigger alarm immediately
+  
+  // set the polarity of the Alarm. (0:Active LOW, 1:Active HIGH).
+  sensor.setAlertPolarity(1); // Active HIGH
+  
+  // set the sensor in Comparator Mode (0) or Interrupt Mode (1).
+  sensor.setAlertMode(0); // Comparator Mode.
+  
+  // set the Conversion Rate (how quickly the sensor gets a new reading)
+  //0-3: 0:0.25Hz, 1:1Hz, 2:4Hz, 3:8Hz
+  sensor.setConversionRate(2);
+  
+  //set Extended Mode.
+  //0:12-bit Temperature(-55C to +128C) 1:13-bit Temperature(-55C to +150C)
+  sensor.setExtendedMode(0);
+
+  //set T_HIGH, the upper limit to trigger the alert on
+  sensor.setHighTempF(125.0);  // set T_HIGH in F
+  //sensor.setHighTempC(29.4); // set T_HIGH in C
+  
+  //set T_LOW, the lower limit to shut turn off the alert
+  sensor.setLowTempF(84.0);  // set T_LOW in F
+  //sensor.setLowTempC(26.67); // set T_LOW in C
+}
 
 void setup() { 
   nh.getHardware()->setBaud(115200);
@@ -53,6 +85,15 @@ void setup() {
     sensor[i].startContinuous(0);
     sensor[i].setMeasurementTimingBudget(20000);
   }
+
+  initTemperatureSensor(sensor48);
+  initTemperatureSensor(sensor49);
+  
+  // Turn sensor on to start temperature measurement.
+  // Current consumtion typically ~10uA.
+  sensor48.wakeup();
+  sensor49.wakeup();
+
 }
 
 void loop()
@@ -68,7 +109,11 @@ void loop()
     arduinoSensors.euler_y = euler.y();
     arduinoSensors.euler_z = euler.z();
   }
-  
+
+  // read temperature data
+  arduinoSensors.motor1_temp = sensor48.readTempF();
+  arduinoSensors.motor2_temp = sensor49.readTempF();
+
   pub.publish(&arduinoSensors);
   nh.spinOnce();
 }

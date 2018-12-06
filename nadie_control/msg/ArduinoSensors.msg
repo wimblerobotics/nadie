@@ -7,3 +7,5 @@ float32 backRightMm
 float32 euler_x
 float32 euler_y
 float32 euler_z
+float32 motor1_temp
+float32 motor2_temp

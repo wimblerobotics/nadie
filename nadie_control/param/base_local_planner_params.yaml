@@ -8,7 +8,7 @@ DWAPlannerROS:
   goal_distance_bias: 24.0        # The weighting for how much the controller should attempt to reach its local goal, also controls speed
   latch_xy_goal_tolerance: false  # If goal tolerance is latched, if the robot ever reaches the goal xy location it will simply rotate in place, even if it ends up outside the goal tolerance while it is doing so. (false)
   max_rot_vel: 1.0 #2.0                # The absolute value of the maximum rotational velocity for the robot in rad/s
-  max_scaling_factor: 0.2 #1.17        # The maximum factor to scale the robot's footprint by (0.2)
+  max_scaling_factor: 0.2         # The maximum factor to scale the robot's footprint by (0.2)
   max_trans_vel: 0.55             # The absolute value of the maximum translational velocity for the robot in m/s
   max_vel_x: 0.55                 # The maximum x velocity for the robot in m/s.
   max_vel_y: 0.1 #0.0                  # The maximum y velocity for the robot in m/s

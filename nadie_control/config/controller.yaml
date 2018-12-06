@@ -10,7 +10,7 @@ gazebo_ros_control:
       d: 0
 
 motor_controller:
-  control_loop_hz: 50.0
+  control_loop_hz: 10.0
   max_command_retries: 4
   max_seconds_uncommanded_travel: 0.5
   port_address: 128
@@ -39,7 +39,7 @@ diff_drive_controller:
   #wheel_radius : 0.0762
 
   # Wheel separation and radius multipliers
-  wheel_separation_multiplier: 1.0 # default: 1.0
+  wheel_separation_multiplier: 0.95 # default: 1.0
   wheel_radius_multiplier    : 1.0 # default: 1.0
 
   # Velocity commands timeout [s], default 0.5
