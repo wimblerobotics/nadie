@@ -1,4 +1,6 @@
 #include "nadie_control/nadie_motor_controller.h"
+#include "nadie_control/RoboClawStatus.h"
+
 #include <boost/assign.hpp>
 #include <fcntl.h>
 #include <iostream>
@@ -120,6 +122,7 @@ void NadieMotorController::initHardware() {
 
 	setM1PID(M1_P, M1_I, 0, M1_QPPS);
 	setM2PID(M2_P, M2_I, 0, M2_QPPS);
+	roboClawStatusPublisherThread_ = boost::thread(boost::bind(&NadieMotorController::roboClawStatusPublisher, this));
 	ROS_INFO("[NadieMotorController::NadieMotorController] RoboClaw software version: %s", getVersion().c_str());
 }
 
@@ -258,6 +261,50 @@ uint16_t NadieMotorController::getErrorStatus() {
 }
 
 
+float NadieMotorController::getTemperature() {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			uint16_t crc = 0;
+			updateCrc(crc, portAddress_);
+			updateCrc(crc, kGETTEMPERATURE);
+			writeN(false, 2, portAddress_, kGETTEMPERATURE);
+			uint16_t result = 0;
+			uint8_t datum = readByteWithTimeout();
+			updateCrc(crc, datum);
+			result = datum << 8;
+			datum = readByteWithTimeout();
+			updateCrc(crc, datum);
+			result |= datum;
+
+			uint16_t responseCrc = 0;
+			if (datum != -1) {
+				datum = readByteWithTimeout();
+				if (datum != -1) {
+					responseCrc = datum << 8;
+					datum = readByteWithTimeout();
+					if (datum != -1) {
+						responseCrc |= datum;
+						if (responseCrc == crc) {
+							return (result * 1.0) / 10.0;
+						}
+					}
+				}
+			}
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::getTemperature] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getTemperature] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("<----- [NadieMotorController::getTemperature] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getTemperature] RETRY COUNT EXCEEDED");
+}
+
+
 std::string NadieMotorController::getErrorString() {
 	uint8_t errorStatus = getErrorStatus();
 	if (errorStatus == 0) return "normal";
@@ -304,6 +351,26 @@ std::string NadieMotorController::getErrorString() {
 }
 
 
+float NadieMotorController::getLogicBatteryLevel() {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			float result = ((float) get2ByteCommandResult(kGETLBATT)) / 10.0;
+			return result;
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::getLogicBatteryLevel] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getLogicBatteryLevel] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::getLogicBatteryLevel] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getLogicBatteryLevel] RETRY COUNT EXCEEDED");
+}
+
+
 int32_t NadieMotorController::getM1Encoder() {
 	boost::mutex::scoped_lock lock(roboClawLock_);
 	int retry;
@@ -321,6 +388,258 @@ int32_t NadieMotorController::getM1Encoder() {
 
 	ROS_ERROR("<----- [NadieMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
 	throw new TRoboClawException("[NadieMotorController::getM1Encoder] RETRY COUNT EXCEEDED");
+}
+
+
+float NadieMotorController::getMainBatteryLevel() {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			float result = ((float) get2ByteCommandResult(kGETMBATT)) / 10.0;
+			return result;
+		} catch (TRoboClawException* e) {
+			ROS_ERROR_COND("[NadieMotorController::getMainBatteryLevel] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getMainBatteryLevel] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("<----- [NadieMotorController::getMainBatteryLevel] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getMainBatteryLevel] RETRY COUNT EXCEEDED");
+}
+
+
+unsigned short NadieMotorController::get2ByteCommandResult(uint8_t command) {
+	uint16_t crc = 0;
+	updateCrc(crc, portAddress_);
+	updateCrc(crc, command);
+
+	writeN(false, 2, portAddress_, command);
+	unsigned short result = 0;
+	uint8_t datum = readByteWithTimeout();
+	result |= datum << 8;
+	updateCrc(crc, datum);
+
+	if (datum != -1) {
+		datum = readByteWithTimeout();
+		result |= datum;
+		updateCrc(crc, datum);
+	}
+
+	uint16_t responseCrc = 0;
+	if (datum != -1) {
+		datum = readByteWithTimeout();
+		if (datum != -1) {
+			responseCrc = datum << 8;
+			datum = readByteWithTimeout();
+			if (datum != -1) {
+				responseCrc |= datum;
+				if (responseCrc == crc) {
+					return result;
+				}
+			}
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::get2ByteCommandResult] Expected CRC of: 0x%X, but got: 0x%X",
+	    int(crc),
+	    int(responseCrc));
+	throw new TRoboClawException("[NadieMotorController::get2ByteCommandResult] INVALID CRC");
+}
+
+
+NadieMotorController::TMotorCurrents NadieMotorController::getMotorCurrents() {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			TMotorCurrents result;
+			unsigned long currentPair = getUlongCommandResult(kGETCURRENTS);
+			result.m1Current = ((int16_t) (currentPair >> 16)) * 0.010;
+			result.m2Current = ((int16_t) (currentPair & 0xFFFF)) * 0.010;
+			return result;
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::getMotorCurrents] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getMotorCurrents] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("NadieMotorController::getMotorCurrents] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getMotorCurrents] RETRY COUNT EXCEEDED");
+}
+
+
+NadieMotorController::TPIDQ NadieMotorController::getPIDQ(uint8_t whichMotor) {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		TPIDQ result;
+		try {
+			uint16_t crc = 0;
+			updateCrc(crc, portAddress_);
+			updateCrc(crc, whichMotor);
+
+			writeN(false, 2, portAddress_, whichMotor);
+			result.p = (int32_t) getULongCont(crc);
+			result.i = (int32_t) getULongCont(crc);
+			result.d = (int32_t) getULongCont(crc);
+			result.q = (int32_t) getULongCont(crc);
+
+			uint16_t responseCrc = 0;
+			uint16_t datum = readByteWithTimeout();
+			if (datum != -1) {
+				responseCrc = datum << 8;
+				datum = readByteWithTimeout();
+				if (datum != -1) {
+					responseCrc |= datum;
+					if (responseCrc == crc) {
+						return result;
+					}
+				}
+			}
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::getPIDQ] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getPIDQ] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::getPIDQ] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getPIDQ] RETRY COUNT EXCEEDED");
+}
+
+
+unsigned long NadieMotorController::getUlongCommandResult(uint8_t command) {
+	uint16_t crc = 0;
+	updateCrc(crc, portAddress_);
+	updateCrc(crc, command);
+
+	writeN(false, 2, portAddress_, command);
+	unsigned long result = 0;
+	uint8_t datum = readByteWithTimeout();
+	result |= datum << 24;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum << 16;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum << 8;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum;
+	updateCrc(crc, datum);
+
+	uint16_t responseCrc = 0;
+	if (datum != -1) {
+		datum = readByteWithTimeout();
+		if (datum != -1) {
+			responseCrc = datum << 8;
+			datum = readByteWithTimeout();
+			if (datum != -1) {
+				responseCrc |= datum;
+				if (responseCrc == crc) {
+					return result;
+				}
+			}
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::getUlongCommandResult] Expected CRC of: 0x%X, but got: 0x%X",
+	    int(crc),
+	    int(responseCrc));
+	throw new TRoboClawException("[NadieMotorController::getUlongCommandResult] INVALID CRC");
+}
+
+
+uint32_t NadieMotorController::getULongCont(uint16_t& crc) {
+	uint32_t result = 0;
+	uint8_t datum = readByteWithTimeout();
+	result |= datum << 24;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum << 16;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum << 8;
+	updateCrc(crc, datum);
+	datum = readByteWithTimeout();
+	result |= datum;
+	updateCrc(crc, datum);
+	return result;
+}
+
+
+int32_t NadieMotorController::getVelocity(uint8_t whichVelocity) {
+	boost::mutex::scoped_lock lock(roboClawLock_);
+	int retry;
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			uint32_t result = getVelocityResult(whichVelocity);
+			return result;
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::getVelocity] Exception: %s, retry number: %d", e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::getVelocity] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("NadieMotorController::getVelocity] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::getVelocity] RETRY COUNT EXCEEDED");
+}
+
+
+int32_t NadieMotorController::getVelocityResult(uint8_t command) {
+	uint16_t crc = 0;
+	updateCrc(crc, portAddress_);
+	updateCrc(crc, command);
+
+	writeN(false, 2, portAddress_, command);
+	int32_t result = 0;
+	uint8_t datum = readByteWithTimeout();
+	result |= datum << 24;
+	updateCrc(crc, datum);
+
+	datum = readByteWithTimeout();
+	result |= datum << 16;
+	updateCrc(crc, datum);
+
+	datum = readByteWithTimeout();
+	result |= datum << 8;
+	updateCrc(crc, datum);
+
+	datum = readByteWithTimeout();
+	result |= datum;
+	updateCrc(crc, datum);
+
+	uint8_t direction = readByteWithTimeout();
+	updateCrc(crc, direction);
+	if (direction != 0) result = -result;
+
+	uint16_t responseCrc = 0;
+	if (datum != -1) {
+		datum = readByteWithTimeout();
+		if (datum != -1) {
+			responseCrc = datum << 8;
+			datum = readByteWithTimeout();
+			if (datum != -1) {
+				responseCrc |= datum;
+				if (responseCrc == crc) {
+					return result;
+				}
+			}
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::getVelocityResult] Expected CRC of: 0x%X, but got: 0x%X",
+		int(crc),
+	    int(responseCrc));
+	throw new TRoboClawException("[NadieMotorController::getVelocityResult] INVALID CRC");
 }
 
 
@@ -525,6 +844,108 @@ void NadieMotorController::restartPort() {
     close(clawPort_);
     usleep(200000);
     openPort();
+}
+
+
+void NadieMotorController::roboClawStatusPublisher() {
+	nadie_control::RoboClawStatus roboClawStatus;
+    uint32_t sequenceCount = 0;
+	ros::Publisher statusPublisher = nh_.advertise<nadie_control::RoboClawStatus>("/RoboClawStatus", 1);
+	ros::Rate rate(1);
+
+	while (ros::ok()) {
+		try {
+			uint8_t errorStatus = getErrorStatus();
+			roboClawStatus.errorStatus = errorStatus;
+			roboClawStatus.stickyErrorStatus |= errorStatus;
+			if (errorStatus == 0) roboClawStatus.errorString = "normal";
+			else {
+				std::stringstream errorMessage;
+				if (errorStatus & kLOGICBATTERYLOW) {
+					errorMessage << "[Logic Battery Low] ";
+				}
+
+				if (errorStatus & kLOGICBATTERYHIGH) {
+					errorMessage << "[Logic Battery High] ";
+				}
+
+				if (errorStatus & kMAINBATTERYLOW) {
+					errorMessage << "[Main Battery Low] ";
+				}
+
+				if (errorStatus & kMAINBATTERYHIGH) {
+					errorMessage << "[Main Battery High] ";
+				}
+
+				if (errorStatus & kTEMPERATURE) {
+					errorMessage << "[Temperature] ";
+				}
+
+				if (errorStatus & kESTOP) {
+					errorMessage << "[E-Stop] ";
+				}
+
+				if (errorStatus & kM2OVERCURRENT) {
+					errorMessage << "[M2 OverCurrent] ";
+				}
+
+				if (errorStatus & kM1OVERCURRENT) {
+					errorMessage << "[M1 OverCurrent] ";
+				}
+
+				if (errorStatus & 0xFF00) {
+					errorMessage << "[INVALID EXTRA STATUS BITS]";
+				}
+
+				roboClawStatus.errorString = errorMessage.str();
+			}
+
+			roboClawStatus.logicBatteryVoltage = getLogicBatteryLevel();
+			roboClawStatus.mainBatteryVoltage = getMainBatteryLevel();
+			TMotorCurrents motorCurrents = getMotorCurrents();
+			roboClawStatus.m1MotorCurrent = motorCurrents.m1Current;
+			roboClawStatus.m2MotorCurrent = motorCurrents.m2Current;
+			
+			TPIDQ pidq = getPIDQ(kGETM1PID);
+			roboClawStatus.m1P = pidq.p / 65536.0;
+			roboClawStatus.m1I = pidq.i / 65536.0;
+			roboClawStatus.m1D = pidq.d / 65536.0;
+			roboClawStatus.m1Qpps = pidq.q;
+			
+			pidq = getPIDQ(kGETM2PID);
+			roboClawStatus.m2P = pidq.p / 65536.0;
+			roboClawStatus.m2I = pidq.i / 65536.0;
+			roboClawStatus.m2D = pidq.d / 65536.0;
+			roboClawStatus.m2Qpps = pidq.q;
+
+			roboClawStatus.temperature = getTemperature();
+
+            {
+                boost::mutex::scoped_lock lock(roboClawLock_);
+                EncodeResult encoder = getEncoderCommandResult(kGETM1ENC);
+                roboClawStatus.encoderM1value = encoder.value;
+                roboClawStatus.encoderM1Status = encoder.status;
+            }
+
+            {
+                boost::mutex::scoped_lock lock(roboClawLock_);
+                EncodeResult encoder = getEncoderCommandResult(kGETM2ENC);
+                roboClawStatus.encoderM2value = encoder.value;
+                roboClawStatus.encoderM2Status = encoder.status;
+            }
+			
+			roboClawStatus.currentM1Speed = getVelocity(kGETM1SPEED);
+			roboClawStatus.currentM2Speed = getVelocity(kGETM2SPEED);
+			
+			statusPublisher.publish(roboClawStatus);
+			rate.sleep();
+
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::roboClawStatusPublisher] Exception: %s", e->what());
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::roboClawStatusPublisher] Uncaught exception !!!");
+		}
+	}
 }
 
 

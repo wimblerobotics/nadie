@@ -63,7 +63,7 @@ public:
 		int32_t q;
 	} TPIDQ;
 
-	TPIDQ getM1PIDQ();
+	TPIDQ getPIDQ(uint8_t whichMotor);
 	
 	int32_t getM1Speed();
 
@@ -83,6 +83,19 @@ private:
 		unsigned long p2;
 	} ULongPair;
 
+	enum {
+		kERROR_NORMAL = 0x00,
+		kM1OVERCURRENT = 0x01,
+		kM2OVERCURRENT = 0x02,
+		kESTOP = 0x04,
+		kTEMPERATURE = 0x08,
+		kMAINBATTERYHIGH = 0x10,
+		kMAINBATTERYLOW = 0x20,
+		kLOGICBATTERYHIGH = 0x40,
+		kLOGICBATTERYLOW = 0x80
+	};
+
+	// Enum values without a 'k' prefix have not been used in code.
 	enum {M1FORWARD = 0,
 	    M1BACKWARD = 1,
 	    SETMINMB = 2,
@@ -99,12 +112,12 @@ private:
 	    MIXEDLR = 13,
 	    kGETM1ENC = 16,
 	    kGETM2ENC = 17,
-	    GETM1SPEED = 18,
-	    GETM2SPEED = 19,
+	    kGETM1SPEED = 18,
+	    kGETM2SPEED = 19,
 	    RESETENC = 20,
 	    kGETVERSION = 21,
-	    GETMBATT = 24,
-	    GETLBATT = 25,
+	    kGETMBATT = 24,
+	    kGETLBATT = 25,
 	    SETMINLB = 26,
 	    SETMAXLB = 27,
 	    kSETM1PID = 28,
@@ -128,14 +141,15 @@ private:
 	    MIXEDSPEEDACCELDIST = 46,
 	    GETBUFFERS = 47,
 	    SETPWM = 48,
-	    GETCURRENTS = 49,
+	    kGETCURRENTS = 49,
 	    MIXEDSPEED2ACCEL = 50,
 	    MIXEDSPEED2ACCELDIST = 51,
 	    M1DUTYACCEL = 52,
 	    M2DUTYACCEL = 53,
 	    MIXEDDUTYACCEL = 54,
-	    GETM1PID = 55,
-	    GETM2PID = 56,
+	    kGETM1PID = 55,
+	    kGETM2PID = 56,
+	    kGETTEMPERATURE = 82,
 	    kGETERROR = 90,
 	    WRITENVM = 94,
 		GETM1MAXCURRENT = 135};
@@ -163,6 +177,10 @@ private:
 	ros::Time lastTime_;
 	ros::Time now_;
 
+	// Threads.
+	boost::thread roboClawStatusPublisherThread_; 			// Thead to publish RoboClaw status.
+
+
 
 	/** \brief ROS Controller Manager and Runner
 	 *
@@ -175,6 +193,20 @@ private:
 	// Get the encoder result given a command which indicates which motor to interrogate.
 	EncodeResult getEncoderCommandResult(uint8_t command);
 
+	// Get velocity (speed) of a motor.
+	int32_t getVelocity(uint8_t whichVelocity);
+
+	// Get velocity (speed) result from the RoboClaw controller.
+	int32_t getVelocityResult(uint8_t command);
+
+	float getTemperature();
+
+	unsigned long getUlongCommandResult(uint8_t command);
+
+	uint32_t getULongCont(uint16_t& crc);
+
+	unsigned short get2ByteCommandResult(uint8_t command);
+
 	// Initialize the hardware.
 	void initHardware();
 
@@ -186,6 +218,9 @@ private:
 
 	// Perform error recovery to re-open a failed device port.
 	void restartPort();
+
+	// Periodically publish the RoboClaw status.
+	void roboClawStatusPublisher();
 
 	// Set the PID for motor M1.
 	void setM1PID(float p, float i, float d, uint32_t qpps);
