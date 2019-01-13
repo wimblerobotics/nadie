@@ -8,9 +8,6 @@
     <url type="website">https://github.com/wimblerobotics/nadie/wiki</url> -->
     <author email="mike@wimblerobotics.com">Michael Wimble</author> -->
 
-
-    <depend>message_runtime</depend>
-
     <!-- Use test_depend for packages you need only for testing: -->
     <!--   <test_depend>gtest</test_depend> -->
     <buildtool_depend>catkin</buildtool_depend>
@@ -19,6 +16,7 @@
     <depend>geometry_msgs</depend>
     <depend>hardware_interface</depend>
     <depend>message_generation</depend>
+    <depend>message_runtime</depend>
     <depend>rosconsole</depend>
     <depend>roscpp</depend>
     <depend>rospy</depend>
