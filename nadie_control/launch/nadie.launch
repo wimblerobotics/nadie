@@ -23,6 +23,7 @@ SOFTWARE.
   <arg name="do_amcl" default="true" />
   <arg name="do_arduino" default="true" />
   <arg name="do_controller_manager" default="true" />
+  <arg name="do_fiducial" default="true" />
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
@@ -35,6 +36,12 @@ SOFTWARE.
 
   <arg name="robot_namespace" default="/nadie" />
 
+  <include
+    if="$(arg do_fiducial)"
+    file="$(find nadie_control)/launch/pibota.launch"
+    >
+  </include>
+ 
   <group ns="$(arg robot_namespace)">
 
     <!-- Load the URDF -->

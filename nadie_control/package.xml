@@ -15,8 +15,10 @@
     <depend>dynamic_reconfigure</depend>
     <depend>geometry_msgs</depend>
     <depend>hardware_interface</depend>
+    <depend>joint_limits_interface</depend>
     <depend>message_generation</depend>
     <depend>message_runtime</depend>
+    <depend>ros_comm</depend>
     <depend>rosconsole</depend>
     <depend>roscpp</depend>
     <depend>rospy</depend>
