@@ -24,7 +24,7 @@ WrAruco::WrAruco() {
 bool WrAruco::init() {
 	ROS_INFO("[WrAruco::init] start");
 
-    const std::string inputSettingsFile = "/home/wimble/catkin_ws/src/nadie/wr_aruco/cfg/ost.yaml";
+    const std::string inputSettingsFile = "/home/wimble/catkin_ws/src/nadie/wr_aruco/cfg/640x480_ost.yaml";
 	cv::FileStorage fs = cv::FileStorage(inputSettingsFile, cv::FileStorage::READ);
     if (!fs.isOpened()) {
         ROS_ERROR("Could not open the configuration file: \"%s\"", inputSettingsFile.c_str());;

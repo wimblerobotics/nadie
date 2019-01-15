@@ -25,10 +25,12 @@
 		<param name="enable_raw" value="$(arg enable_raw)"/>
 		<!-- We are running at 90fps to reduce motion blur -->
 		<param name="framerate" value="25"/>
-		<param name="height" value="720"/>
 		<param name="hFlip" value="true" />
 		<param name="vFlip" value="true" />
-		<param name="width" value="1280"/>
+		<!--param name="width" value="1280"/>
+		<param name="height" value="720"/-->
+		<param name="width" value="640"/>
+		<param name="height" value="480"/>
 	</node>
 
 	<node 
