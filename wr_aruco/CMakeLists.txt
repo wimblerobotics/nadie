@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(wr_aruco)
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -g -Wall" )
-set(CMAKE_CXX_STANDARD 14) # use C++14
+#set(CMAKE_CXX_STANDARD 14) # use C++14
 
 find_package(catkin REQUIRED COMPONENTS
   compressed_image_transport
