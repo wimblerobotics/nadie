@@ -85,7 +85,7 @@ bool WrAruco::init() {
 }
 
 void WrAruco::processVideoFrame() {
-	const bool visualizeMarkers = false;
+	const bool visualizeMarkers = true;
 	cv::Mat	frame;
 	*cap_ >> frame;
 	cv::flip(frame, frame, -1);
@@ -101,30 +101,57 @@ void WrAruco::processVideoFrame() {
 	//ROS_INFO("[wr_aruco::processVideoFrame] Detected %d markers", (int) ids.size());
 
 	if(ids.size() > 0) {
-		// std::cout << "corners: " << std::endl; for (std::vector <std::vector <cv::Point2f> >::iterator i = corners.begin(); i != corners.end(); ++i) std::cout << *i << std::endl;
-		// if (visualizeMarkers) {
-		// 	cv::aruco::drawDetectedMarkers(frame, corners, ids);
-		// }
+		std::cout << "corners: " << std::endl; for (std::vector <std::vector <cv::Point2f> >::iterator i = corners.begin(); i != corners.end(); ++i) std::cout << *i << std::endl;
+		if (visualizeMarkers) {
+			cv::aruco::drawDetectedMarkers(frame, corners, ids);
+		}
 
 		std::vector<cv::Vec3d> rvecs;
 		std::vector<cv::Vec3d> tvecs;
 		cv::aruco::estimatePoseSingleMarkers(corners, 0.140, cameraMatrix_, distortionCoefficients_, rvecs, tvecs);
 
-		// std::cout << "rvecs: ";
-		// for (auto i = rvecs.begin(); i != rvecs.end(); ++i) std::cout << *i << ' ';
-		// std::cout << "  --  ";
-
-		std::cout << "tvecs: " << std::endl;
 		int idIndex = 0;
+		std::cout << "  --  " << std::endl;
+		std::cout << "rvecs: " << std::endl;
+		for (std::vector<cv::Vec3d>::iterator i = rvecs.begin(); i != rvecs.end(); ++i) {
+			std::cout << ids[idIndex++] << "  " << *i << std::endl;
+		}
+		
+		idIndex = 0;
+		std::cout << "tvecs: " << std::endl;
 		for (std::vector<cv::Vec3d>::iterator i = tvecs.begin(); i != tvecs.end(); ++i) {
 			std::cout << ids[idIndex++] << "  " << *i << std::endl;
 		}
 
-     //    // draw axis for each marker
-     //    for (unsigned int i = 0; i < ids.size(); i++) {
-     //    	std::cout << "id" << ids[i] << std::endl;
-     //        cv::aruco::drawAxis(frame, cameraMatrix_, distortionCoefficients_, rvecs[i], tvecs[i], 0.1);
-    	// }
+        // draw axis for each marker
+		if (visualizeMarkers) {
+			for (unsigned int i = 0; i < ids.size(); i++) {
+				cv::aruco::drawAxis(frame, cameraMatrix_, distortionCoefficients_, rvecs[i], tvecs[i], 0.1);
+			}
+
+			int id1 = -1;
+			int id2 = -1;
+			int id3 = -1;
+			int id5 = -1;
+			int id6 = -1;
+			int id7 = -1;
+			idIndex = 0;
+			for (std::vector<int>::iterator i = ids.begin(); i != ids.end(); ++i) {
+				if (*i == 1) id1 = idIndex;
+				if (*i == 2) id2 = idIndex;
+				if (*i == 3) id3 = idIndex;
+				if (*i == 5) id5 = idIndex;
+				if (*i == 6) id6 = idIndex;
+				if (*i == 7) id7 = idIndex;
+				idIndex++;
+			}
+
+			if ((id1 != -1) && (id2 != -1)) std::cout << "1->2 " << tvecs[id2][0] - tvecs[id1][0] << std::endl;
+			if ((id2 != -1) && (id3 != -1)) std::cout << "2->3 " << tvecs[id3][0] - tvecs[id2][0] << std::endl;
+			if ((id1 != -1) && (id5 != -1)) std::cout << "1->5 " << tvecs[id5][1] - tvecs[id1][1] << std::endl;
+			if ((id2 != -1) && (id6 != -1)) std::cout << "2->6 " << tvecs[id6][1] - tvecs[id2][1] << std::endl;
+			if ((id3 != -1) && (id7 != -1)) std::cout << "3->7 " << tvecs[id7][1] - tvecs[id3][1] << std::endl;
+		}
     }
 
     ros::Time now = ros::Time::now();
