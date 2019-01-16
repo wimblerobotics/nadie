@@ -7,6 +7,8 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -g -Wall" )
 find_package(catkin REQUIRED COMPONENTS
   compressed_image_transport
   dynamic_reconfigure
+  geometry_msgs
+  message_generation
   rosconsole
   roscpp
   roslaunch
@@ -15,19 +17,30 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-#find_package(Boost REQUIRED COMPONENTS system thread)
+add_message_files(
+   FILES
+   FiducialMapEntry.msg
+   FiducialMapEntryArray.msg
+)
 
-#generate_dynamic_reconfigure_options( cfg/motor_controller.cfg)
+#find_package(Boost REQUIRED COMPONENTS system thread)
 
 find_package(OpenCV REQUIRED)
 
 generate_dynamic_reconfigure_options(cfg/DetectorParams.cfg)
+
+generate_messages(
+  DEPENDENCIES 
+  std_msgs 
+  geometry_msgs
+)
 
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS 
   dynamic_reconfigure 
   cv_bridge
+  message_runtime
   rosconsole 
   roscpp 
   sensor_msgs 
