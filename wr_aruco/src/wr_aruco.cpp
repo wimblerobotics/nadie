@@ -1,5 +1,6 @@
 #include <ros/console.h>
 
+#include <assert.h>
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include <vector>
@@ -17,14 +18,17 @@
 
 using namespace cv;
 
-WrAruco::WrAruco() {
+WrAruco::WrAruco(const ros::NodeHandle& nh)
+	: nh_(nh) {
 	ROS_INFO("[WrAruco::WrAruco] invoked");
+	assert(nh_.param<std::string>("camera_intrinsics_path", cameraIntrinsicsPath_, ""));
 }
 
 bool WrAruco::init() {
-	ROS_INFO("[WrAruco::init] start");
+	ROS_INFO("[WrAruco::init] Loading camera intrinsics file: %s", cameraIntrinsicsPath_.c_str());
 
-    const std::string inputSettingsFile = "/home/wimble/catkin_ws/src/nadie/wr_aruco/cfg/640x480_ost.yaml";
+
+    const std::string inputSettingsFile = cameraIntrinsicsPath_.c_str();
 	cv::FileStorage fs = cv::FileStorage(inputSettingsFile, cv::FileStorage::READ);
     if (!fs.isOpened()) {
         ROS_ERROR("Could not open the configuration file: \"%s\"", inputSettingsFile.c_str());;

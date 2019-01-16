@@ -4,9 +4,9 @@
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "wr_aruco_node");
-	ros::NodeHandle nh;
+	ros::NodeHandle nh("~");
 
-	WrAruco wrAruco;
+	WrAruco wrAruco(nh);
 
 	if (!wrAruco.init()) {
 		ROS_ERROR("[wr_aruco_node] WrAruco::init failed");

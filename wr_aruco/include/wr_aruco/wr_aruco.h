@@ -8,21 +8,27 @@
 
 class WrAruco {
 public:
-	WrAruco();
+	WrAruco(const ros::NodeHandle& nh);
 
 	bool init();
 
 	void processVideoFrame();
 
 private:
-	cv::VideoCapture* cap_;
-	cv::Mat cameraMatrix_;
+	// ROS Parameters.
+	std::string cameraIntrinsicsPath_;
+
+	// OpenCV variables.
+	cv::VideoCapture* cap_;				// Video feed.
+	cv::Mat cameraMatrix_;				// Camera intrinsics.
     cv::Ptr<cv::aruco::DetectorParameters> detectorParams_;
-	cv::Mat distortionCoefficients_;
+	cv::Ptr<cv::aruco::Dictionary> dictionary_;	// Dictionary to be used for aruco markers.
+	cv::Mat distortionCoefficients_;	// Camera intrinsics.
 
-	ros::Time prev_;
+	// ROS variables;
+	const ros::NodeHandle& nh_;			// ROS node handle;
+	ros::Time prev_;					// Previous loop time, for computing durations.
 
-	cv::Ptr<cv::aruco::Dictionary> dictionary_;
 };
 
 #endif

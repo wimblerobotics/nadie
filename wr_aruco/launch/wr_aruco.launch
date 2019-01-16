@@ -38,6 +38,7 @@ SOFTWARE.
       type="wr_aruco_node" 
       output="screen" 
       respawn="false" >
+      <param name="camera_intrinsics_path" value="$(find wr_aruco)/cfg/640x480_ost.yaml" />
     </node>
 
   </group>
