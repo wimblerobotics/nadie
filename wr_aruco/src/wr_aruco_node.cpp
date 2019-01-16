@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv) {
 	ros::init(argc, argv, "wr_aruco_node");
-	ros::NodeHandle nh("~");
+	ros::NodeHandle nh;
 
 	WrAruco wrAruco(nh);
 

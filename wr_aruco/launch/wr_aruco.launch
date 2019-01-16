@@ -28,7 +28,7 @@ SOFTWARE.
 
   <group ns="$(arg ns)">
     <!-- load the controller yaml -->
-    <!--rosparam file="$(find nadie_control)/config/controller.yaml" command="load" /-->
+    <rosparam file="$(find wr_aruco)/cfg/wr_aruco.yaml" command="load" subst_value="true" />
 
     <!-- Start the aruco marker node -->
     <node 
@@ -38,7 +38,6 @@ SOFTWARE.
       type="wr_aruco_node" 
       output="screen" 
       respawn="false" >
-      <param name="camera_intrinsics_path" value="$(find wr_aruco)/cfg/640x480_ost.yaml" />
     </node>
 
   </group>

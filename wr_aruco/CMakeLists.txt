@@ -19,6 +19,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 #generate_dynamic_reconfigure_options( cfg/motor_controller.cfg)
 
+find_package(OpenCV REQUIRED)
+
+generate_dynamic_reconfigure_options(cfg/DetectorParams.cfg)
+
 catkin_package(
   INCLUDE_DIRS include
   CATKIN_DEPENDS 
@@ -31,8 +35,6 @@ catkin_package(
   tf
   LIBRARIES ${PROJECT_NAME}
 )
-
-find_package(OpenCV REQUIRED)
 
 ###########
 ## Build ##

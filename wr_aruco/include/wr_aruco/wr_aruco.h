@@ -2,8 +2,10 @@
 #define __WR_AUCO
 
 #include <ros/ros.h>
+#include <dynamic_reconfigure/server.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
+#include "wr_aruco/DetectorParamsConfig.h"
 
 
 class WrAruco {
@@ -16,7 +18,14 @@ public:
 
 private:
 	// ROS Parameters.
+	int arucoDictionaryNumber_;
 	std::string cameraIntrinsicsPath_;
+	int videoDeviceNumber_;
+	int videoFrameHeight_;
+	int videoFrameWidth_;
+	bool visualizeMarkers_;
+    dynamic_reconfigure::Server<wr_aruco::DetectorParamsConfig> configServer_;
+    dynamic_reconfigure::Server<wr_aruco::DetectorParamsConfig>::CallbackType callbackType_;
 
 	// OpenCV variables.
 	cv::VideoCapture* cap_;				// Video feed.
@@ -29,6 +38,11 @@ private:
 	const ros::NodeHandle& nh_;			// ROS node handle;
 	ros::Time prev_;					// Previous loop time, for computing durations.
 
+	void configCallback(wr_aruco::DetectorParamsConfig &config, uint32_t level);
+
+	void displayVideoFrameStats(cv::Mat& frame, std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs);
+
+	void setDetectorParameters();
 };
 
 #endif
