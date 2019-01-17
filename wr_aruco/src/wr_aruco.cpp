@@ -4,6 +4,8 @@
 #include <boost/algorithm/string.hpp>
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
+#include <tf/transform_broadcaster.h>
+//#include <tf2/LinearMath/Vector3.h>
 #include <vector>
 
 // #include "opencv2/imgproc/imgproc.hpp"
@@ -22,6 +24,7 @@ using namespace cv;
 WrAruco::WrAruco(ros::NodeHandle& nh)
 	: nh_(nh) {
   	assert(nh_.param<int>("wr_aruco/aruco_dictionay_number", arucoDictionaryNumber_, 7));
+	assert(nh_.param<std::string>("wr_aruco/camera_frame", cameraFrame_, ""));
 	assert(nh_.param<std::string>("wr_aruco/camera_intrinsics_path", cameraIntrinsicsPath_, ""));
 	assert(nh_.param<std::string>("wr_aruco/map_frame", mapFrame_, ""));
 	assert(nh_.param<int>("wr_aruco/video_device_number", videoDeviceNumber_, 0));
@@ -199,9 +202,11 @@ void WrAruco::processVideoFrame() {
 
 void WrAruco::publishMap(std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs) {
 	wr_aruco::FiducialMapEntryArray fiducialMapEntryArray;
+	int id1Index = -1;
 	for (unsigned int i = 0; i < ids.size(); i++) {
 		wr_aruco::FiducialMapEntry fiducialMapEntry;
 		fiducialMapEntry.fiducial_id = ids[i];
+		if (ids[i] == 1) id1Index = i;
 		fiducialMapEntry.x = tvecs[i][0];
 		fiducialMapEntry.y = tvecs[i][1];
 		fiducialMapEntry.z = tvecs[i][2];
@@ -212,6 +217,16 @@ void WrAruco::publishMap(std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, s
 	}
 
 	fiducialMapEntryArrayPub_.publish(fiducialMapEntryArray);
+
+	static tf::TransformBroadcaster br;
+	if (id1Index != -1) {
+		tf::Transform transform;
+		transform.setOrigin(tf::Vector3(-tvecs[id1Index][0], -tvecs[id1Index][1], 0.0) );
+		tf::Quaternion q;
+		q.setRPY(rvecs[id1Index][0], rvecs[id1Index][1], rvecs[id1Index][2]);
+		transform.setRotation(q);
+		br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), mapFrame_, cameraFrame_));
+	}
 }
 
 
