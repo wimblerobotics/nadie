@@ -19,7 +19,7 @@
 
 using namespace cv;
 
-WrAruco::WrAruco(const ros::NodeHandle& nh)
+WrAruco::WrAruco(ros::NodeHandle& nh)
 	: nh_(nh) {
   	assert(nh_.param<int>("wr_aruco/aruco_dictionay_number", arucoDictionaryNumber_, 7));
 	assert(nh_.param<std::string>("wr_aruco/camera_intrinsics_path", cameraIntrinsicsPath_, ""));
@@ -28,7 +28,8 @@ WrAruco::WrAruco(const ros::NodeHandle& nh)
 	assert(nh_.param<int>("wr_aruco/video_frame_width", videoFrameWidth_, 640));
 	assert(nh_.param<bool>("wr_aruco/visualize_markers", visualizeMarkers_, false));
 
-    callbackType_ = boost::bind(&WrAruco::configCallback, this, _1, _2);
+	fiducialMapEntryArrayPub_ = nh_.advertise<wr_aruco::FiducialMapEntryArray>("/fiducial_map", 1, false);
+	callbackType_ = boost::bind(&WrAruco::configCallback, this, _1, _2);
     configServer_.setCallback(callbackType_);
 }
 
@@ -116,28 +117,6 @@ bool WrAruco::init() {
 	return true;
 }
 
-void WrAruco::processVideoFrame() {
-	cv::Mat	frame;
-	*cap_ >> frame;
-	cv::flip(frame, frame, -1);
-
-	std::vector<int> ids;
-	std::vector <std::vector <cv::Point2f> > corners;
-	cv::aruco::detectMarkers(frame, dictionary_, corners, ids, detectorParams_);
-	//ROS_INFO("[wr_aruco::processVideoFrame] Detected %d markers", (int) ids.size());
-
-	if(ids.size() > 0) {
-		std::vector<cv::Vec3d> rvecs;
-		std::vector<cv::Vec3d> tvecs;
-		cv::aruco::estimatePoseSingleMarkers(corners, 0.140, cameraMatrix_, distortionCoefficients_, rvecs, tvecs);
-
-		if (visualizeMarkers_) {
-			displayVideoFrameStats(frame, ids, rvecs, tvecs);
-		}
-    }
-}
-
-
 void WrAruco::displayVideoFrameStats(cv::Mat& frame, std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs) {
 	// std::cout << "corners: " << std::endl; for (std::vector <std::vector <cv::Point2f> >::iterator i = corners.begin(); i != corners.end(); ++i) std::cout << *i << std::endl;
 	// if (visualizeMarkers) {
@@ -192,6 +171,48 @@ void WrAruco::displayVideoFrameStats(cv::Mat& frame, std::vector<int>& ids, std:
 	cv::imshow("pic", frame);
 	cv::waitKey(1);
 }
+
+void WrAruco::processVideoFrame() {
+	cv::Mat	frame;
+	*cap_ >> frame;
+	cv::flip(frame, frame, -1);
+
+	std::vector<int> ids;
+	std::vector <std::vector <cv::Point2f> > corners;
+	cv::aruco::detectMarkers(frame, dictionary_, corners, ids, detectorParams_);
+	//ROS_INFO("[wr_aruco::processVideoFrame] Detected %d markers", (int) ids.size());
+
+	if(ids.size() > 0) {
+		std::vector<cv::Vec3d> rvecs;
+		std::vector<cv::Vec3d> tvecs;
+		cv::aruco::estimatePoseSingleMarkers(corners, 0.140, cameraMatrix_, distortionCoefficients_, rvecs, tvecs);
+
+		if (visualizeMarkers_) {
+			displayVideoFrameStats(frame, ids, rvecs, tvecs);
+		}
+
+		publishMap(ids, rvecs, tvecs);
+    }
+}
+
+
+void WrAruco::publishMap(std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs) {
+	wr_aruco::FiducialMapEntryArray fiducialMapEntryArray;
+	for (unsigned int i = 0; i < ids.size(); i++) {
+		wr_aruco::FiducialMapEntry fiducialMapEntry;
+		fiducialMapEntry.fiducial_id = ids[i];
+		fiducialMapEntry.x = tvecs[i][0];
+		fiducialMapEntry.y = tvecs[i][1];
+		fiducialMapEntry.z = tvecs[i][2];
+		fiducialMapEntry.rx = rvecs[i][0];
+		fiducialMapEntry.ry = rvecs[i][1];
+		fiducialMapEntry.rz = rvecs[i][2];
+		fiducialMapEntryArray.fiducials.push_back(fiducialMapEntry);
+	}
+
+	fiducialMapEntryArrayPub_.publish(fiducialMapEntryArray);
+}
+
 
 
 void WrAruco::setDetectorParameters() {

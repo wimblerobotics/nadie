@@ -6,11 +6,11 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
 #include "wr_aruco/DetectorParamsConfig.h"
-
+#include "wr_aruco/FiducialMapEntryArray.h"
 
 class WrAruco {
 public:
-	WrAruco(const ros::NodeHandle& nh);
+	WrAruco(ros::NodeHandle& nh);
 
 	bool init();
 
@@ -35,12 +35,15 @@ private:
 	cv::Mat distortionCoefficients_;	// Camera intrinsics.
 
 	// ROS variables;
-	const ros::NodeHandle& nh_;			// ROS node handle;
-	ros::Time prev_;					// Previous loop time, for computing durations.
+	ros::Publisher fiducialMapEntryArrayPub_;	// For publishing a FiducialMapEtryArray
+	ros::NodeHandle& nh_;					// ROS node handle;
+	ros::Time prev_;							// Previous loop time, for computing durations.
 
 	void configCallback(wr_aruco::DetectorParamsConfig &config, uint32_t level);
 
 	void displayVideoFrameStats(cv::Mat& frame, std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs);
+
+	void publishMap(std::vector<int>& ids, std::vector<cv::Vec3d>& rvecs, std::vector<cv::Vec3d>& tvecs);
 
 	void setDetectorParameters();
 };
