@@ -20,6 +20,7 @@ private:
 	// ROS Parameters.
 	int arucoDictionaryNumber_;
 	std::string cameraIntrinsicsPath_;
+	std::string mapFrame_;
 	int videoDeviceNumber_;
 	int videoFrameHeight_;
 	int videoFrameWidth_;

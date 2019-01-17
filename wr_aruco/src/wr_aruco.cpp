@@ -23,6 +23,7 @@ WrAruco::WrAruco(ros::NodeHandle& nh)
 	: nh_(nh) {
   	assert(nh_.param<int>("wr_aruco/aruco_dictionay_number", arucoDictionaryNumber_, 7));
 	assert(nh_.param<std::string>("wr_aruco/camera_intrinsics_path", cameraIntrinsicsPath_, ""));
+	assert(nh_.param<std::string>("wr_aruco/map_frame", mapFrame_, ""));
 	assert(nh_.param<int>("wr_aruco/video_device_number", videoDeviceNumber_, 0));
 	assert(nh_.param<int>("wr_aruco/video_frame_height", videoFrameHeight_, 480));
 	assert(nh_.param<int>("wr_aruco/video_frame_width", videoFrameWidth_, 640));
