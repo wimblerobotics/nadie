@@ -80,24 +80,35 @@ void WrAruco::configCallback(wr_aruco::DetectorParamsConfig & config, uint32_t l
 
 
 bool WrAruco::init() {
-	ROS_INFO("[WrAruco::init] Loading camera intrinsics file: %s", cameraIntrinsicsPath_.c_str());
-    const std::string inputSettingsFile = cameraIntrinsicsPath_.c_str();
-	cv::FileStorage fs = cv::FileStorage(inputSettingsFile, cv::FileStorage::READ);
-    if (!fs.isOpened()) {
-        ROS_ERROR("[WrAruco::init] Could not open the configuration file: \"%s\"", inputSettingsFile.c_str());;
-        return false;
-    }
+	std::vector<float> data;
 
-    fs["camera_matrix"] >> cameraMatrix_;
-    fs["distortion_coefficients"] >> distortionCoefficients_;
-   
+	if( !nh_.getParam("wr_aruco_camera/camera_matrix/data", data) )
+		ROS_ERROR("[WrAruco::init] Failed to get /wr_aruco_camera/camera_matrix/data from parameter server.");
+	std::cout << "data cam mat: " << std::endl;
+	for (std::vector<float>::iterator i = data.begin(); i != data.end(); ++i) {
+		std::cout << *i << std::endl;
+	}
+	
+	cameraMatrix_ = cv::Mat(3, 3, CV_32FC1);
+	for (int i = 0; i < 9; i++) cameraMatrix_.at<float>(i / 3, i % 3) = data[i];
+
+	if( !nh_.getParam("wr_aruco_camera/distortion_coefficients/data", data) )
+		ROS_ERROR("[WrAruco::init] Failed to get /wr_aruco_camera/distortion_coefficients from parameter server.");
+	std::cout << "data dist coef: " << std::endl;
+	for (std::vector<float>::iterator i = data.begin(); i != data.end(); ++i) {
+		std::cout << *i << std::endl;
+	}
+
+	distortionCoefficients_ = cv::Mat(1, data.size(), CV_32FC1);
+	for (int i = 0; i < (int) data.size(); i++) distortionCoefficients_.at<float>(0, i) = data[i];
+
     ROS_INFO_STREAM("[WrAruco::init] camera_matrix: " << cameraMatrix_);
     ROS_INFO_STREAM("[WrAruco::init] distortion_coefficients: " << distortionCoefficients_);
-    ROS_INFO("[WrAruco::init] Intrinsics image_width: %f, image_height: %f", fs["image_width"].real(), fs["image_height"].real());
-	assert(fs["image_height"].real() == videoFrameHeight_);
-	assert(fs["image_width"].real() == videoFrameWidth_);
+	assert(nh_.param<int>("wr_aruco_camera/image_height", videoFrameHeight_, 0));
+	assert(nh_.param<int>("wr_aruco_camera/image_width", videoFrameWidth_, 0));
+
 	
-	fs.release(); 
+	// fs.release(); 
 
 	setDetectorParameters();
 

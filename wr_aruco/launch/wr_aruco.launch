@@ -30,6 +30,9 @@ SOFTWARE.
     <!-- load the controller yaml -->
     <rosparam file="$(find wr_aruco)/cfg/wr_aruco.yaml" command="load" subst_value="true" />
 
+    <!-- load the camera intrinsics yaml -->
+    <rosparam file="$(find wr_aruco)/cfg/wr_aruco_camera.yaml" command="load" subst_value="true" />
+
     <!-- Start the aruco marker node -->
     <node 
       launch-prefix="$(arg launchPrefix)" 
