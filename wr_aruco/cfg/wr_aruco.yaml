@@ -1,7 +1,6 @@
 wr_aruco:
     aruco_dictionay_number: 7
     camera_frame: "raspicam"
-    camera_intrinsics_path: "$(find wr_aruco)/cfg/640x480_ost.yaml"
     map_frame: "map"
     video_device_number: 0
     video_frame_height: 480
