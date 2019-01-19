@@ -1,0 +1,34 @@
+<launch>
+  <arg name="do_wr_aruco" value="true" />
+
+<machine
+    address="192.168.0.103" 
+    default="false"
+    env-loader="/opt/ros/kinetic/env.sh"
+    name="machine_pibota"
+    user="wimble"
+/>
+
+<!-- load the controller yaml -->
+<rosparam file="$(find wr_aruco)/cfg/wr_aruco.yaml" command="load" subst_value="true" />
+
+<!-- Start the aruco marker node -->
+<node 
+    if="$(arg do_wr_aruco)"
+    machine="machine_pibota"
+    name="wr_aruco_node" 
+    pkg="wr_aruco"  
+    type="wr_aruco_node" 
+    output="screen" 
+    respawn="false" >
+</node>
+
+<node
+    if="$(arg do_wr_aruco)"
+    machine="machine_pibota"
+    name="raspicam_tf"
+    pkg="tf"
+    type="static_transform_publisher"
+    args="0.0 0.0 0.0 0 0 0 base_link raspicam 100"
+/>
+</launch>
