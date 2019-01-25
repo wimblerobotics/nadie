@@ -1,16 +1,20 @@
 <launch>
   <arg name="do_wr_aruco" value="true" />
 
+<!--    env-loader="/opt/ros/kinetic/env.sh" -->
 <machine
     address="192.168.0.103" 
     default="false"
-    env-loader="/opt/ros/kinetic/env.sh"
+    env-loader="/home/wimble/catkin_ws/devel/env.sh"
     name="machine_pibota"
     user="wimble"
 />
 
 <!-- load the controller yaml -->
 <rosparam file="$(find wr_aruco)/cfg/wr_aruco.yaml" command="load" subst_value="true" />
+
+<!-- load the camera intrinsics yaml -->
+<rosparam file="$(find wr_aruco)/cfg/wr_aruco_camera.yaml" command="load" subst_value="true" />
 
 <!-- Start the aruco marker node -->
 <node 
@@ -25,10 +29,9 @@
 
 <node
     if="$(arg do_wr_aruco)"
-    machine="machine_pibota"
     name="raspicam_tf"
     pkg="tf"
     type="static_transform_publisher"
-    args="0.0 0.0 0.0 0 0 0 base_link raspicam 100"
+    args="0.0 0.0 0.0 0 0 0 raspicam base_link 100"
 />
 </launch>

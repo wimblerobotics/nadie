@@ -1,6 +1,6 @@
 <launch>
   <arg name="do_aruco_detect" value="false" />
-  <arg name="do_compressed_to_raw_video" value="false" />
+  <arg name="do_compressed_to_raw_video" value="true" />
   <arg name="do_fiducial" value="true" />
   <arg name="do_fiducial_slam" value="false" />
   <arg name="do_raspicam_node" value="true" />
@@ -11,7 +11,7 @@
     <machine
       address="192.168.0.103" 
       default="false"
-      env-loader="/opt/ros/kinetic/env.sh"
+      env-loader="/home/wimble/catkin_ws/devel/env.sh"
       name="machine_pibota"
       user="wimble"
     />
@@ -54,7 +54,7 @@
       <param name="camera_name" value="$(arg camera_name)" />
       <param name="enable_imv" value="$(arg enable_imv)" />
       <param name="enable_raw" value="$(arg enable_raw)" />
-      <param name="framerate" value="10" />
+      <param name="framerate" value="90" />
       <param name="height" value="480" />
       <param name="hFlip" value="true" />
       <param name="vFlip" value="true" />
