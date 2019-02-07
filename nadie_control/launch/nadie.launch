@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
   <arg name="do_amcl" default="false" />
-  <arg name="do_arduino" default="true" />
+  <arg name="do_arduino" default="false" />
   <arg name="do_controller_manager" default="true" />
   <arg name="do_fiducial" default="true" />
   <arg name="do_joint_state_publisher" default="true" />
