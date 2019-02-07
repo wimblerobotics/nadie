@@ -113,12 +113,12 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 void NadieMotorController::initHardware() {
 	openPort();	
 
-	float M1_P =  8762.98571;
-	float M2_P = 9542.41265;
-	float M1_I = 1535.49646;
-	float M2_I = 1773.65086;
-	float M1_QPPS = 3562;
-	float M2_QPPS = 3340;
+	float M1_P =  23250.3986;
+	float M2_P = 23250.3986;
+	float M1_I = 779;
+	float M2_I = 779;
+	float M1_QPPS = 3216;
+	float M2_QPPS = 3216;
 
 	setM1PID(M1_P, M1_I, 0, M1_QPPS);
 	setM2PID(M2_P, M2_I, 0, M2_QPPS);
@@ -719,7 +719,7 @@ std::string NadieMotorController::getVersion() {
 
 void NadieMotorController::openPort() {
 	ROS_INFO("[NadieMotorController::openPort] about to open port: %s", motorUSBPort_.c_str());
-	clawPort_ = open(motorUSBPort_.c_str(), O_RDWR | O_NOCTTY);
+	clawPort_ = open(motorUSBPort_.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (clawPort_ < 0) {
 		ROS_ERROR("[NadieMotorController::openPort] Unable to open USB port: %s, errno: (%d) %s"
 				  , motorUSBPort_.c_str()
@@ -743,18 +743,26 @@ void NadieMotorController::openPort() {
     //   this program from "owning" the port and to enable receipt of data.
     //   Also, it holds the settings for number of data bits, parity, stop bits,
     //   and hardware flow control. 
-    portOptions.c_cflag &= ~HUPCL;
-    portOptions.c_iflag |= BRKINT;
-    portOptions.c_iflag |= IGNPAR;
-    portOptions.c_iflag &= ~ICRNL;
-    portOptions.c_oflag &= ~OPOST;
-    portOptions.c_lflag &= ~ISIG;
-    portOptions.c_lflag &= ~ICANON;
-    portOptions.c_lflag &= ~ECHO;
+	portOptions.c_cflag |= CLOCAL | CREAD;
+	portOptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHOK | ECHONL | ISIG | IEXTEN);
+	portOptions.c_oflag &= ~(OPOST | ONLCR | OCRNL);
+	portOptions.c_iflag &= ~(INLCR | IGNCR | ICRNL | IGNBRK);
+	portOptions.c_cflag &= ~CSIZE;
+	portOptions.c_cflag |= CS8;
+	portOptions.c_cc[VTIME] = 1;
+	portOptions.c_cc[VMIN] = 10;
+    // portOptions.c_cflag &= ~HUPCL;
+    // portOptions.c_iflag |= BRKINT;
+    // portOptions.c_iflag |= IGNPAR;
+    // portOptions.c_iflag &= ~ICRNL;
+    // portOptions.c_oflag &= ~OPOST;
+    // portOptions.c_lflag &= ~ISIG;
+    // portOptions.c_lflag &= ~ICANON;
+    // portOptions.c_lflag &= ~ECHO;
 
-    portOptions.c_cc[VKILL] = 8;
-    portOptions.c_cc[VMIN] = 100;
-    portOptions.c_cc[VTIME] = 2;
+    // portOptions.c_cc[VKILL] = 8;
+    // portOptions.c_cc[VMIN] = 100;
+    // portOptions.c_cc[VTIME] = 2;
     
     if (cfsetispeed(&portOptions, B38400) < 0) {
 		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
@@ -771,6 +779,9 @@ void NadieMotorController::openPort() {
 		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal options (tcsetattr)");
 		throw new TRoboClawException("[NadieMotorController::openPort] Unable to set terminal options (tcsetattr)");
     }
+
+	int origFlags = fcntl(clawPort_, F_GETFL, 0);
+	fcntl(clawPort_, F_SETFL, origFlags & ~O_NONBLOCK);
 }
 
 
@@ -811,7 +822,7 @@ uint8_t NadieMotorController::readByteWithTimeout() {
 	ufd[0].fd = clawPort_;
 	ufd[0].events = POLLIN;
 
-	int retval = poll(ufd, 1, 11);
+	int retval = poll(ufd, 1, 20);
 	if (retval < 0) {
 		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Poll failed (%d) %s", errno, strerror(errno));
 		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] Read error");
@@ -1110,7 +1121,7 @@ void NadieMotorController::write(const ros::Time& time, const ros::Duration& per
 					   , SetDWORDval(rightMaxDistance)
 					   , 1 /* Cancel any previous command */
 					   );
-				//ROS_INFO("[NadieMotorController::write] Error status: %s", getErrorString().c_str());
+   				//ROS_INFO("[NadieMotorController::write] Error status: %s", getErrorString().c_str());
 				return;
 			} catch (TRoboClawException* e) {
 				ROS_ERROR("[NadieMotorController::write] Exception: %s, retry number %d", e->what(), retry);
@@ -1142,8 +1153,8 @@ void NadieMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
 	va_list marker;
 	va_start(marker, cnt);
 
-	int origFlags = fcntl(clawPort_, F_GETFL, 0);
-	fcntl(clawPort_, F_SETFL, origFlags & ~O_NONBLOCK);
+	// int origFlags = fcntl(clawPort_, F_GETFL, 0);
+	// fcntl(clawPort_, F_SETFL, origFlags & ~O_NONBLOCK);
 
 	for (uint8_t i = 0; i < cnt; i++) {
 		uint8_t byte = va_arg(marker, int);
@@ -1164,7 +1175,7 @@ void NadieMotorController::writeN(bool sendCRC, uint8_t cnt, ...) {
 		}
 	}
 
-	fcntl(clawPort_, F_SETFL, origFlags);
+	// fcntl(clawPort_, F_SETFL, origFlags);
 }
 
 
