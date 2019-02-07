@@ -23,7 +23,7 @@ SOFTWARE.
   <arg name="doDebug" default="false" />
   <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
   <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
-  <arg name="do_odom_tf" default="false" />
+  <arg name="do_odom_tf" default="true" />
   <arg name="do_load_urdf" default="false" />
   <arg name="robot_namespace" default="/nadie" />
 

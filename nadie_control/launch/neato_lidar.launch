@@ -23,7 +23,7 @@ SOFTWARE.
 
   <arg name="robot_namespace" default="/nadie" />
   <!--group ns="$(arg robot_namespace)"-->
-  <group ns="/">
+ <group ns="$(arg robot_namespace)">
     <!-- Start the main LIDAR -->
     <node 
       name="neato_lidar" 
