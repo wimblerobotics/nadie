@@ -88,7 +88,7 @@ SOFTWARE.
       pkg="nadie_control"  
       type="nadie_motor_controller_node" 
       output="screen" 
-      respawn="false" >
+      respawn="true" >
       
       <remap from="odom" to="motor_odom" />
       <!--rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/ -->
