@@ -164,6 +164,8 @@ private:
 	double quadPulsesPerRevolution_;		// Number of quadrature pulses per revolution.
 	boost::mutex roboClawLock_;				// To control multithread access.
 	bool simulating;						// True => robot is runnig in sumulator.
+	int vmin_;								// Terminal control value.
+	int vtime_;								// Terminal control value.
 	double wheelRadius_;					// Wheel radius.
 
 	static const double kBILLION;

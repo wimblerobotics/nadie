@@ -32,6 +32,8 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	assert(ros::param::get("motor_controller/quad_pulses_per_meter", quadPulsesPerMeter_));
 	assert(ros::param::get("motor_controller/quad_pulses_per_revolution", quadPulsesPerRevolution_));
 	assert(ros::param::get("motor_controller/usb_device_name", motorUSBPort_));
+	assert(ros::param::get("motor_controller/vmin", vmin_));
+	assert(ros::param::get("motor_controller/vtime", vtime_));
 	assert(ros::param::get("motor_controller/wheel_radius", wheelRadius_));
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/control_loop_hz: %6.3f", controlLoopHz_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_command_retries: %d", maxCommandRetries_);
@@ -40,6 +42,9 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_meter: %8.3f", quadPulsesPerMeter_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_revolution: %8.3f", quadPulsesPerRevolution_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/usb_device_name: %s", motorUSBPort_.c_str());
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vmin: %d", vmin_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vtime: %d", vtime_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/wheel_radius: %6.3f", wheelRadius_);
 
 	now_ = ros::Time::now();
 	lastTime_ = now_;
@@ -749,8 +754,8 @@ void NadieMotorController::openPort() {
 	portOptions.c_iflag &= ~(INLCR | IGNCR | ICRNL | IGNBRK);
 	portOptions.c_cflag &= ~CSIZE;
 	portOptions.c_cflag |= CS8;
-	portOptions.c_cc[VTIME] = 1;
-	portOptions.c_cc[VMIN] = 10;
+	portOptions.c_cc[VTIME] = vtime_;
+	portOptions.c_cc[VMIN] = vmin_;
     // portOptions.c_cflag &= ~HUPCL;
     // portOptions.c_iflag |= BRKINT;
     // portOptions.c_iflag |= IGNPAR;
@@ -822,7 +827,7 @@ uint8_t NadieMotorController::readByteWithTimeout() {
 	ufd[0].fd = clawPort_;
 	ufd[0].events = POLLIN;
 
-	int retval = poll(ufd, 1, 20);
+	int retval = poll(ufd, 1, 11);
 	if (retval < 0) {
 		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Poll failed (%d) %s", errno, strerror(errno));
 		throw new TRoboClawException("[NadieMotorController::readByteWithTimeout] Read error");
