@@ -28,7 +28,6 @@ SOFTWARE.
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_load_urdf" default="true" />
   <arg name="do_motor_controller" default="true" />
-  <arg name="do_odom_tf" default="true" />
   <arg name="do_robot_state_publisher" default="true" />
   <arg name="use_joint_state_publisher_gui" default="false" />
 
@@ -92,7 +91,6 @@ SOFTWARE.
       
       <remap from="odom" to="motor_odom" />
       <!--rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/ -->
-      <param name="do_odom_tf" value="$(arg do_odom_tf)" />
     </node>
 
   </group>
