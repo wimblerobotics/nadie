@@ -18,7 +18,7 @@ motor_controller:
   quad_pulses_per_revolution: 3200
   usb_device_name: /dev/ttyACM1
   vmin: 1
-  vtime: 1
+  vtime: 2
   wheel_radius: 0.10169
 
 joint_state_controller:

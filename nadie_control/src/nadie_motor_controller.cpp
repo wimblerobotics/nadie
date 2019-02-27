@@ -32,6 +32,8 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	assert(ros::param::get("motor_controller/quad_pulses_per_meter", quadPulsesPerMeter_));
 	assert(ros::param::get("motor_controller/quad_pulses_per_revolution", quadPulsesPerRevolution_));
 	assert(ros::param::get("motor_controller/usb_device_name", motorUSBPort_));
+	assert(ros::param::get("motor_controller/vmin", vmin_));
+	assert(ros::param::get("motor_controller/vtime", vtime_));
 	assert(ros::param::get("motor_controller/wheel_radius", wheelRadius_));
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/control_loop_hz: %6.3f", controlLoopHz_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_command_retries: %d", maxCommandRetries_);
@@ -40,6 +42,9 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_meter: %8.3f", quadPulsesPerMeter_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_revolution: %8.3f", quadPulsesPerRevolution_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/usb_device_name: %s", motorUSBPort_.c_str());
+ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vmin: %d", vmin_);
+ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vtime: %d", vtime_);
+ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/wheel_radius: %6.4f", wheelRadius_);
 
 	now_ = ros::Time::now();
 	lastTime_ = now_;
@@ -643,9 +648,8 @@ std::string NadieMotorController::getVersion() {
 			uint8_t datum;
 			std::stringstream version;
 
-			for (i = 0; i < 32; i++) {
+			for (i = 0; i < 48; i++) {
 				datum = readByteWithTimeout();
-				version << (char) datum;
 				updateCrc(crc, datum);
 				if (datum == 0) {
 					uint16_t responseCrc = 0;
@@ -658,6 +662,8 @@ std::string NadieMotorController::getVersion() {
 					} else {
 						ROS_ERROR("[NadieMotorController::getErrorStatus] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
 					}
+				} else {
+					version << (char) datum;
 				}
 			}
 
@@ -678,7 +684,7 @@ std::string NadieMotorController::getVersion() {
 
 void NadieMotorController::openPort() {
 	ROS_INFO("[NadieMotorController::openPort] about to open port: %s", motorUSBPort_.c_str());
-	clawPort_ = open(motorUSBPort_.c_str(), O_RDWR | O_NOCTTY);
+	clawPort_ = open(motorUSBPort_.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
 	if (clawPort_ < 0) {
 		ROS_ERROR("[NadieMotorController::openPort] Unable to open USB port: %s, errno: (%d) %s"
 				  , motorUSBPort_.c_str()
@@ -702,18 +708,39 @@ void NadieMotorController::openPort() {
     //   this program from "owning" the port and to enable receipt of data.
     //   Also, it holds the settings for number of data bits, parity, stop bits,
     //   and hardware flow control. 
-    portOptions.c_cflag &= ~HUPCL;
-    portOptions.c_iflag |= BRKINT;
-    portOptions.c_iflag |= IGNPAR;
-    portOptions.c_iflag &= ~ICRNL;
-    portOptions.c_oflag &= ~OPOST;
-    portOptions.c_lflag &= ~ISIG;
-    portOptions.c_lflag &= ~ICANON;
-    portOptions.c_lflag &= ~ECHO;
+    portOptions.c_cflag |= CLOCAL;            // Prevent changing ownership.
+	portOptions.c_cflag |= CREAD;             // Enable reciever.
+	portOptions.c_cflag &= ~CRTSCTS;          // Disable hardware CTS/RTS flow control.
+	portOptions.c_cflag |= CS8;               // Enable 8 bit characters.
+	portOptions.c_cflag &= ~CSIZE;            // Remove size flag.
+	portOptions.c_cflag &= ~CSTOPB;           // Disable 2 stop bits.
+    portOptions.c_cflag |= HUPCL;             // Enable lower control lines on close - hang up.
+	portOptions.c_cflag &= ~PARENB;           // Disable parity.
 
+	//portOptions.c_iflag |= BRKINT;
+	portOptions.c_iflag &= ~IGNBRK;            // Disable ignoring break.
+	portOptions.c_iflag &= ~IGNCR;             // Disable ignoring CR;
+    portOptions.c_iflag &= ~(IGNPAR | PARMRK); // Disable parity checks.
+    //portOptions.c_iflag |= IGNPAR;
+	portOptions.c_iflag &= ~(INLCR | ICRNL);   // Disable translating NL <-> CR.
+	portOptions.c_iflag &= ~INPCK;             // Disable parity checking.
+	portOptions.c_iflag &= ~ISTRIP;            // Disable stripping 8th bit.
+    portOptions.c_iflag &= ~(IXON | IXOFF);    // disable XON/XOFF flow control
+
+    portOptions.c_lflag &= ~ECHO;			   // Disable echoing characters.
+	portOptions.c_lflag &= ~ECHONL;            // ??
+    portOptions.c_lflag &= ~ICANON;			   // Disable canonical mode - line by line.
+	portOptions.c_lflag &= ~IEXTEN;            // Disable input processing
+    portOptions.c_lflag &= ~ISIG;			   // Disable generating signals.
+	portOptions.c_lflag &= ~NOFLSH;            // Disable flushing on SIGINT.
+
+	portOptions.c_oflag &= ~OFILL;             // Disable fill characters.
+	portOptions.c_oflag &= ~(ONLCR | OCRNL);   // Disable translating NL <-> CR.
+	portOptions.c_oflag &= ~OPOST;			   // Disable output processing.
+    
     portOptions.c_cc[VKILL] = 8;
-    portOptions.c_cc[VMIN] = 100;
-    portOptions.c_cc[VTIME] = 2;
+    portOptions.c_cc[VMIN] = vmin_;
+    portOptions.c_cc[VTIME] = vtime_;
     
     if (cfsetispeed(&portOptions, B38400) < 0) {
 		ROS_ERROR("[NadieMotorController::openPort] Unable to set terminal speed (cfsetispeed)");
@@ -865,6 +892,7 @@ uint8_t NadieMotorController::readByteWithTimeout() {
 			throw TRoboClawException("[NadieMotorController::readByteWithTimeout] Failed to read 1 byte");
 		}
 
+		// ROS_INFO("..> char: %c 0x%2X <--", buffer[0], buffer[0]);
 		return buffer[0];
 	} else {
 		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Unhandled case");
