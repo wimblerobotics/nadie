@@ -21,8 +21,8 @@ motor_controller:
   m2d: 0.0
   m2qpps: 11625
   max_command_retries: 20
-  max_m1_current: 3.5
-  max_m2_current: 3.5
+  max_m1_current: 8
+  max_m2_current: 8
   max_seconds_uncommanded_travel: 0.5
   port_address: 128
   quad_pulses_per_meter: 5236

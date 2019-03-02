@@ -971,11 +971,10 @@ void NadieMotorController::stop() {
 	for (retry = 0; retry < maxCommandRetries_; retry++) {
 		try {
 			writeN(true
-				  , 10
-				  , portAddress_
-				  , kMIXEDSPEED
-				  , SetDWORDval(0)
-				  , SetDWORDval(0));
+				   , 6
+				   , portAddress_
+				   , kMIXEDDUTY
+				   , 0, 0, 0, 0);
 			ROS_INFO("[NadieMotorController::stop] Stop requested");//#####
 			return;
 		} catch (TRoboClawException* e) {
@@ -1025,10 +1024,11 @@ void NadieMotorController::updateCrc(uint16_t& crc, uint8_t data) {
 
 
 void NadieMotorController::write(const ros::Time& time, const ros::Duration& period) {
-	if (motorAlarms_ != 0) {
-		ROS_ERROR("[NadieMotorController::write] MOTOR ALARM -- motor stop");
-		stop();
-	}
+	// Disabled until better solution found
+	// if (motorAlarms_ != 0) {
+	// 	ROS_ERROR("[NadieMotorController::write] MOTOR ALARM -- motor stop");
+	// 	stop();
+	// }
 
 	int retry;
 	int32_t leftMaxDistance;

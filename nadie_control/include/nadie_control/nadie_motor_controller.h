@@ -129,7 +129,7 @@ private:
 	    GETM2ISPEED = 31,
 	    M1DUTY = 32,
 	    M2DUTY = 33,
-	    MIXEDDUTY = 34,
+	    kMIXEDDUTY = 34,
 	    M1SPEED = 35,
 	    M2SPEED = 36,
 	    kMIXEDSPEED = 37,
