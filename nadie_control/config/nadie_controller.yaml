@@ -1,4 +1,5 @@
 gazebo_ros_control:
+  
   pid_gains:
     front_left_wheel:
       p: 200
@@ -11,7 +12,17 @@ gazebo_ros_control:
 
 motor_controller:
   control_loop_hz: 10.0
+  m1p: 2.11730
+  m1i: 0.35170
+  m1d: 0.0
+  m1qpps: 9562
+  m2p: 1.59863
+  m2i: 0.28494
+  m2d: 0.0
+  m2qpps: 11625
   max_command_retries: 20
+  max_m1_current: 3.5
+  max_m2_current: 3.5
   max_seconds_uncommanded_travel: 0.5
   port_address: 128
   quad_pulses_per_meter: 5236

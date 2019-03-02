@@ -159,8 +159,19 @@ private:
 
 	int clawPort_;							// Unix file descriptor for RoboClaw connection.
 	double controlLoopHz_;					// Loop rate for control loop.
+	float m1p_;
+	float m1i_;
+	float m1d_;
+	int m1qpps_;
+	float m2p_;
+	float m2i_;
+	float m2d_;
+	int m2qpps_;
 	int maxCommandRetries_;					// Maximum number of times to retry a RoboClaw command.
+	float maxM1Current_;					// Maximum allowed M1 current.
+	float maxM2Current_;					// Maximum allowed M2 current.
 	double maxSecondsUncommandedTravel_;	// Abort travel after this number of seconds if a new motion command has not arrived.
+	int motorAlarms_;						// Motors alarms. Bit-wise or of contributors.
 	std::string motorUSBPort_;				// Device name of RoboClaw device.
 	int portAddress_;						// Port number of RoboClaw device under control
 	double quadPulsesPerMeter_;				// Number of quadrature pulses that will be received after 1 meter of travel.
@@ -169,6 +180,13 @@ private:
 	int vmin_;								// Terminal control value.
 	int vtime_;								// Terminal control value.
 	double wheelRadius_;					// Wheel radius.
+
+	enum {
+		kM1_OVER_CURRENT = 0x01,			// Moter 1 current sense is too high.
+		kM2_OVER_CURRENT = 0x02,			// Motor 2 current sense is too high.
+		kM1_OVER_CURRENT_ALARM = 0x04,		// Motor 1 controller over current alarm.
+		kM2_OVER_CURRENT_ALARM = 0x08,		// Motor 2 controller over current alarm.
+	};
 
 	static const double kBILLION;
 

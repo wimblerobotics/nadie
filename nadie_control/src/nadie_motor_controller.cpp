@@ -21,12 +21,23 @@
 
 NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urdf_model)
 	: MotorController(nh, urdf_model)
+	, motorAlarms_(0)
 	, nh_(nh)
 	, simulating(false)
 	, urdf_model_(urdf_model) {
 
 	assert(ros::param::get("motor_controller/control_loop_hz", controlLoopHz_));
+	assert(ros::param::get("motor_controller/m1p", m1p_));
+	assert(ros::param::get("motor_controller/m1i", m1i_));
+	assert(ros::param::get("motor_controller/m1d", m1d_));
+	assert(ros::param::get("motor_controller/m1qpps", m1qpps_));
+	assert(ros::param::get("motor_controller/m1p", m2p_));
+	assert(ros::param::get("motor_controller/m1i", m2i_));
+	assert(ros::param::get("motor_controller/m1d", m2d_));
+	assert(ros::param::get("motor_controller/m1qpps", m2qpps_));
 	assert(ros::param::get("motor_controller/max_command_retries", maxCommandRetries_));
+	assert(ros::param::get("motor_controller/max_m1_current", maxM1Current_));
+	assert(ros::param::get("motor_controller/max_m2_current", maxM2Current_));
 	assert(ros::param::get("motor_controller/max_seconds_uncommanded_travel", maxSecondsUncommandedTravel_));
 	assert(ros::param::get("motor_controller/port_address", portAddress_));
 	assert(ros::param::get("motor_controller/quad_pulses_per_meter", quadPulsesPerMeter_));
@@ -36,15 +47,25 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	assert(ros::param::get("motor_controller/vtime", vtime_));
 	assert(ros::param::get("motor_controller/wheel_radius", wheelRadius_));
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/control_loop_hz: %6.3f", controlLoopHz_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m1p: %6.3f", m1p_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m1i: %6.3f", m1i_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m1d: %6.3f", m1d_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m1qpps: %d", m1qpps_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m2p: %6.3f", m2p_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m2i: %6.3f", m2i_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m2d: %6.3f", m2d_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/m2qpps: %d", m2qpps_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_command_retries: %d", maxCommandRetries_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_m1_current: %6.3f", maxM1Current_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_m2_current: %6.3f", maxM2Current_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/max_seconds_uncommanded_travel: %6.3f", maxSecondsUncommandedTravel_);
 	ROS_INFO_STREAM("[NadieMotorController::NadieMotorController] motor_controller/port_address: 0x" << std::hex << portAddress_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_meter: %8.3f", quadPulsesPerMeter_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/quad_pulses_per_revolution: %8.3f", quadPulsesPerRevolution_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/usb_device_name: %s", motorUSBPort_.c_str());
-ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vmin: %d", vmin_);
-ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vtime: %d", vtime_);
-ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/wheel_radius: %6.4f", wheelRadius_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vmin: %d", vmin_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/vtime: %d", vtime_);
+	ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/wheel_radius: %6.4f", wheelRadius_);
 
 	now_ = ros::Time::now();
 	lastTime_ = now_;
@@ -119,16 +140,8 @@ ROS_INFO("[NadieMotorController::NadieMotorController] motor_controller/wheel_ra
 
 void NadieMotorController::initHardware() {
 	openPort();	
-
-	float M1_P =  8762.98571;
-	float M2_P = 9542.41265;
-	float M1_I = 1535.49646;
-	float M2_I = 1773.65086;
-	float M1_QPPS = 3562;
-	float M2_QPPS = 3340;
-
-	setM1PID(M1_P, M1_I, 0, M1_QPPS);
-	setM2PID(M2_P, M2_I, 0, M2_QPPS);
+	setM1PID(m1p_, m1i_, m1d_, m1qpps_);
+	setM2PID(m2p_, m2i_, m2d_, m2qpps_);
 	ROS_INFO("[NadieMotorController::NadieMotorController] RoboClaw software version: %s", getVersion().c_str());
 }
 
@@ -186,7 +199,7 @@ NadieMotorController::EncodeResult NadieMotorController::getEncoderCommandResult
 		return result;
 	}
 
-	ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Expected CRC of: 0x%X, but got: 0x%X"
+	ROS_ERROR("[NadieMotorController::getEncoderCommandResult] Expected CRC of: 0x%02X, but got: 0x%02X"
 	    	  , int(crc)
 	    	  , int(responseCrc));
 	throw new TRoboClawException("[NadieMotorController::getEncoderCommandResult] INVALID CRC");
@@ -194,31 +207,23 @@ NadieMotorController::EncodeResult NadieMotorController::getEncoderCommandResult
 
 
 uint16_t NadieMotorController::getErrorStatus() {
-	int retry;
-
-	for (retry = 0; retry < maxCommandRetries_; retry++) {
+	for (int retry = 0; retry < maxCommandRetries_; retry++) {
 		try {
 			uint16_t crc = 0;
 			updateCrc(crc, portAddress_);
 			updateCrc(crc, kGETERROR);
-			writeN(false, 2, portAddress_, kGETERROR);
-			uint16_t result = 0;
-			uint8_t datum = readByteWithTimeout();
-			result |= datum << 8;
-			updateCrc(crc, datum);
-			datum = readByteWithTimeout();
-			result |= datum;
-			updateCrc(crc, datum);
 
+			writeN(false, 2, portAddress_, kGETERROR);
+			unsigned short result = (unsigned short) getULongCont(crc);
 			uint16_t responseCrc = 0;
-			datum = readByteWithTimeout();
+			uint16_t datum = readByteWithTimeout();
 			responseCrc = datum << 8;
 			datum = readByteWithTimeout();
 			responseCrc |= datum;
 			if (responseCrc == crc) {
 				return result;
 			} else {
-				ROS_ERROR("[NadieMotorController::getErrorStatus] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
+				ROS_ERROR("[NadieMotorController::getPIDQ] invalid CRC expected: 0x%02X, got: 0x%02X", crc, responseCrc);
 			}
 		} catch (TRoboClawException* e) {
 			ROS_ERROR("[NadieMotorController::getErrorStatus] Exception: %s, retry number: %d", e->what(), retry);
@@ -295,10 +300,16 @@ std::string NadieMotorController::getErrorString() {
 
 		if (errorStatus & 0x02) {
 			errorMessage << "[M2 OverCurrent Warning] ";
+			motorAlarms_ |= kM2_OVER_CURRENT_ALARM;
+		} else {
+			motorAlarms_ &= ~kM2_OVER_CURRENT_ALARM;
 		}
 
 		if (errorStatus & 0x01) {
 			errorMessage << "[M1 OverCurrent Warning] ";
+			motorAlarms_ |= kM1_OVER_CURRENT_ALARM;
+		} else {
+			motorAlarms_ &= ~kM1_OVER_CURRENT_ALARM;
 		}
 
 		return errorMessage.str();
@@ -386,13 +397,9 @@ unsigned short NadieMotorController::get2ByteCommandResult(uint8_t command) {
 	if (responseCrc == crc) {
 		return result;
 	} else {
-		ROS_ERROR("[NadieMotorController::get2ByteCommandResult] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
+		ROS_ERROR("[NadieMotorController::get2ByteCommandResult] invalid CRC expected: 0x%02X, got: 0x%02X", crc, responseCrc);
+		throw new TRoboClawException("[NadieMotorController::get2ByteCommandResult] INVALID CRC");
 	}
-
-	ROS_ERROR("[NadieMotorController::get2ByteCommandResult] Expected CRC of: 0x%X, but got: 0x%X",
-	    int(crc),
-	    int(responseCrc));
-	throw new TRoboClawException("[NadieMotorController::get2ByteCommandResult] INVALID CRC");
 }
 
 
@@ -405,6 +412,26 @@ NadieMotorController::TMotorCurrents NadieMotorController::getMotorCurrents() {
 			unsigned long currentPair = getUlongCommandResult(kGETCURRENTS);
 			result.m1Current = ((int16_t) (currentPair >> 16)) * 0.010;
 			result.m2Current = ((int16_t) (currentPair & 0xFFFF)) * 0.010;
+			if (result.m1Current > maxM1Current_) {
+				motorAlarms_ |= kM1_OVER_CURRENT_ALARM;
+				ROS_ERROR("[NadieMotorController::getMotorCurrents] Moter 1 over current. Max allowed: %6.3f, found: %6.3f",
+						  maxM1Current_,
+						  result.m1Current);
+				stop();
+			} else {
+				motorAlarms_ &= ~kM1_OVER_CURRENT_ALARM;
+			}
+
+			if (result.m2Current > maxM2Current_) {
+				motorAlarms_ |= kM2_OVER_CURRENT_ALARM;
+				ROS_ERROR("[NadieMotorController::getMotorCurrents] Moter 2 over current. Max allowed: %6.3f, found: %6.3f",
+						  maxM2Current_,
+						  result.m2Current);
+				stop();
+			} else {
+				motorAlarms_ &= ~kM2_OVER_CURRENT_ALARM;
+			}
+
 			return result;
 		} catch (TRoboClawException* e) {
 			ROS_ERROR("[NadieMotorController::getMotorCurrents] Exception: %s, retry number: %d", e->what(), retry);
@@ -442,7 +469,7 @@ NadieMotorController::TPIDQ NadieMotorController::getPIDQ(uint8_t whichMotor) {
 			if (responseCrc == crc) {
 				return result;
 			} else {
-				ROS_ERROR("[NadieMotorController::getPIDQ] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
+				ROS_ERROR("[NadieMotorController::getPIDQ] invalid CRC expected: 0x%2X, got: 0x%2X", crc, responseCrc);
 			}
 		} catch (TRoboClawException* e) {
 			ROS_ERROR("[NadieMotorController::getPIDQ] Exception: %s, retry number: %d", e->what(), retry);
@@ -481,7 +508,7 @@ float NadieMotorController::getTemperature() {
 			if (responseCrc == crc) {
 				return result / 10.0;
 			} else {
-				ROS_ERROR("[NadieMotorController::getTemperature] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
+				ROS_ERROR("[NadieMotorController::getTemperature] invalid CRC expected: 0x%2X, got: 0x%2X", crc, responseCrc);
 			}
 		} catch (TRoboClawException* e) {
 			ROS_ERROR("[NadieMotorController::getTemperature] Exception: %s, retry number: %d", e->what(), retry);
@@ -522,11 +549,9 @@ unsigned long NadieMotorController::getUlongCommandResult(uint8_t command) {
 	responseCrc |= datum;
 	if (responseCrc == crc) {
 		return result;
-	} else {
-		ROS_ERROR("[NadieMotorController::getUlongCommandResult] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
 	}
 
-	ROS_ERROR("[NadieMotorController::getUlongCommandResult] Expected CRC of: 0x%X, but got: 0x%X",
+	ROS_ERROR("[NadieMotorController::getUlongCommandResult] Expected CRC of: 0x%02X, but got: 0x%02X",
 	    int(crc),
 	    int(responseCrc));
 	throw new TRoboClawException("[NadieMotorController::getUlongCommandResult] INVALID CRC");
@@ -604,11 +629,9 @@ int32_t NadieMotorController::getVelocityResult(uint8_t command) {
 	responseCrc |= datum;
 	if (responseCrc == crc) {
 		return result;
-	} else {
-		ROS_ERROR("[NadieMotorController::getVelocityResult] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
 	}
 
-	ROS_ERROR("[NadieMotorController::getVelocityResult] Expected CRC of: 0x%X, but got: 0x%X",
+	ROS_ERROR("[NadieMotorController::getVelocityResult] Expected CRC of: 0x%02X, but got: 0x%02X",
 		int(crc),
 	    int(responseCrc));
 	throw new TRoboClawException("[NadieMotorController::getVelocityResult] INVALID CRC");
@@ -660,7 +683,7 @@ std::string NadieMotorController::getVersion() {
 					if (responseCrc == crc) {
 						return version.str();
 					} else {
-						ROS_ERROR("[NadieMotorController::getErrorStatus] invalid CRC expected: 0x%4X, got: 0x%4X", crc, responseCrc);
+						ROS_ERROR("[NadieMotorController::getVersion] invalid CRC expected: 0x%02X, got: 0x%02X", crc, responseCrc);
 					}
 				} else {
 					version << (char) datum;
@@ -764,51 +787,6 @@ void NadieMotorController::publishStatus() {
 	nadie_control::RoboClawStatus roboClawStatus;
     static uint32_t sequenceCount = 0;
 	try {
-		// uint8_t errorStatus = getErrorStatus();
-		// roboClawStatus.errorStatus = errorStatus;
-		// roboClawStatus.stickyErrorStatus |= errorStatus;
-		// if (errorStatus == 0) roboClawStatus.errorString = "normal";
-		// else {
-		// 	std::stringstream errorMessage;
-		// 	if (errorStatus & kLOGICBATTERYLOW) {
-		// 		errorMessage << "[Logic Battery Low] ";
-		// 	}
-
-		// 	if (errorStatus & kLOGICBATTERYHIGH) {
-		// 		errorMessage << "[Logic Battery High] ";
-		// 	}
-
-		// 	if (errorStatus & kMAINBATTERYLOW) {
-		// 		errorMessage << "[Main Battery Low] ";
-		// 	}
-
-		// 	if (errorStatus & kMAINBATTERYHIGH) {
-		// 		errorMessage << "[Main Battery High] ";
-		// 	}
-
-		// 	if (errorStatus & kTEMPERATURE) {
-		// 		errorMessage << "[Temperature] ";
-		// 	}
-
-		// 	if (errorStatus & kESTOP) {
-		// 		errorMessage << "[E-Stop] ";
-		// 	}
-
-		// 	if (errorStatus & kM2OVERCURRENT) {
-		// 		errorMessage << "[M2 OverCurrent] ";
-		// 	}
-
-		// 	if (errorStatus & kM1OVERCURRENT) {
-		// 		errorMessage << "[M1 OverCurrent] ";
-		// 	}
-
-		// 	if (errorStatus & 0xFF00) {
-		// 		errorMessage << "[INVALID EXTRA STATUS BITS]";
-		// 	}
-
-		// 	roboClawStatus.errorString = errorMessage.str();
-		// }
-
 		roboClawStatus.logicBatteryVoltage = getLogicBatteryLevel();
 		roboClawStatus.mainBatteryVoltage = getMainBatteryLevel();
 		TMotorCurrents motorCurrents = getMotorCurrents();
@@ -843,9 +821,28 @@ void NadieMotorController::publishStatus() {
 		
 		roboClawStatus.currentM1Speed = getVelocity(kGETM1SPEED);
 		roboClawStatus.currentM2Speed = getVelocity(kGETM2SPEED);
+
+		roboClawStatus.errorString = getErrorString();
 		
 		statusPublisher_.publish(roboClawStatus);
 
+		if (motorAlarms_ != 0) {
+			if (motorAlarms_ & kM1_OVER_CURRENT) {
+				ROS_ERROR("[NadieMotorController::publishStatus] M1_OVER_CURRENT");
+			}
+
+			if (motorAlarms_ & kM2_OVER_CURRENT) {
+				ROS_ERROR("[NadieMotorController::publishStatus] M2_OVER_CURRENT");
+			}
+
+			if (motorAlarms_ & kM1_OVER_CURRENT_ALARM) {
+				ROS_ERROR("[NadieMotorController::publishStatus] M1_OVER_CURRENT_ALARM");
+			}
+
+			if (motorAlarms_ & kM2_OVER_CURRENT_ALARM) {
+				ROS_ERROR("[NadieMotorController::publishStatus] M2_OVER_CURRENT_ALARM");
+			}
+		}
 	} catch (TRoboClawException* e) {
 		ROS_ERROR("[NadieMotorController::roboClawStatusPublisher] Exception: %s", e->what());
 	} catch (...) {
@@ -892,7 +889,15 @@ uint8_t NadieMotorController::readByteWithTimeout() {
 			throw TRoboClawException("[NadieMotorController::readByteWithTimeout] Failed to read 1 byte");
 		}
 
-		// ROS_INFO("..> char: %c 0x%2X <--", buffer[0], buffer[0]);
+		static const bool kDEBUG_READBYTE = false;
+		if (kDEBUG_READBYTE) {
+			if ((buffer[0] < 0x21) || (buffer[0] > 0x7F)) {
+				ROS_INFO("..> char: ?? 0x%02X <--", buffer[0]);
+			} else {
+				ROS_INFO("..> char: %c  0x%02X <--", buffer[0], buffer[0]);
+			}
+		}
+
 		return buffer[0];
 	} else {
 		ROS_ERROR("[NadieMotorController::readByteWithTimeout] Unhandled case");
@@ -971,6 +976,7 @@ void NadieMotorController::stop() {
 				  , kMIXEDSPEED
 				  , SetDWORDval(0)
 				  , SetDWORDval(0));
+			ROS_INFO("[NadieMotorController::stop] Stop requested");//#####
 			return;
 		} catch (TRoboClawException* e) {
 			ROS_ERROR("[NadieMotorController::stop] Exception: %s, retry number: %d", e->what(), retry);
@@ -1019,6 +1025,11 @@ void NadieMotorController::updateCrc(uint16_t& crc, uint8_t data) {
 
 
 void NadieMotorController::write(const ros::Time& time, const ros::Duration& period) {
+	if (motorAlarms_ != 0) {
+		ROS_ERROR("[NadieMotorController::write] MOTOR ALARM -- motor stop");
+		stop();
+	}
+
 	int retry;
 	int32_t leftMaxDistance;
 	int32_t rightMaxDistance;
@@ -1064,6 +1075,7 @@ void NadieMotorController::write(const ros::Time& time, const ros::Duration& per
 
 void NadieMotorController::writeByte(uint8_t byte) {
 	ssize_t result = ::write(clawPort_, &byte, 1);
+	//##### ROS_INFO("--> write: 0x%02X", byte); //####
 	if (result != 1) {
 	  	ROS_ERROR("[NadieMotorController::writeByte] Unable to write one byte, result: %d, errno: %d)", (int) result,  errno);
 		restartPort();
