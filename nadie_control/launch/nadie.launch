@@ -23,6 +23,7 @@ SOFTWARE.
   <arg name="do_amcl" default="true" />
   <arg name="do_arduino" default="false" />
   <arg name="do_fiducial" default="true" />
+  <arg name="do_imu" default="true" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
   <arg name="do_nadie_motor" default="true" />
@@ -67,6 +68,20 @@ SOFTWARE.
       if="$(arg do_lidar)"
       file="$(find nadie_control)/launch/neato_lidar.launch"
       />
+    
+    <!-- Launch the IMU -->
+    <node 
+      if="$(arg do_imu)"
+      ns="imu" 
+      name="imu_node"
+      pkg="imu_bno055_i2c"
+      type="imu_bno055_i2c_node"
+      respawn="true"
+      respawn_delay="2">
+        <param name="device" type="string" value="/dev/i2c-5"/>
+        <param name="address" type="int" value="40"/> <!-- 0x28 == 40 is the default for BNO055 -->
+        <param name="frame_id" type="string" value="imu"/>
+    </node>
 
     <!-- Load the map -->
     <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
