@@ -7,6 +7,8 @@
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
+#include <string>
+#include <tf/transform_datatypes.h>
 #include <visualization_msgs/Marker.h>
 
 class Calibrate {
@@ -55,6 +57,9 @@ private:
     void imu_raw_callback(const sensor_msgs::Imu::ConstPtr& msg);
     void imu_status_callback(const diagnostic_msgs::DiagnosticStatus::ConstPtr& msg);
     void odometry_callback(const nav_msgs::Odometry::ConstPtr& msg);
+
+    std::string eulerString(const sensor_msgs::Imu_<std::allocator<void> >::_orientation_type& q, u_long counter);
+    void report();
 
 };
 

@@ -1,6 +1,10 @@
 #include <boost/bind.hpp>
 #include <ros/console.h>
+#include <iomanip>      // std::setprecision
+#include <iostream>
 #include "nadie_control/calibrate.h"
+#include <string>
+#include <sstream>
 
 Calibrate::Calibrate(ros::NodeHandle& nh)
 	: last_ficucial_pose_msg_counter_(0)
@@ -80,7 +84,70 @@ void Calibrate::odometry_callback(const nav_msgs::Odometry::ConstPtr& msg) {
 }
 
 
+std::string Calibrate::eulerString(const sensor_msgs::Imu_<std::allocator<void> >::_orientation_type& q, u_long counter) {
+    tf::Quaternion qq(q.x, q.y, q.z, q.w);
+    std::stringstream s;
+    s << "angle: " << std::setprecision(2);
+    if (counter > 0) {
+        s << tf::getYaw(qq);
+
+        s << std::setprecision(4);
+        s << ", QUAT x: " << q.x;
+        s << ", y: " << q.y;
+        s << ", z: " << q.z;
+        s << ", w: " << q.w;
+    } else {
+        s << "NO DATA";
+    }
+    
+    return s.str();
+}
+
+
+void Calibrate::report() {
+    std::stringstream s;
+    s << std::endl << "IMU calib status: ";
+    if (last_imu_status_msg_counter_ > 0) {
+        //s << last_imu_status_msg_.??? ;
+    } else {
+        s << "??";
+    }
+
+    s << std::endl;
+
+    s << "  fiducial angle: " << eulerString(last_ficucial_pose_msg_.pose.pose.orientation, last_ficucial_pose_msg_counter_) << std::endl;
+    
+    if (last_ficucial_pose_msg_counter_ > 0) {
+        s << "  fiducial position: x: " << std::setprecision(2) << last_ficucial_pose_msg_.pose.pose.position.x;
+        s << ", y: " << last_ficucial_pose_msg_.pose.pose.position.y;
+        s << ", z: " << last_ficucial_pose_msg_.pose.pose.position.z;
+    } else {
+        s << "  fiducial position: NO DATA";
+    }
+
+    s << std::endl;
+
+    s << "  IMU data angle: " << eulerString(last_imu_data_msg_.orientation, last_imu_data_msg_counter_) << std::endl;
+
+    s << "  IMU raw angle: " << eulerString(last_imu_raw_msg_.orientation, last_imu_raw_msg_counter_) << std::endl;
+
+    if (last_imu_mag_msg_counter_ > 0) {
+        s << "  IMU mag: x: " << last_imu_mag_msg_.magnetic_field.x;
+        s << "  , y: " << last_imu_mag_msg_.magnetic_field.y;
+        s << "  , z: " << last_imu_mag_msg_.magnetic_field.z;
+    } else {
+        s << "  IMU mag: NO DATA";
+    }
+    s << std::endl;
+
+
+    ROS_INFO_STREAM("[Calibrate::report] "  << s.str());
+}
+
+
+
 void Calibrate::run() {
+    report();
 }
 
 
