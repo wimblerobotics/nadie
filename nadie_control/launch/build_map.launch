@@ -1,0 +1,52 @@
+<launch> 
+<!--
+Copyright (c) 2018 Michael Wimble
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+  <arg name="do_gmapping" default="true" />
+  <arg name="do_lidar" default="true" />
+  <arg name="do_nadie_motor" default="true" />
+  <arg name="do_move_base" default="true" />
+
+  <arg name="robot_namespace" default="/nadie" />
+
+  <group ns="$(arg robot_namespace)">
+  
+    <!-- Bring up the LIDAR -->
+    <include
+      if="$(arg do_lidar)"
+      file="$(find nadie_control)/launch/neato_lidar.launch"
+    />
+    
+    <!-- Bring up gmapping -->
+    <node
+        if="$(arg do_gmapping)" 
+        name="gmaping"
+        output="screen" 
+        pkg="gmapping"
+        type="slam_gmapping"
+    />
+
+    <!-- Bring up the motor stack -->
+    <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie_motor.launch" />
+
+  </group>
+
+ </launch> 

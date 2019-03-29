@@ -1,0 +1,6 @@
+<launch>
+  <arg name="do_map_server" default="true" />
+
+  <node if="$(arg do_map_server)" name="map_server" pkg="map_server" type="map_server" />
+
+</launch>
