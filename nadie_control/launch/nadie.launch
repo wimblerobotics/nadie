@@ -38,6 +38,12 @@ SOFTWARE.
     file="$(find nadie_control)/launch/pibota.launch"
     >
   </include>
+  <node
+    unless="$(arg do_fiducial)"
+    name="TestMessage"
+    pkg="nadie_control"
+    type="mikeWasHere.sh"
+    />
  
   <include
     if="$(arg do_wr_aruco)"

@@ -3,10 +3,10 @@
 
 <!--    env-loader="/opt/ros/kinetic/env.sh" -->
 <machine
-    address="192.168.0.103" 
+    address="192.168.2.104" 
     default="false"
-    env-loader="/home/wimble/catkin_ws/devel/env.sh"
-    name="machine_pibota"
+    env-loader="/home/wimble/nadie_ws/devel/env.sh"
+    name="machine_pibotb"
     user="wimble"
 />
 
@@ -19,7 +19,7 @@
 <!-- Start the aruco marker node -->
 <node 
     if="$(arg do_wr_aruco)"
-    machine="machine_pibota"
+    machine="machine_pibotb"
     name="wr_aruco_node" 
     pkg="wr_aruco"  
     type="wr_aruco_node" 

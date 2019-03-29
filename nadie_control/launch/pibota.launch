@@ -1,23 +1,25 @@
 <launch>
-  <arg name="do_aruco_detect" value="false" />
-  <arg name="do_compressed_to_raw_video" value="false" />
+  <arg name="do_aruco_detect" value="true" />
+  <arg name="do_compressed_to_raw_video" value="true" />
   <arg name="do_fiducial" value="true" />
-  <arg name="do_fiducial_slam" value="false" />
+  <arg name="do_fiducial_slam" value="true" />
   <arg name="do_raspicam_node" value="true" />
-  <arg name="do_static_transform_publisher" value="false" />
+  <arg name="do_static_transform_publisher" value="true" />
 
   <!-- Fiducials -->
+  <!-- env-loader="/opt/ros/kinetic/env.sh" -->
   <!--group ns="pibota"-->
     <machine
-      address="192.168.0.103" 
+      address="192.168.2.104" 
       default="false"
-      env-loader="/opt/ros/kinetic/env.sh"
+      env-loader="/home/wimble/nadie_ws/devel/env.sh"
       name="machine_pibota"
       user="wimble"
     />
 
     <arg name="base_frame" default="base_link"/>
-    <arg name="camera" default="/raspicam_node"/>
+    <!--arg name="camera" default="/raspicam_node"/-->
+    <arg name="camera" default=""/>
     <arg name="camera_frame_id" default="raspicam"/>
     <arg name="camera_id" default="0"/>
     <arg name="camera_name" default="camerav2_640x480"/>
@@ -90,14 +92,13 @@
       <param name="ignore_fiducials" value="$(arg ignore_fiducials)"/>
       <param name="fiducial_len_override" value="$(arg fiducial_len_override)"/>
       <remap from="/camera/compressed" 
-          to="$(arg camera)/$(arg image)/$(arg transport)"/>
-      <remap from="/camera_info" to="$(arg camera)/camera_info"/>
+          to="/raspicam_node/raw_image/compressed"/>
+      <remap from="/camera_info" to="/raspicam_node/camera_info"/>
     </node>
 
     <node 
       if="$(arg do_fiducial_slam)"
-      machine="machine_pibota" 
-      name="fiducial_slam" 
+       name="fiducial_slam" 
       output="screen" 
       pkg="fiducial_slam" 
       respawn="false"
@@ -112,7 +113,7 @@
       <param name="odom_frame" value="$(arg odom_frame)" />
       <param name="publish_6dof_pose" value="$(arg publish_6dof_pose)" />
       <param name="sum_error_in_quadrature" value="true" />
-      <remap from="/camera_info" to="$(arg camera)/camera_info" />
+      <remap from="/camera_info" to="/raspicam_node/camera_info" />
     </node>
 
     <node

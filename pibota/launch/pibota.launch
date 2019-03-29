@@ -5,14 +5,14 @@
   <arg name="do_fiducial_slam" value="false" />
   <arg name="do_raspicam_node" value="true" />
   <arg name="do_static_transform_publisher" value="false" />
-
+aaa
   <!-- Fiducials -->
-  <!--group ns="pibota"-->
+  <!--group ns="pibotb"-->
     <machine
-      address="192.168.0.103" 
+      address="192.168.2.104" 
       default="false"
-      env-loader="/home/wimble/catkin_ws/devel/env.sh"
-      name="machine_pibota"
+      env-loader="/home/wimble/nadie_ws/devel/env.sh"
+      name="machine_pibotb"
       user="wimble"
     />
 
@@ -41,7 +41,7 @@
     
     <node 
       if="$(arg do_raspicam_node)"
-      machine="machine_pibota"
+      machine="machine_pibotb"
       name="raspicam_node" 
       output="screen" 
       pkg="raspicam_node" 
@@ -63,7 +63,7 @@
 
     <node 
       if="$(arg do_compressed_to_raw_video)"
-      machine="machine_pibota"
+      machine="machine_pibotb"
       name="compressed_to_raw_video" 
       output="screen"
       pkg="image_transport" 
@@ -75,7 +75,7 @@
 
     <node 
       if="$(arg do_aruco_detect)"
-      machine="machine_pibota"
+      machine="machine_pibotb"
       name="aruco_detect"
       output="screen" 
       pkg="aruco_detect"
@@ -96,7 +96,7 @@
 
     <node 
       if="$(arg do_fiducial_slam)"
-      machine="machine_pibota" 
+      machine="machine_pibotb" 
       name="fiducial_slam" 
       output="screen" 
       pkg="fiducial_slam" 
@@ -117,7 +117,7 @@
 
     <node
       if="$(arg do_static_transform_publisher)"
-      machine="machine_pibota"
+      machine="machine_pibotb"
       name="raspicam_tf"
       output="screen" 
       pkg="tf"
