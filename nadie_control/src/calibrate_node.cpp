@@ -14,9 +14,11 @@ int main(int argc, char** argv) {
 	}
 
 	ROS_INFO("[calibrate_node] starting loop");
+    ros::Rate r(10);
 	while (ros::ok()) {
 		calibrate.run();
         ros::spinOnce();
+        r.sleep();
 	}
 
 	ROS_INFO("[calibrate_node] shutdown");

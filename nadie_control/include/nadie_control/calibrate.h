@@ -20,6 +20,13 @@ public:
 	void run();
 
 private:
+    typedef enum STATE {
+        kDONE,
+        kFORWARD,
+        kROTATE_RIGHT,
+        KSTART
+    } STATE;
+
 	// ROS Parameters.
 
 	// ROS variables;
@@ -48,6 +55,13 @@ private:
     diagnostic_msgs::DiagnosticStatus last_imu_status_msg_;
     u_long last_odometry_msg_counter_;
     nav_msgs::Odometry last_odometry_msg_;
+
+    // Class variables.
+    double goal_x_;
+    double goal_z_;
+    nav_msgs::Odometry start_odometry_;
+    bool start_odometry_found_;
+    STATE state_;
 
     // Functions.
     void fiducial_pose_callback(const geometry_msgs::PoseWithCovarianceStampedConstPtr& msg);
