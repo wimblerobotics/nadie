@@ -6,6 +6,7 @@
 #include "hardware_interface/joint_command_interface.h"
 #include "hardware_interface/joint_state_interface.h"
 #include "motor_controller.h"
+#include "nadie_control/ResetEncoders.h"
 
 class NadieMotorController : public MotorController {
 public:
@@ -99,7 +100,8 @@ private:
 	};
 
 	// Enum values without a 'k' prefix have not been used in code.
-	enum {M1FORWARD = 0,
+	typedef enum ROBOCLAW_COMMAND{
+		M1FORWARD = 0,
 	    M1BACKWARD = 1,
 	    SETMINMB = 2,
 	    SETMAXMB = 3,
@@ -119,6 +121,8 @@ private:
 	    kGETM2SPEED = 19,
 	    RESETENC = 20,
 	    kGETVERSION = 21,
+		kSETM1ENCODER = 22,
+		kSETM2ENCODER = 23,
 	    kGETMBATT = 24,
 	    kGETLBATT = 25,
 	    SETMINLB = 26,
@@ -155,7 +159,8 @@ private:
 	    kGETTEMPERATURE = 82,
 	    kGETERROR = 90,
 	    WRITENVM = 94,
-		GETM1MAXCURRENT = 135};
+		GETM1MAXCURRENT = 135
+		} ROBOCLAW_COMMAND;
 
 	int clawPort_;							// Unix file descriptor for RoboClaw connection.
 	double controlLoopHz_;					// Loop rate for control loop.
@@ -191,6 +196,7 @@ private:
 	static const double kBILLION;
 
 	ros::NodeHandle nh_;
+	ros::ServiceServer resetEncodersService_;
 
 	urdf::Model *urdf_model_;
 
@@ -241,6 +247,10 @@ private:
 	// Publish the RoboClaw status.
 	void publishStatus();
 
+	// Reset the encoders.
+	bool resetEncoders(nadie_control::ResetEncoders::Request &request,
+                       nadie_control::ResetEncoders::Response &response);
+					   
 	// Set the PID for motor M1.
 	void setM1PID(float p, float i, float d, uint32_t qpps);
 
@@ -255,6 +265,8 @@ private:
 
 	// Write a stream of bytes to the device.
 	void writeN(bool sendCRC, uint8_t cnt, ...);
+
+	void SetEncoder(ROBOCLAW_COMMAND command, long value);
 };
 
 #endif

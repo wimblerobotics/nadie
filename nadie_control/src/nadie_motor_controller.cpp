@@ -130,6 +130,7 @@ NadieMotorController::NadieMotorController(ros::NodeHandle &nh, urdf::Model *urd
 	expectedControlLoopDuration_ = ros::Duration(1 / controlLoopHz_);
 
 	statusPublisher_ = nh_.advertise<nadie_control::RoboClawStatus>("/RoboClawStatus", 1);
+	resetEncodersService_ = nh_.advertiseService("reset_encoders", &NadieMotorController::resetEncoders, (NadieMotorController*) this);
 
 	if (!simulating) {
 		initHardware();
@@ -906,11 +907,49 @@ uint8_t NadieMotorController::readByteWithTimeout() {
 }
 
 
+bool NadieMotorController::resetEncoders(nadie_control::ResetEncoders::Request &request,
+                       					 nadie_control::ResetEncoders::Response &response) {
+	try {
+		SetEncoder(kSETM1ENCODER, request.left);
+		SetEncoder(kSETM2ENCODER, request.right);
+		response.ok = true;
+	} catch (...) {
+		ROS_ERROR("[NadieMotorController::resetEncoders] uncaught exception");
+	}
+	return true;
+}
+
+
 void NadieMotorController::restartPort() {
     close(clawPort_);
     usleep(200000);
     openPort();
 }
+
+void NadieMotorController::SetEncoder(ROBOCLAW_COMMAND command, long value) {
+	int retry;
+
+	if ((command != kSETM1ENCODER) && (command != kSETM2ENCODER)) {
+		ROS_ERROR("[NadieMotorController::SetEncoder] Invalid command value");
+		throw new TRoboClawException("[NadieMotorController::SetEncoder] Invalid command value");
+	}
+
+	for (retry = 0; retry < maxCommandRetries_; retry++) {
+		try {
+			writeN(true, 6, portAddress_, command, 
+				   SetDWORDval(value));
+			return;
+		} catch (TRoboClawException* e) {
+			ROS_ERROR("[NadieMotorController::SetEncoder] Exception: %s, retry number: %d",  e->what(), retry);
+		} catch (...) {
+		    ROS_ERROR("[NadieMotorController::SetEncoder] Uncaught exception !!!");
+		}
+	}
+
+	ROS_ERROR("[NadieMotorController::SetEncoder] RETRY COUNT EXCEEDED");
+	throw new TRoboClawException("[NadieMotorController::SetEncoder] RETRY COUNT EXCEEDED");
+}
+
 
 
 void NadieMotorController::setM1PID(float p, float i, float d, uint32_t qpps) {

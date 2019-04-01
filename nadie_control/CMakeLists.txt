@@ -40,6 +40,11 @@ add_message_files(
   RoboClawStatus.msg
 )
 
+add_service_files(
+  FILES
+  ResetEncoders.srv
+)
+
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
