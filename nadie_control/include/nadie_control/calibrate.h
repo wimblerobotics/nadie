@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
+#include <math.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/MagneticField.h>
@@ -17,14 +18,14 @@ public:
 
 	bool init();
 
-	void run();
+	bool run();
 
 private:
     typedef enum STATE {
         kDONE,
         kFORWARD,
         kROTATE_RIGHT,
-        KSTART
+        KSTART,
     } STATE;
 
 	// ROS Parameters.
@@ -33,6 +34,7 @@ private:
 	ros::NodeHandle& nh_;					// ROS node handle;
 	ros::Time prev_;						// Previous loop time, for computing durations.
  
+    ros::Publisher cmd_vel_publisher_;          // Publisher for geometry_msgs/Twist
     ros::Subscriber fiducial_pose_subscriber_;  // Subscriber to geometry_msgs/PoseWithCovarianceStamped
     ros::Subscriber fiducials_subscriber_;      // Subscriber to visualization_msgs/Marker
     ros::Subscriber imu_data_subscriber_;       // Subscriber to imu/data message.
@@ -59,6 +61,8 @@ private:
     // Class variables.
     double goal_x_;
     double goal_z_;
+    geometry_msgs::PoseWithCovarianceStamped start_fiducial_;
+    bool start_fiducial_found_;
     nav_msgs::Odometry start_odometry_;
     bool start_odometry_found_;
     STATE state_;
@@ -70,6 +74,7 @@ private:
     void imu_mag_callback(const sensor_msgs::MagneticField::ConstPtr& msg);
     void imu_raw_callback(const sensor_msgs::Imu::ConstPtr& msg);
     void imu_status_callback(const diagnostic_msgs::DiagnosticStatus::ConstPtr& msg);
+    double normalizeRadians(double theta);
     void odometry_callback(const nav_msgs::Odometry::ConstPtr& msg);
 
     std::string eulerString(const sensor_msgs::Imu_<std::allocator<void> >::_orientation_type& q, u_long counter);

@@ -58,7 +58,7 @@ diff_drive_controller:
   wheel_radius : 0.10169
 
   # Wheel separation and radius multipliers
-  wheel_separation_multiplier: 0.95 # default: 1.0
+  wheel_separation_multiplier: 0.702318932875916 # 0.95 # default: 1.0
   wheel_radius_multiplier    : 1.0 # default: 1.0
 
   # Velocity commands timeout [s], default 0.5
@@ -77,11 +77,11 @@ diff_drive_controller:
     x:
       has_velocity_limits    : false
       max_velocity           : 0.5
-      has_acceleration_limits: false
+      has_acceleration_limits: true
       max_acceleration       : 1.0
   angular:
     z:
       has_velocity_limits    : false
       max_velocity           : 1.0
-      has_acceleration_limits: false
+      has_acceleration_limits: true
       max_acceleration       : 1.0
