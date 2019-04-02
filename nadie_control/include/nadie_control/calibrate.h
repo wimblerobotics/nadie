@@ -31,8 +31,9 @@ private:
 	// ROS Parameters.
 
 	// ROS variables;
-	ros::NodeHandle& nh_;					// ROS node handle;
-	ros::Time prev_;						// Previous loop time, for computing durations.
+	ros::NodeHandle& nh_;					    // ROS node handle;
+	ros::Time prev_;						    // Previous loop time, for computing durations.
+    ros::ServiceClient resetEncodersService_;   // For reseting the encoders.
  
     ros::Publisher cmd_vel_publisher_;          // Publisher for geometry_msgs/Twist
     ros::Subscriber fiducial_pose_subscriber_;  // Subscriber to geometry_msgs/PoseWithCovarianceStamped
@@ -79,6 +80,7 @@ private:
 
     std::string eulerString(const sensor_msgs::Imu_<std::allocator<void> >::_orientation_type& q, u_long counter);
     void report();
+    void resetEncoders();
 
 };
 

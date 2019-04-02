@@ -5,9 +5,11 @@
 #include <iomanip>      // std::setprecision
 #include <iostream>
 #include "nadie_control/calibrate.h"
+#include "nadie_control/ResetEncoders.h"
 #include <ros/console.h>
 #include <string>
 #include <sstream>
+#include <unistd.h>
 #include <vector>
 
 Calibrate::Calibrate(ros::NodeHandle& nh)
@@ -25,6 +27,7 @@ Calibrate::Calibrate(ros::NodeHandle& nh)
     , start_fiducial_found_(false)
     , start_odometry_found_(false)
     , state_(KSTART) {
+    resetEncodersService_ = nh.serviceClient<nadie_control::ResetEncoders>("reset_encoders");
     cmd_vel_publisher_ = nh.advertise<geometry_msgs::Twist>("/nadie/diff_drive_controller/cmd_vel", 1);
     fiducial_pose_subscriber_ = nh.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/fiducial_pose", 10, boost::bind(&Calibrate::fiducial_pose_callback, this, _1));
     fiducials_subscriber_ = nh.subscribe<visualization_msgs::Marker>("/fiducials", 10, boost::bind(&Calibrate::fiducials_callback, this, _1));
@@ -151,7 +154,7 @@ void Calibrate::report() {
         }
     }
 
-    s << "  fiducial angle: " << eulerString(last_ficucial_pose_msg_.pose.pose.orientation, last_ficucial_pose_msg_counter_) << std::endl;
+    s << "  fiducial angle: " << std::setprecision(2) << eulerString(last_ficucial_pose_msg_.pose.pose.orientation, last_ficucial_pose_msg_counter_) << std::endl;
     
     if (last_ficucial_pose_msg_counter_ > 0) {
         s << "  fiducial position: x: " << std::setprecision(2) << last_ficucial_pose_msg_.pose.pose.position.x;
@@ -163,9 +166,9 @@ void Calibrate::report() {
 
     s << std::endl;
 
-    s << "  IMU data angle: " << eulerString(last_imu_data_msg_.orientation, last_imu_data_msg_counter_) << std::endl;
+    s << "  IMU data angle: " << std::setprecision(4) << eulerString(last_imu_data_msg_.orientation, last_imu_data_msg_counter_) << std::endl;
 
-    s << "  IMU raw angle: " << eulerString(last_imu_raw_msg_.orientation, last_imu_raw_msg_counter_) << std::endl;
+    s << "  IMU raw angle: " << std::setprecision(2) << eulerString(last_imu_raw_msg_.orientation, last_imu_raw_msg_counter_) << std::endl;
 
     if (last_imu_mag_msg_counter_ > 0) {
         s << "  IMU mag: x: " << last_imu_mag_msg_.magnetic_field.x;
@@ -176,7 +179,7 @@ void Calibrate::report() {
     }
     s << std::endl;
 
-    s << "  ODOM angle: " << eulerString(last_odometry_msg_.pose.pose.orientation, last_odometry_msg_counter_) << std::endl;
+    s << "  ODOM angle: " << std::setprecision(2) << eulerString(last_odometry_msg_.pose.pose.orientation, last_odometry_msg_counter_) << std::endl;
     if (last_odometry_msg_counter_ > 0) {
         s << "  ODOM pos x: " << std::setprecision(4) 
         << last_odometry_msg_.pose.pose.position.x 
@@ -213,7 +216,7 @@ bool Calibrate::run() {
                           start_odometry_.pose.pose.orientation.w);
         start_yaw = tf::getYaw(qq);
         start_goal_string << std::setprecision(4);
-        start_goal_string << "START x: " << start_odometry_.pose.pose.position.x;
+        start_goal_string << "start x: " << start_odometry_.pose.pose.position.x;
         start_goal_string << ", y: " << start_odometry_.pose.pose.position.y;
         start_goal_string << ", z: " << start_odometry_.pose.pose.position.z;
         start_goal_string << ", start_yaw: " << start_yaw << "r (" << ((start_yaw * 360) / (2 * M_PI)) << "d)";
@@ -223,7 +226,7 @@ bool Calibrate::run() {
 
     ROS_INFO_STREAM("[Calibrate::run] state: "
                     << state_string
-                    << ", start: " << start_goal_string.str());
+                    << start_goal_string.str());
 
     switch (state_) {
         case kDONE:
@@ -253,6 +256,7 @@ bool Calibrate::run() {
                     cmd_vel.linear.x = 0.0;
                     cmd_vel.angular.z = 0.0;
                     cmd_vel_publisher_.publish(cmd_vel);
+                    resetEncoders();
                 }
             }
 
@@ -267,7 +271,7 @@ bool Calibrate::run() {
                                   last_odometry_msg_.pose.pose.orientation.w);
                 double current_yaw = tf::getYaw(qq);
                 double goal_z = normalizeRadians(start_yaw + goal_z_);
-                double goal_z_to_go = normalizeRadians(abs(current_yaw - goal_z));
+                double goal_z_to_go = normalizeRadians(fabs(current_yaw - goal_z));
                 ROS_INFO("[Calibrate::run] kROTATE_RIGHT Goal z: %7.4fr (%7.4fd), current z: %7.4fr still need to rotate  %7.4fr (%7.4fd)",
                          goal_z, 
                          ((goal_z * 360) / (2 * M_PI)), 
@@ -275,7 +279,7 @@ bool Calibrate::run() {
                          goal_z_to_go, 
                          ((goal_z_to_go * 360) / (2 * M_PI)));
                 
-                if (goal_z_to_go > 0.04) {
+                if (fabs(goal_z_to_go) > 0.04) {
                     ROS_INFO("[Calibrate::run] kROTATE_RIGHT still need to rotate");
                     geometry_msgs::Twist cmd_vel;
                     cmd_vel.linear.x = 0.0;
@@ -313,6 +317,7 @@ bool Calibrate::run() {
             break;
         
         case KSTART:
+            resetEncoders();
             if (last_odometry_msg_counter_ > 0) {
                 ROS_INFO("[Calibrate::run] Starting. Change goal to kFORWARD");
                 state_ = kFORWARD;
@@ -332,3 +337,14 @@ bool Calibrate::run() {
 }
 
 
+void Calibrate::resetEncoders() {
+    try {
+        nadie_control::ResetEncoders values;
+        values.request.left = 0;
+        values.request.right = 0;
+        resetEncodersService_.call(values);
+        usleep(250000);
+    } catch (...) {
+        ROS_ERROR("[Calibrate::resetEncoders] uncaught exception");
+    }
+}
