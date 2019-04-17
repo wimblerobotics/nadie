@@ -1,6 +1,7 @@
 <launch>
   <arg name="do_map_server" default="true" />
-  <arg name="map_file" default="$(find snowberry_map)/maps/Snowberry.yaml"/>
+  <!--arg name="map_file" default="$(find snowberry_map)/maps/Snowberry.yaml"/-->
+  <arg name="map_file" default="$(find snowberry_map)/maps/map_20190416_1132.yaml"/>
 
   <node if="$(arg do_map_server)" name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 

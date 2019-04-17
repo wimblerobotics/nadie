@@ -22,7 +22,8 @@ SOFTWARE.
 -->
   <arg name="do_amcl" default="true" />
   <arg name="do_arduino" default="false" />
-  <arg name="do_fiducial" default="true" />
+  <arg name="do_fiducial" default="false" />
+  <arg name="do_gmapping" default="false" />
   <arg name="do_imu" default="true" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
@@ -35,16 +36,17 @@ SOFTWARE.
 
   <include
     if="$(arg do_fiducial)"
-    file="$(find nadie_control)/launch/pibota.launch"
+    file="$(find nadie_control)/launch/fiducial.launch"
     >
   </include>
-  <node
+
+   <node
     unless="$(arg do_fiducial)"
     name="TestMessage"
     pkg="nadie_control"
     type="mikeWasHere.sh"
-    />
- 
+  />
+
   <include
     if="$(arg do_wr_aruco)"
     file="$(find nadie_control)/launch/wr_aruco.launch"
@@ -91,6 +93,15 @@ SOFTWARE.
 
     <!-- Load the map -->
     <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
+
+    <node
+      if="$(arg do_gmapping)"
+      name="gmapping_node"
+      pkg="gmapping"
+      type="slam_gmapping"
+      respawn="false"
+    >
+    </node>
 
     <!-- Bring up AMCL -->
     <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/amcl.launch" />

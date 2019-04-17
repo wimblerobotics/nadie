@@ -12,17 +12,17 @@ gazebo_ros_control:
 
 motor_controller:
   control_loop_hz: 10.0
-  m1p: 1.58195
-  m1i: 0.24754
+  m1p: 12.40624
+  m1i: 3.94584
   m1d: 0.0
-  m1qpps: 11250
-  m2p: 1.51866
-  m2i: 0.23130
+  m1qpps: 937
+  m2p: 12.40624
+  m2i: 4.38229
   m2d: 0.0
-  m2qpps: 12375
+  m2qpps: 1312
   max_command_retries: 20
-  max_m1_current: 8
-  max_m2_current: 8
+  max_m1_current: 12
+  max_m2_current: 12
   max_seconds_uncommanded_travel: 0.5
   port_address: 128
 
@@ -31,8 +31,8 @@ motor_controller:
   # PI * 0.2032m dia = 0.638371627209446 meters / revolution
   # invert to get 1.566485660353301 revolution/meter
   # * 8384 pulses/revolution = 13133.415776402075584 pulses / meter
-  quad_pulses_per_meter: 13133 # 5236
-  quad_pulses_per_revolution: 8384  # 3200
+  quad_pulses_per_meter: 1566 #13133 # 5236
+  quad_pulses_per_revolution: 1000 # 8384  # 3200
   usb_device_name: /dev/ttyACM0
   vmin: 1
   vtime: 2
@@ -54,7 +54,7 @@ diff_drive_controller:
   # Wheel separation and diameter. These are both optional.
   # diff_drive_controller will attempt to read either one or both from the
   # URDF if not specified as a parameter
-  wheel_separation : 0.340
+  wheel_separation :  0.345 #0.335 #0.369 # 0.349 #0.340
   wheel_radius : 0.10169
 
   # Wheel separation and radius multipliers
