@@ -22,7 +22,6 @@ SOFTWARE.
 -->
   <arg name="do_amcl" default="true" />
   <arg name="do_arduino" default="false" />
-  <arg name="do_fiducial" default="false" />
   <arg name="do_gmapping" default="false" />
   <arg name="do_imu" default="true" />
   <arg name="do_lidar" default="true" />
@@ -30,29 +29,9 @@ SOFTWARE.
   <arg name="do_nadie_motor" default="true" />
   <arg name="do_move_base" default="true" />
   <arg name="do_rviz" default="false" />
-  <arg name="do_wr_aruco" default="false" />
 
   <arg name="robot_namespace" default="/nadie" />
 
-  <include
-    if="$(arg do_fiducial)"
-    file="$(find nadie_control)/launch/fiducial.launch"
-    >
-  </include>
-
-   <node
-    unless="$(arg do_fiducial)"
-    name="TestMessage"
-    pkg="nadie_control"
-    type="mikeWasHere.sh"
-  />
-
-  <include
-    if="$(arg do_wr_aruco)"
-    file="$(find nadie_control)/launch/wr_aruco.launch"
-    >
-  </include>
- 
   <group ns="$(arg robot_namespace)">
 
   
