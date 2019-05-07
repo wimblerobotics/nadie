@@ -1,6 +1,6 @@
 global_costmap:
   # always_send_full_costmap: false
-  global_frame: '/map'
+  global_frame: 'map'
   height: 6.0
   publish_frequency: 2.0
   robot_base_frame: 'base_link'
