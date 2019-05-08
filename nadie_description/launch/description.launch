@@ -25,8 +25,7 @@ SOFTWARE.
   <arg name="robot_namespace" default="" />
 
   <param name="$(arg robot_namespace)/robot_description" command="$(find xacro)/xacro '$(find nadie_description)/urdf/nadie.urdf.xacro'
-    --inorder
-    robot_namespace:=$(arg robot_namespace)
+ robot_namespace:=$(arg robot_namespace)
     " />
 
 </launch>

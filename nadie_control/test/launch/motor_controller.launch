@@ -7,7 +7,7 @@
 
 	    <param 
 	      name="/nadie/robot_description" 
-	      command="$(find xacro)/xacro --inorder $(find nadie_control)/test/urdf/nadie.xacro" />
+	      command="$(find xacro)/xacro $(find nadie_control)/test/urdf/nadie.xacro" />
 
 	    <!-- Load joint controller configurations from YAML file to parameter server -->
 	    <rosparam file="$(find nadie_control)/test/config/controller.yaml" command="load" ns="/" />
