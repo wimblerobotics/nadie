@@ -23,7 +23,7 @@ SOFTWARE.
   <arg name="do_amcl" default="true" />
   <arg name="do_arduino" default="false" />
   <arg name="do_gmapping" default="false" />
-  <arg name="do_imu" default="true" />
+  <arg name="do_imu" default="false" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="true" />
   <arg name="do_nadie_motor" default="true" />
