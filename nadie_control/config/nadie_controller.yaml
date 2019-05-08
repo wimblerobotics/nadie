@@ -33,7 +33,7 @@ motor_controller:
   # * 8384 pulses/revolution = 13133.415776402075584 pulses / meter
   quad_pulses_per_meter: 1566 #13133 # 5236
   quad_pulses_per_revolution: 1000 # 8384  # 3200
-  usb_device_name: /dev/ttyACM0
+  usb_device_name: /dev/roboclaw
   vmin: 1
   vtime: 2
   wheel_radius: 0.10169

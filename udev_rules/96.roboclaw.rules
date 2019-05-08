@@ -1,0 +1,2 @@
+KERNEL=="ttyACM*", ATTRS{idVendor}=="03eb", ATTRS{idProduct}=="2404", MODE:="0777", SYMLINK+="roboclaw"
+
