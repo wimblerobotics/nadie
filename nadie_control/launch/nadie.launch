@@ -29,6 +29,7 @@ SOFTWARE.
   <arg name="do_nadie_motor" default="true" />
   <arg name="do_move_base" default="true" />
   <arg name="do_rviz" default="false" />
+  <arg name="do_t265" default="true" />
 
   <arg name="robot_namespace" default="/nadie" />
 
@@ -94,6 +95,7 @@ SOFTWARE.
     <!-- Launch visualization in rviz --> 
     <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
 
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
   </group>
 
  </launch> 
