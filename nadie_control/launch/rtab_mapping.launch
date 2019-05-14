@@ -49,7 +49,7 @@ SOFTWARE.
  * <arg name="stereo"          default="false"/>
  
   <!-- Choose visualization -->
-  <arg name="rtabmapviz"              default="true" /> 
+  <arg name="rtabmapviz"              default="false" /> 
   <arg name="rviz"                    default="false" />
   
   <!-- Localization-only mode -->
@@ -85,7 +85,7 @@ SOFTWARE.
   <!-- RGB-D related topics -->
   <arg name="rgb_topic"               default="/camera/color/image_raw" /> <!-- ## -->
   <arg name="depth_topic"             default="/camera/depth/image_rect_raw" />  <!-- ## -->
-  <arg name="camera_info_topic"       default="/camera/depth/image_rect_raw" /> <!-- ## -->
+  <arg name="camera_info_topic"       default="/camera/depth/camera_info" /> <!-- ## -->
   <arg name="depth_camera_info_topic" default="$(arg camera_info_topic)" />
   
   <!-- stereo related topics -->
