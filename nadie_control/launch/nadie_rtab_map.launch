@@ -20,15 +20,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-  <arg name="do_amcl" default="true" />
-  <arg name="do_arduino" default="false" />
   <arg name="do_d435" default="true" />
-  <arg name="do_gmapping" default="false" />
-  <arg name="do_imu" default="false" />
+   <arg name="do_imu" default="false" />
   <arg name="do_lidar" default="true" />
-  <arg name="do_map" default="true" />
+  <arg name="do_map" default="false" />
   <arg name="do_nadie_motor" default="true" />
   <arg name="do_move_base" default="true" />
+  <arg name="do_rtab_map" default="true" />
   <arg name="do_rviz" default="false" />
   <arg name="do_t265" default="true" />
 
@@ -50,12 +48,6 @@ SOFTWARE.
       <arg name="debug" value="false"/>
       <arg name="world_name" value="$(find nadie_control)/world/Home3" />
     </include-->
-
-    <!-- Start the communicatoin with the teensy3.6 -->    
-    <node if="$(arg do_arduino)" pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen" >
-      <param name="port" value="/dev/teensy3_6"/>
-      <param name="baud" value="115200"/>
-    </node>
 
     <!-- Bring up the LIDAR -->
     <include
@@ -80,18 +72,6 @@ SOFTWARE.
     <!-- Load the map -->
     <include if="$(arg do_map)" file="$(find snowberry_map)/launch/map.launch" />
 
-    <node
-      if="$(arg do_gmapping)"
-      name="gmapping_node"
-      pkg="gmapping"
-      type="slam_gmapping"
-      respawn="false"
-    >
-    </node>
-
-    <!-- Bring up AMCL -->
-    <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/amcl.launch" />
-
     <!-- Bring up the motor stack -->
     <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie_motor.launch" />
 
@@ -104,6 +84,9 @@ SOFTWARE.
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
 
+    <!-- Launch rtabmap_ros -->
+    <include if="$(arg do_rtab_map)" file="$(find nadie_control)/launch/rtab_mapping.launch" />
+    
   </group>
 
  </launch> 
