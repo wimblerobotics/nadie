@@ -1,36 +1,4 @@
-<launch> 
-<!--
-Copyright (c) 2018 Michael Wimble
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
--->
-
-  <machine
-      address="192.168.2.102"
-      default="true"
-      env-loader="/home/wimble/remote_env.sh"
-      name="tx2a"
-      user="wimble"
-  />
-
-  <arg name="machine" default="tx2a" />
-
+<launch>
   <!-- Convenience launch file to launch odometry, rtabmap and rtabmapviz nodes at once -->
 
   <!-- For stereo:=false
@@ -46,7 +14,7 @@ SOFTWARE.
            $ roslaunch rtabmap_ros bumblebee.launch -->
      
   <!-- Choose between RGB-D and stereo -->      
- * <arg name="stereo"          default="false"/>
+  <arg name="stereo"          default="false"/>
  
   <!-- Choose visualization -->
   <arg name="rtabmapviz"              default="false" /> 
@@ -64,8 +32,8 @@ SOFTWARE.
   <arg name="gui_cfg"                 default="~/.ros/rtabmap_gui.ini" />
   <arg name="rviz_cfg"                default="$(find rtabmap_ros)/launch/config/rgbd.rviz" />
   
-  <arg name="frame_id"                default="base_link"/>  <!-- ## -->   <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
-  <arg name="odom_frame_id"           default="camera_odom_frame"/>  <!-- ## --> <!-- If set, TF is used to get odometry instead of the topic -->
+  <arg name="frame_id"                default="camera_link"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
+  <arg name="odom_frame_id"           default=""/>                <!-- If set, TF is used to get odometry instead of the topic -->
   <arg name="map_frame_id"            default="map"/>
   <arg name="ground_truth_frame_id"   default=""/>     <!-- e.g., "world" -->
   <arg name="ground_truth_base_frame_id" default=""/>  <!-- e.g., "tracker", a fake frame matching the frame "frame_id" (but on different TF tree) -->
@@ -73,7 +41,7 @@ SOFTWARE.
   <arg name="database_path"           default="~/.ros/rtabmap.db"/>
   <arg name="queue_size"              default="10"/>
   <arg name="wait_for_transform"      default="0.2"/>
-  <arg name="args"                    default="delete_db_on_start"/>  <!-- ## --> <!-- delete_db_on_start, udebug -->
+  <arg name="args"                    default="--delete_db_on_start"/>              <!-- delete_db_on_start, udebug -->
   <arg name="rtabmap_args"            default="$(arg args)"/>   <!-- deprecated, use "args" argument -->
   <arg name="launch_prefix"           default=""/>              <!-- for debugging purpose, it fills launch-prefix tag of the nodes -->
   <arg name="output"                  default="screen"/>        <!-- Control node output (screen or log) -->
@@ -83,9 +51,9 @@ SOFTWARE.
   <arg unless="$(arg stereo)" name="approx_sync"  default="true"/>         
    
   <!-- RGB-D related topics -->
-  <arg name="rgb_topic"               default="/camera/color/image_raw" /> <!-- ## -->
-  <arg name="depth_topic"             default="/camera/depth/image_rect_raw" />  <!-- ## -->
-  <arg name="camera_info_topic"       default="/camera/depth/camera_info" /> <!-- ## -->
+  <arg name="rgb_topic"               default="/camera/color/image_raw" />
+  <arg name="depth_topic"             default="/camera/aligned_depth_to_color/image_raw" />
+  <arg name="camera_info_topic"       default="/camera/color/camera_info" />
   <arg name="depth_camera_info_topic" default="$(arg camera_info_topic)" />
   
   <!-- stereo related topics -->
@@ -102,12 +70,12 @@ SOFTWARE.
   <arg name="rgbd_topic"              default="rgbd_image" />
   <arg name="depth_scale"             default="1.0" />
   
-  <arg name="compressed"              default="true"/> <!-- ## -->         <!-- If you want to subscribe to compressed image topics -->
+  <arg name="compressed"              default="false"/>         <!-- If you want to subscribe to compressed image topics -->
   <arg name="rgb_image_transport"     default="compressed"/>    <!-- Common types: compressed, theora (see "rosrun image_transport list_transports") -->
   <arg name="depth_image_transport"   default="compressedDepth"/>  <!-- Depth compatible types: compressedDepth (see "rosrun image_transport list_transports") -->
    
-  <arg name="subscribe_scan"          default="true"/> <!-- ## -->
-  <arg name="scan_topic"              default="/nadie/scan"/> <!-- ## -->
+  <arg name="subscribe_scan"          default="false"/>
+  <arg name="scan_topic"              default="/scan"/>
   <arg name="subscribe_scan_cloud"    default="false"/>
   <arg name="scan_cloud_topic"        default="/scan_cloud"/>
   <arg name="scan_normal_k"           default="0"/>
@@ -145,13 +113,13 @@ SOFTWARE.
     <!-- relays -->
     <group unless="$(arg stereo)">
       <group unless="$(arg subscribe_rgbd)">
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_rgb" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg rgb_topic) raw out:=$(arg rgb_topic_relay)" />
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_depth" type="republish" pkg="image_transport" args="$(arg depth_image_transport) in:=$(arg depth_topic) raw out:=$(arg depth_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_rgb" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg rgb_topic) raw out:=$(arg rgb_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_depth" type="republish" pkg="image_transport" args="$(arg depth_image_transport) in:=$(arg depth_topic) raw out:=$(arg depth_topic_relay)" />
       </group>
       <group if="$(arg rgbd_sync)">
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_rgb" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg rgb_topic) raw out:=$(arg rgb_topic_relay)" />
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_depth" type="republish" pkg="image_transport" args="$(arg depth_image_transport) in:=$(arg depth_topic) raw out:=$(arg depth_topic_relay)" />
-        <node machine="$(arg machine)" pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="$(arg output)">
+        <node if="$(arg compressed)" name="republish_rgb" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg rgb_topic) raw out:=$(arg rgb_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_depth" type="republish" pkg="image_transport" args="$(arg depth_image_transport) in:=$(arg depth_topic) raw out:=$(arg depth_topic_relay)" />
+        <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/rgbd_sync" output="$(arg output)">
           <remap from="rgb/image"       to="$(arg rgb_topic_relay)"/>
           <remap from="depth/image"     to="$(arg depth_topic_relay)"/>
           <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
@@ -164,13 +132,13 @@ SOFTWARE.
     </group>
     <group if="$(arg stereo)">
       <group unless="$(arg subscribe_rgbd)">
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_left"  type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg left_image_topic) raw out:=$(arg left_image_topic_relay)" />
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_right" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg right_image_topic) raw out:=$(arg right_image_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_left"  type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg left_image_topic) raw out:=$(arg left_image_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_right" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg right_image_topic) raw out:=$(arg right_image_topic_relay)" />
       </group>
       <group if="$(arg rgbd_sync)">
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_left"  type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg left_image_topic) raw out:=$(arg left_image_topic_relay)" />
-        <node machine="$(arg machine)" if="$(arg compressed)" name="republish_right" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg right_image_topic) raw out:=$(arg right_image_topic_relay)" />
-        <node machine="$(arg machine)" pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/stereo_sync" output="$(arg output)">
+        <node if="$(arg compressed)" name="republish_left"  type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg left_image_topic) raw out:=$(arg left_image_topic_relay)" />
+        <node if="$(arg compressed)" name="republish_right" type="republish" pkg="image_transport" args="$(arg rgb_image_transport) in:=$(arg right_image_topic) raw out:=$(arg right_image_topic_relay)" />
+        <node pkg="nodelet" type="nodelet" name="rgbd_sync" args="standalone rtabmap_ros/stereo_sync" output="$(arg output)">
           <remap from="left/image_rect"   to="$(arg left_image_topic_relay)"/>
           <remap from="right/image_rect"  to="$(arg right_image_topic_relay)"/>
           <remap from="left/camera_info"  to="$(arg left_camera_info_topic)"/>
@@ -183,7 +151,7 @@ SOFTWARE.
     </group>
     
     <group unless="$(arg rgbd_sync)">
-       <node machine="$(arg machine)" if="$(arg subscribe_rgbd)" name="republish_rgbd_image"  type="relay" pkg="topic_tools" args="$(arg rgbd_topic) $(arg rgbd_topic)_relay" />
+       <node if="$(arg subscribe_rgbd)" name="republish_rgbd_image"  type="relay" pkg="topic_tools" args="$(arg rgbd_topic) $(arg rgbd_topic)_relay" />
     </group>
 
     <!-- Visual odometry -->
@@ -191,7 +159,7 @@ SOFTWARE.
       <group if="$(arg visual_odometry)">
       
         <!-- RGB-D Odometry -->
-        <node machine="$(arg machine)" unless="$(arg stereo)" pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+        <node unless="$(arg stereo)" pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
           <remap from="rgb/image"       to="$(arg rgb_topic_relay)"/>
           <remap from="depth/image"     to="$(arg depth_topic_relay)"/>
           <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
@@ -214,7 +182,7 @@ SOFTWARE.
         </node>
 
         <!-- Stereo Odometry -->
-        <node machine="$(arg machine)" if="$(arg stereo)" pkg="rtabmap_ros" type="stereo_odometry" name="stereo_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+        <node if="$(arg stereo)" pkg="rtabmap_ros" type="stereo_odometry" name="stereo_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
           <remap from="left/image_rect"        to="$(arg left_image_topic_relay)"/>
           <remap from="right/image_rect"       to="$(arg right_image_topic_relay)"/>
           <remap from="left/camera_info"       to="$(arg left_camera_info_topic)"/>
@@ -241,7 +209,7 @@ SOFTWARE.
     </group>
     
     <!-- ICP Odometry -->
-    <node machine="$(arg machine)" if="$(arg icp_odometry)" pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+    <node if="$(arg icp_odometry)" pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
       <remap from="scan"                   to="$(arg scan_topic)"/>
       <remap from="scan_cloud"             to="$(arg scan_cloud_topic)"/>
       <remap from="odom"                   to="$(arg odom_topic)"/>
@@ -260,7 +228,7 @@ SOFTWARE.
   
     <!-- Visual SLAM (robot side) -->
     <!-- args: "delete_db_on_start" and "udebug" -->
-    <node machine="$(arg machine)" name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="$(arg output)" args="$(arg rtabmap_args)" launch-prefix="$(arg launch_prefix)">
+    <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="$(arg output)" args="$(arg rtabmap_args)" launch-prefix="$(arg launch_prefix)">
       <param     if="$(arg stereo)" name="subscribe_depth"  type="bool" value="false"/>
       <param unless="$(arg stereo)" name="subscribe_depth"  type="bool" value="true"/>
       <param name="subscribe_rgbd"       type="bool"   value="$(arg subscribe_rgbd)"/>
@@ -310,7 +278,7 @@ SOFTWARE.
     </node>
   
     <!-- Visualisation RTAB-Map -->
-    <node machine="$(arg machine)" if="$(arg rtabmapviz)" pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(arg gui_cfg)" output="$(arg output)" launch-prefix="$(arg launch_prefix)">
+    <node if="$(arg rtabmapviz)" pkg="rtabmap_ros" type="rtabmapviz" name="rtabmapviz" args="-d $(arg gui_cfg)" output="$(arg output)" launch-prefix="$(arg launch_prefix)">
       <param     if="$(arg stereo)" name="subscribe_depth"  type="bool" value="false"/>
       <param unless="$(arg stereo)" name="subscribe_depth"  type="bool" value="true"/>
       <param name="subscribe_rgbd"       type="bool"   value="$(arg subscribe_rgbd)"/>
@@ -345,8 +313,8 @@ SOFTWARE.
   </group>
   
   <!-- Visualization RVIZ -->
-  <node machine="$(arg machine)" if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_cfg)"/>
-  <node machine="$(arg machine)" if="$(arg rviz)" pkg="nodelet" type="nodelet" name="points_xyzrgb" args="standalone rtabmap_ros/point_cloud_xyzrgb" output="$(arg output)">
+  <node if="$(arg rviz)" pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_cfg)"/>
+  <node if="$(arg rviz)" pkg="nodelet" type="nodelet" name="points_xyzrgb" args="standalone rtabmap_ros/point_cloud_xyzrgb" output="$(arg output)">
     <remap if="$(arg stereo)" from="left/image"        to="$(arg left_image_topic_relay)"/>
     <remap if="$(arg stereo)" from="right/image"       to="$(arg right_image_topic_relay)"/>
     <remap if="$(arg stereo)" from="left/camera_info"  to="$(arg left_camera_info_topic)"/>

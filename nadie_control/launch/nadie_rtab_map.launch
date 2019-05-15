@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
   <arg name="do_d435" default="true" />
-   <arg name="do_imu" default="false" />
+  <arg name="do_imu" default="false" />
   <arg name="do_lidar" default="true" />
   <arg name="do_map" default="false" />
   <arg name="do_nadie_motor" default="true" />
@@ -33,21 +33,11 @@ SOFTWARE.
   <arg name="robot_namespace" default="/nadie" />
 
 <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
-<include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/rs_camera.launch" >
+<include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/rs_aligned_depth.launch" >
   <arg name="serial_no" value="836612072267" />
 </include>
 
 <group ns="$(arg robot_namespace)">
-
-  
-    <!--include file="$(find nadie_control)/launch/world.launch">
-      <arg name="paused" value="false"/>
-      <arg name="use_sim_time" value="true"/>
-      <arg name="gui" value="true"/>
-      <arg name="headless" value="false"/>
-      <arg name="debug" value="false"/>
-      <arg name="world_name" value="$(find nadie_control)/world/Home3" />
-    </include-->
 
     <!-- Bring up the LIDAR -->
     <include
@@ -84,15 +74,33 @@ SOFTWARE.
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
 
-    <!-- Launch rtabmap_ros -->
-    <include if="$(arg do_rtab_map)" file="$(find nadie_control)/launch/rtab_mapping.launch" />
     
     <node
       name="realsense_depth_transform" 
       pkg="tf" 
       type="static_transform_publisher" 
-      args="0.2 0 0.0 0.0 0 0 camera_odom_frame base_link 100" />
+      args="0.0 0 0.0 0.0 0 0 camera_odom_frame camera_link 200" />
 
   </group>
+
+<!-- Launch rtabmap_ros -->
+<!--include if="$(arg do_rtab_map)" file="$(find nadie_control)/launch/rtab_mapping.launch" /-->
+<group ns="rtab">
+    <machine
+        address="192.168.2.102"
+        default="true"
+        env-loader="/home/wimble/remote_env.sh"
+        name="tx2a"
+        user="wimble"
+    />
+    <include if="$(arg do_rtab_map)" file="$(find rtabmap_ros)/launch/rtabmap.launch" >
+      <arg name="rtabmap_args" value="--delete_db_on_start" />
+      <arg name="rviz" value="false" /> 
+      <arg name="rtabmapviz" value="false" />
+      <arg name="depth_topic" value="/camera/aligned_depth_to_color/image_raw" />
+      <arg name="rgb_topic" value="/camera/color/image_raw" />
+      <arg name="camera_info_topic" value="/camera/color/camera_info" />
+    </include>
+</group>
 
  </launch> 
