@@ -19,7 +19,7 @@
     <arg if="$(arg compressed)"     name="left_image_topic_relay"    default="$(arg left_image_topic)_relay"/>
     <arg unless="$(arg compressed)" name="left_image_topic_relay"    default="$(arg left_image_topic)"/>
     <arg name="odom_frame_id"           default=""/>                <!-- If set, TF is used to get odometry instead of the topic -->
-    <arg name="odom_topic"               default="odom"/>          <!-- Odometry topic name -->
+    <arg name="odom_topic"               default="/nadie/camera/odom/sample"/>          <!-- Odometry topic name -->
     <arg name="output"                  default="screen"/>        <!-- Control node output (screen or log) -->
     <arg name="queue_size"              default="10"/>
     <arg name="rgb_topic"               default="/camera/color/image_raw" />

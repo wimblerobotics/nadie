@@ -22,12 +22,11 @@ SOFTWARE.
 -->
   <arg name="do_d435" default="true" />
   <arg name="do_imu" default="false" />
-  <arg name="do_lidar" default="true" />
-  <arg name="do_map" default="false" />
+  <arg name="do_lidar" default="false" />
+  <arg name="do_map" default="true" />
   <arg name="do_nadie_motor" default="true" />
-  <arg name="do_move_base" default="true" />
+  <arg name="do_move_base" default="false" />
   <arg name="do_rtab_map" default="true" />
-  <arg name="do_rviz" default="false" />
   <arg name="do_t265" default="true" />
 
   <arg name="robot_namespace" default="/nadie" />
@@ -67,9 +66,6 @@ SOFTWARE.
 
     <!-- Brunk up move_base -->
     <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base.launch" />
-
-    <!-- Launch visualization in rviz --> 
-    <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
 
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
