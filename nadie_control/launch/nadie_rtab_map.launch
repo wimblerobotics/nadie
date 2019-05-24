@@ -80,7 +80,6 @@ SOFTWARE.
   </group>
 
 <!-- Launch rtabmap_ros -->
-<!--include if="$(arg do_rtab_map)" file="$(find nadie_control)/launch/rtab_mapping.launch" /-->
 <group ns="rtab">
     <machine
         address="192.168.2.102"
