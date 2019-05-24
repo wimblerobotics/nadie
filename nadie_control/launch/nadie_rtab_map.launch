@@ -65,7 +65,7 @@ SOFTWARE.
     <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie_motor.launch" />
 
     <!-- Brunk up move_base -->
-    <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base.launch" />
+    <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/move_base_realsense.launch" />
 
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />

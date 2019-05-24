@@ -17,9 +17,9 @@ obstacle_layer:
   inf_is_valid: true #false
   d435_sensor: { clearing: true, data_type: PointCloud2, expected_update_rate: 2.0, marking: true, sensor_frame: 'map', topic: '/rtab/rtabmap/cloud_map' }
   laser_scan_sensor: { clearing: true, data_type: LaserScan, expected_update_rate: 2.0, marking: true, sensor_frame: 'scan', topic: '/nadie/scan' }
-  max_obstacle_height: 2.0              # 0.0 .. 50
+  max_obstacle_height: 1.0              # 0.0 .. 50
   min_obstacle_height: 0.0
-  observation_sources: d435_sensor, laser_scan_sensor
+  observation_sources: d435_sensor laser_scan_sensor
   observation_persistence: 0.1
   obstacle_range: 3.5
   raytrace_range: 4.0
