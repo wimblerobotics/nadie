@@ -91,8 +91,9 @@ SOFTWARE.
     <include if="$(arg do_rtab_map)" file="$(find rtabmap_ros)/launch/rtabmap.launch" >
       <arg name="camera_info_topic" value="/camera/color/camera_info" />
       <arg name="depth_topic" value="/camera/aligned_depth_to_color/image_raw" />
-      <arg name="frame_id" value="base_link" />
-      <arg name="odom_frame_id" value="camera_odom_frame" />
+      <arg name="frame_id" value="camera_link" />
+      <!--arg name="odom_frame_id" value="odom" /-->
+      <arg name="odom_topic" value="odom" />
       <arg name="rgb_topic" value="/camera/color/image_raw" />
       <arg name="rtabmap_args" value="--delete_db_on_start" />
       <arg name="rtabmapviz" value="false" />
