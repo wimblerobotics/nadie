@@ -24,6 +24,12 @@ SOFTWARE.
 
 	<xacro:macro name="wheel" params="wheel_prefix *joint_pose">
 		<link name="${wheel_prefix}_wheel_link">
+			<collision>
+				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+				<geometry>
+			        <cylinder length="${wheel_width}" radius="${wheel_radius}" />
+				</geometry>
+			</collision>
 			<inertial>
 				<mass value="2.637" />
 				<origin xyz="0 0 0" />
@@ -33,15 +39,9 @@ SOFTWARE.
 				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
 				<geometry>
 			        <cylinder length="${wheel_width}" radius="${wheel_radius}" />
-					<!--mesh filename="package://husky_description/meshes/wheel.dae" /-->
 				</geometry>
+				<material name="wheel_material" />
 			</visual>
-			<collision>
-				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
-				<geometry>
-			        <cylinder length="${wheel_width}" radius="${wheel_radius}" />
-				</geometry>
-			</collision>
 		</link>
 
 		<gazebo reference="${wheel_prefix}_wheel_link">

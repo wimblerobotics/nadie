@@ -26,12 +26,12 @@ SOFTWARE.
 
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <legacyModeNS>true</legacyModeNS> <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
+      <legacyModeNS>true</legacyModeNS>      <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
       <!--robotNamespace>$(arg robot_namespace)</robotNamespace-->
     </plugin>
   </gazebo>
 
- <xacro:include filename="$(find nadie_description)/urdf/caster.urdf.xacro" />
+  <xacro:include filename="$(find nadie_description)/urdf/caster.urdf.xacro" />
   <xacro:include filename="$(find nadie_description)/urdf/wheel.urdf.xacro" />
   <!--xacro:include filename="$(find nadie_description)/urdf/lidar_sim.xacro" /-->
 
@@ -59,11 +59,19 @@ SOFTWARE.
   <xacro:property name="lidar_z_offset" value="${body_height+(lidar_height/2)}" />
 
   <material name="base">
-    <color rgba="0.25 0.25 0.53 1" />>
+    <color rgba="0.9 0.9 0.9 1" />
   </material>
 
-  <material name="wheel">
-    <color rgba="0.6 0.5 0.5 1" />
+  <material name="blackish">
+    <color rgba="0.1 0.1 0.1 1" />
+  </material>
+
+  <material name="caster_wheel_material">
+    <color rgba="0.9 0.1 0.1 1" />
+  </material>
+
+  <material name="wheel_material">
+    <color rgba="0.15 0.15 0.15 1" />
   </material>
 
   <!-- Parts -->
@@ -82,15 +90,12 @@ SOFTWARE.
       <origin rpy="0 0 0" xyz="0 0 ${(body_height/2)}"/>
     </visual>
     <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <mass value="1" />
-        <inertia
-          ixx="1.0" ixy="0.0" ixz="0.0"
-          iyy="1.0" iyz="0.0"
-          izz="1.0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
     </inertial>
   </link>
-  
+
   <!-- Base footprint is on the ground under the robot -->
   <link name="base_footprint"/>
 
@@ -119,10 +124,10 @@ SOFTWARE.
     <origin xyz="${wheel_forward_of_center_distance} ${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
   </xacro:wheel>
 
- <xacro:wheel wheel_prefix="front_right">
+  <xacro:wheel wheel_prefix="front_right">
     <origin xyz="${wheel_forward_of_center_distance} -${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
   </xacro:wheel>
-  
+
   <xacro:caster wheel_prefix="lcaster">
     <origin xyz="${fwheel_offset} 0.135 -${caster_radius}" rpy="0 0 0" />
   </xacro:caster>
@@ -138,28 +143,92 @@ SOFTWARE.
       <origin rpy="0 0 0" xyz="0 0 0"/>
     </collision>
     <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <mass value="1" />
-        <inertia
-          ixx="1.0" ixy="0.0" ixz="0.0"
-          iyy="1.0" iyz="0.0"
-          izz="1.0" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
     </inertial>
     <visual>
       <geometry>
         <box size="${lidar_width} ${lidar_length} ${lidar_height}"/>
       </geometry>
       <origin rpy="0 0 0" xyz="0 0 0"/>
-      <material name="black">
-        <color rgba="0.5 0 0 1"/>
-      </material>
+      <material name="blackish" />
     </visual>
   </link>
-  
+
   <joint name="base_to_neato" type="fixed">
     <parent link="base_link"/>
     <child link="neato"/>
     <origin xyz="${lidar_x_offset} 0  ${lidar_z_offset}" rpy="0 0 0"/>
   </joint>
-  
+
+  <material name="d435_material">
+    <color rgba="0.7 0.8 0.7 1" />
+  </material>
+
+  <xacro:property name="d435_height" value="0.025" />
+  <xacro:property name="d435_length" value="0.090" />
+  <xacro:property name="d435_width" value="0.025" />
+
+<link name="d435">
+    <collision>
+      <geometry>
+        <box size="${d435_width} ${d435_length} ${d435_height}" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="${d435_width} ${d435_length} ${d435_height}" />
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <material name="d435_material" />
+    </visual>
+  </link>
+
+  <joint name="base_to_d435" type="fixed">
+    <parent link="base_link" />
+    <child link="d435" />
+    <origin xyz="${(body_length/2)+(0.025/2)} 0 ${(-body_height/2)+0.205}" rpy="0 0 0" />
+  </joint>
+
+  <material name="t265_material">
+    <color rgba="0.60 0.40 0.60 1" />
+  </material>
+
+  <xacro:property name="t265_height" value="0.016" />
+  <xacro:property name="t265_length" value="0.100" />
+  <xacro:property name="t265_width" value="0.008" />
+
+  <link name="t265">
+    <collision>
+      <geometry>
+        <box size="${t265_width} ${t265_length} ${t265_height}" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="1" />
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="${t265_width} ${t265_length} ${t265_height}" />
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <material name="t265_material" />
+    </visual>
+  </link>
+
+  <joint name="base_to_t265" type="fixed">
+    <parent link="base_link" />
+    <child link="t265" />
+    <origin xyz="${(body_length/2)+(0.008/2)} 0 ${(-body_height/2)+0.166}" rpy="0 0 0" />
+  </joint>
 </robot>
