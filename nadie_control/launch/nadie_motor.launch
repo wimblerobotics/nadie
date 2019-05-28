@@ -26,6 +26,7 @@ SOFTWARE.
   
   <arg name="do_controller_manager" default="true" />
   <arg name="do_joint_state_publisher" default="true" />
+  <arg name="do_joystick" default="true" />
   <arg name="do_load_urdf" default="true" />
   <arg name="do_motor_controller" default="true" />
   <arg name="do_robot_state_publisher" default="true" />
@@ -34,6 +35,13 @@ SOFTWARE.
   <arg name="robot_namespace" default="/nadie" />
 
   <group ns="$(arg robot_namespace)">
+    <machine
+        address="192.168.2.107"
+        default="true"
+        env-loader="/home/wimble/remote_env.sh"
+        name="up1b"
+        user="wimble"
+    />
     <!-- load the controller yaml -->
     <rosparam file="$(find nadie_control)/config/nadie_controller.yaml" command="load" />
 
@@ -64,7 +72,7 @@ SOFTWARE.
       <remap from="joint_states" to="/$(arg robot_namespace)/joint_states" />
     </node>
    
-        <!-- load the controllers -->
+    <!-- load the controllers -->
     <node 
       if="$(arg do_controller_manager)"
       name="controller_spawner" 
@@ -94,4 +102,12 @@ SOFTWARE.
     </node>
 
   </group>
+
+  <!-- Start the joystick controller -->
+  <include
+    if="$(arg do_joystick)"
+    file="$(find nadie_control)/launch/nadie_joystick.launch" >
+    <arg name="robot_namespace" value="$(arg robot_namespace)" />
+  </include>
+
 </launch>
