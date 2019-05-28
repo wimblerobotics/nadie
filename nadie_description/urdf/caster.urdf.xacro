@@ -32,14 +32,14 @@ SOFTWARE.
 			<visual>
 				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
 				<geometry>
-			        <cylinder length="${wheel_width}" radius="${wheel_radius}" />
+			        <cylinder length="${caster_width}" radius="${caster_radius}" />
 				</geometry>
 		        <material name="wheel" />
 			</visual>
 			<collision>
 				<origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
 				<geometry>
-			        <cylinder length="${wheel_width}" radius="${wheel_radius}" />
+			        <cylinder length="${caster_width}" radius="${caster_radius}" />
 				</geometry>
 			</collision>
 		</link>
