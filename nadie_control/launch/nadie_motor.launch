@@ -98,16 +98,15 @@ SOFTWARE.
       respawn="true" >
       
       <remap from="odom" to="motor_odom" />
-      <!--rosparam command="load" file="$(find nadie_control)/cfg/motor.yaml"/ -->
     </node>
 
   </group>
 
   <!-- Start the joystick controller -->
-  <include
+  <!--include
     if="$(arg do_joystick)"
     file="$(find nadie_control)/launch/nadie_joystick.launch" >
     <arg name="robot_namespace" value="$(arg robot_namespace)" />
-  </include>
+  </include-->
 
 </launch>
