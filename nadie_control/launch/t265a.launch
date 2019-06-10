@@ -1,10 +1,12 @@
 <launch>
-    <machine
-        address="192.168.2.103"
-        default="true"
-        env-loader="/home/wimble/remote_env.sh"
-        name="up1a"
-        user="wimble"
-    />
-    <include file="$(find realsense2_camera)/launch/rs_t265.launch" />
+    <group ns="t265">
+        <machine
+            address="192.168.2.103"
+            default="true"
+            env-loader="/home/wimble/remote_env.sh"
+            name="up1a"
+            user="wimble"
+        />
+        <include file="$(find realsense2_camera)/launch/rs_t265.launch" />
+    </group>
 </launch>

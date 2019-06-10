@@ -21,17 +21,9 @@ SOFTWARE.
 -->
 <launch>
     <arg name="do_nadie_motor" default="true" />
+    <arg name="do_t265" default="true" />
     <arg name="offline"          default="false"/>
  
-    <!-- Bring up the motor stack -->
-    <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie_motor.launch" />
-
-    <node
-      name="camera_link_to_base_footprint_link" 
-      pkg="tf" 
-      type="static_transform_publisher" 
-      args="-0.2425 0.0 -0.2101 0 0.07 0 camera_link base_footprint 200" />
-
     <include unless="$(arg offline)" 
         file="$(find realsense2_camera)/launch/rs_camera.launch">
         <arg name="align_depth" value="true"/>
@@ -81,4 +73,17 @@ SOFTWARE.
     <param name="/ukf_se/imu0_relative" value="false"/>
     <param name="/ukf_se/use_control" value="false"/>
     <!-- <param name="/ukf_se/odom0_config" value="{true,true,true,}"/> -->
+
+    <!-- Bring up the motor stack -->
+    <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie_motor.launch" />
+
+    <node
+      name="camera_link_to_base_footprint_link" 
+      pkg="tf" 
+      type="static_transform_publisher" 
+      args="-0.2425 0.0 -0.2101 0 0.07 0 camera_link base_footprint 200" />
+
+    <!-- Launch the T265 tracking camera -->
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
+
 </launch>
