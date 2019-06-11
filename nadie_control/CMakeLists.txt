@@ -21,11 +21,19 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
+  tf2
+  tf2_ros
+  tf2_msgs
+  tf2_sensor_msgs
   transmission_interface
   urdf
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
+
+find_package( PCL REQUIRED )
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 if(CATKIN_ENABLE_TESTING)
   find_package(GTest REQUIRED)
@@ -60,6 +68,7 @@ catkin_package(
   dynamic_reconfigure 
   geometry_msgs 
   message_runtime 
+  pcl_ros
   rosconsole 
   roscpp 
   rospy 
@@ -79,6 +88,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${GTest_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -94,6 +104,25 @@ add_dependencies(
 )
 
 ## Declare a C++ executable
+add_executable(
+  closest_obj_node
+  src/closest_obj.cpp
+)
+
+add_dependencies(
+  closest_obj_node
+  ${PROJECT_NAME}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${catkin_EXPORTED_TARGETS}
+)
+
+target_link_libraries(
+  closest_obj_node
+  ${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+
 add_executable (
   calibrate_node
   src/calibrate_node.cpp

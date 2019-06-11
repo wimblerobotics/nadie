@@ -7,6 +7,8 @@
             name="up1a"
             user="wimble"
         />
-        <include file="$(find realsense2_camera)/launch/rs_t265.launch" />
+        <include file="$(find realsense2_camera)/launch/rs_t265.launch" >
+             <param name="initial_reset"         value="True"/>
+        </include>
     </group>
 </launch>

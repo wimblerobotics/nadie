@@ -1,0 +1,4 @@
+<launch>
+    <node name="closest_obj" pkg="nadie_control" type="closest_obj_node">
+    </node>
+</launch>
