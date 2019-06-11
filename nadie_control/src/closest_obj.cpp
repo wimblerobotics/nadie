@@ -24,52 +24,44 @@ float computeDistance(geometry_msgs::Point32 & p1, geometry_msgs::Point32 & p2) 
 
 void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
     ROS_INFO("--FRAME-- frame_id: %s", cloud2_msg->header.frame_id.c_str());
-    tf::TransformListener listener;
-    ros::Time now = ros::Time::now();
-    listener.waitForTransform("base_link", "map", now, ros::Duration(3.0));
-    ROS_INFO("--post wait--");
+ 
+    sensor_msgs::PointCloud2 xy_image_cloud;
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+    geometry_msgs::TransformStamped transformStamped;
+    try{
+        transformStamped = tfBuffer.lookupTransform("base_link", "map", ros::Time(0), ros::Duration(3.0));
+    }
+    catch (tf2::TransformException &ex) {
+        ROS_WARN("%s",ex.what());
+         return;
+    }
+    tf2::doTransform (*cloud2_msg, xy_image_cloud, transformStamped);
+ 
+    sensor_msgs::PointCloud cloud_msg;
+    sensor_msgs::convertPointCloud2ToPointCloud(xy_image_cloud, cloud_msg);
+
+    //  tf::TransformListener listener;
+    // ros::Time now = ros::Time::now();
+    // listener.waitForTransform("base_link", "map", now, ros::Duration(3.0));
+    // ROS_INFO("--post wait--");
 
     //static tf2_ros::Buffer tf_buffer_;
 
-    geometry_msgs::TransformStamped transform;
-    try {
-        tf2_ros::Buffer tfBuffer;
-        tf2_ros::TransformListener tfListener(tfBuffer);
-        geometry_msgs::TransformStamped transform;
-        transform = tfBuffer.lookupTransform("base_link", "map" /*cloud2_msg->header.frame_id*/, ros::Time(0));
-
-        // tf::StampedTransform transform;
-        // listener.lookupTransform("base_link", "map" /*cloud2_msg->header.frame_id*/, ros::Time(0), transform);
-
-
-        // transform = tf_buffer_.lookupTransform("base_link", "map"/*cloud2_msg->header.frame_id*/, ros::Time(0));
-        sensor_msgs::PointCloud2 cloud_out;
-        tf2::doTransform(*cloud2_msg, cloud_out, transform);
-        sensor_msgs::PointCloud cloud_msg;
-        sensor_msgs::convertPointCloud2ToPointCloud(cloud_out, cloud_msg);
-        // sensor_msgs::PointCloud cloud_msg;
-        // sensor_msgs::convertPointCloud2ToPointCloud(*cloud2_msg, cloud_msg);
-
-        geometry_msgs::Point32 fromWhere;
-        fromWhere.x = 0.0;
-        fromWhere.y = 0.0;
-        fromWhere.z = 0.0;
-        float lowestDist = 1e8;
-        for (int i = 0; i < cloud_msg.points.size(); ++i) {
-            float dist = computeDistance(fromWhere, cloud_msg.points[i]);
-            if(dist < lowestDist) {
-                lowestDist = dist;
-            }
-            ROS_INFO("point\t%f\t%f\t%f\t%f", cloud_msg.points[i].x, cloud_msg.points[i].y, cloud_msg.points[i].z, dist);
+    geometry_msgs::Point32 fromWhere;
+    fromWhere.x = 0.0;
+    fromWhere.y = 0.0;
+    fromWhere.z = 0.0;
+    float lowestDist = 1e8;
+    for (int i = 0; i < cloud_msg.points.size(); ++i) {
+        float dist = computeDistance(fromWhere, cloud_msg.points[i]);
+        if(dist < lowestDist) {
+            lowestDist = dist;
         }
-
-        ROS_INFO("%f\tclosest-point", lowestDist);
-
-
-    } catch (tf2::TransformException& ex) {
-        ROS_WARN("%s", ex.what());
-        return;
+        ROS_INFO("point\t%f\t%f\t%f\t%f", cloud_msg.points[i].x, cloud_msg.points[i].y, cloud_msg.points[i].z, dist);
     }
+
+    ROS_INFO("%f\tclosest-point", lowestDist);
 }
 
 int main(int argc, char** argv) {
