@@ -1,20 +1,13 @@
 #include <ros/ros.h>
-#include <boost/foreach.hpp>
 #include <geometry_msgs/Point32.h>
 #include <geometry_msgs/TransformStamped.h>
-#include <pcl/point_types.h>
 #include <pcl_ros/point_cloud.h>
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
-#include <sensor_msgs/point_field_conversion.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.h>
 #include <tf/transform_listener.h>
-#include <tgmath.h>
-#include <tf2/LinearMath/Quaternion.h>
-#include <geometry_msgs/TransformStamped.h>
-#include <tf2/convert.h>
 
 
 
