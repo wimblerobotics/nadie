@@ -3,9 +3,9 @@
         <machine
             address="192.168.2.103"
             default="true"
-            env-loader="/home/wimble/remote_env.sh"
+            env-loader="/homeext/ros/remote_env.sh"
             name="up1a"
-            user="wimble"
+            user="ros"
         />
         <include file="$(find realsense2_camera)/launch/rs_t265.launch" >
              <param name="initial_reset"         value="True"/>

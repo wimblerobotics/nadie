@@ -15,11 +15,26 @@
   <arg name="topic_odom_in"             default="odom_in"/>
   <arg name="calib_odom_file"           default=""/>
 
-  <group ns="$(arg camera1)">
+  <group ns="$(arg camera2)">
+    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+      <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
+      <arg name="tf_prefix"             value="$(arg tf_prefix_camera2)"/>
+      <arg name="initial_reset"         value="$(arg initial_reset)"/>
+      <arg name="align_depth"           value="true"/>
+      <arg name="filters"               value="pointcloud"/>
+      <arg name="color_width"           value="$(arg color_width)"/>
+      <arg name="color_height"          value="$(arg color_height)"/>
+      <arg name="depth_width"           value="$(arg depth_width)"/>
+      <arg name="depth_height"          value="$(arg depth_height)"/>
+      <arg name="clip_distance"         value="$(arg clip_distance)"/>
+    </include>
+  </group>
+
+<group ns="$(arg camera1)">
     <machine
         address="192.168.2.103"
         default="true"
-        env-loader="/home/wimble/remote_env.sh"
+        env-loader="/homeext/ros/remote_env.sh"
         name="up1a"
         user="ros"
     />
@@ -33,21 +48,6 @@
       <arg name="calib_odom_file"       value="$(arg calib_odom_file)"/>
     </include>
   </group>
-
-  <!--group ns="$(arg camera2)">
-    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
-      <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
-      <arg name="tf_prefix"             value="$(arg tf_prefix_camera2)"/>
-      <arg name="initial_reset"         value="$(arg initial_reset)"/>
-      <arg name="align_depth"           value="true"/>
-      <arg name="filters"               value="pointcloud"/>
-      <arg name="color_width"           value="$(arg color_width)"/>
-      <arg name="color_height"          value="$(arg color_height)"/>
-      <arg name="depth_width"           value="$(arg depth_width)"/>
-      <arg name="depth_height"          value="$(arg depth_height)"/>
-      <arg name="clip_distance"         value="$(arg clip_distance)"/>
-    </include>
-  </group-->
 
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find realsense2_camera)/urdf/mount_t265_d435.urdf.xacro' tf_prefix_camera1:=$(arg tf_prefix_camera1) tf_prefix_camera2:=$(arg tf_prefix_camera2)" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />

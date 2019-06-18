@@ -1,6 +1,6 @@
 <launch>
     <include file="$(find nadie_control)/launch/d435_and_t265.launch">
-      <!--arg name="serial_no_camera1" value="905312111684"/--> 			<!-- Note: Replace with actual serial number (camera1 default: t265)-->
+      <arg name="serial_no_camera1" value="905312111684"/> 			<!-- Note: Replace with actual serial number (camera1 default: t265)-->
       <arg name="serial_no_camera2" value="836612072267"/> 			<!-- Note: Replace with actual serial number (camera2 default: d400)-->
     </include>
 </launch>
