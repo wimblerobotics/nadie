@@ -26,9 +26,9 @@ SOFTWARE.
     <machine
         address="192.168.2.103"
         default="true"
-        env-loader="/home/wimble/remote_env.sh"
+        env-loader="/homeext/ros/remote_env.sh"
         name="up1a"
-        user="wimble"
+        user="ros"
     />
     <node name="nadie_joystick_node" pkg="joy" type="joy_node">
       <param name="joy_node/dev" value="/dev/input/js0" />

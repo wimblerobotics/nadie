@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <launch>
-  <arg name="serial_no_camera1"    			default="xxx"/> 			<!-- Note: Replace with actual serial number -->
-  <arg name="serial_no_camera2"    			default="yyy"/> 			<!-- Note: Replace with actual serial number -->
+  <arg name="serial_no_camera1"    			default="905312111684"/> 			<!-- Note: Replace with actual serial number -->
+  <arg name="serial_no_camera2"    			default="836612072267"/> 			<!-- Note: Replace with actual serial number -->
   <arg name="camera1"              			default="t265"/>		<!-- Note: Replace with camera name -->
-  <arg name="camera2"              			default="d400"/>		<!-- Note: Replace with camera name -->
+  <arg name="camera2"              			default="d435"/>		<!-- Note: Replace with camera name -->
   <arg name="tf_prefix_camera1"         default="$(arg camera1)"/>
   <arg name="tf_prefix_camera2"         default="$(arg camera2)"/>
   <arg name="initial_reset"             default="false"/>
@@ -33,8 +33,8 @@ SOFTWARE.
   <arg name="depth_width"               default="640"/>
   <arg name="depth_height"              default="480"/>
   <arg name="clip_distance"             default="-2"/>
-  <arg name="topic_odom_in"             default="odom_in"/>
-  <arg name="calib_odom_file"           default=""/>
+  <arg name="topic_odom_in"             default="/nadie/diff_drive_controller/odom"/>
+  <arg name="calib_odom_file"           default="${find nadie_control)/config/calib_odometry.json"/>
 
   <group ns="$(arg camera2)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
