@@ -1,0 +1,17 @@
+<launch>
+    <machine
+        address="192.168.2.103"
+        default="false"
+        env-loader="/home/ros/foo.sh"
+        name="up1a"
+        user="ros"
+    />
+
+    <machine
+        address="192.168.2.107"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="up1b"
+        user="wimble"
+    />
+</launch>

@@ -23,8 +23,8 @@ SOFTWARE.
   <arg name="do_t265" default="true" />
   <arg name="do_d435" default="true" />
 
-  <arg name="serial_no_camera1"    			default="905312111684"/> 			<!-- Note: Replace with actual serial number -->
-  <arg name="serial_no_camera2"    			default="836612072267"/> 			<!-- Note: Replace with actual serial number -->
+  <arg name="serial_no_camera1"    			default="905312111684"/> 			<!-- Note: Replace with actual serial number of t265 -->
+  <arg name="serial_no_camera2"    			default="836612072267"/> 			<!-- Note: Replace with actual serial number of d435 -->
   <arg name="camera1"              			default="t265"/>		<!-- Note: Replace with camera name -->
   <arg name="camera2"              			default="d435"/>		<!-- Note: Replace with camera name -->
   <arg name="tf_prefix_camera1"         default="$(arg camera1)"/>
@@ -40,7 +40,7 @@ SOFTWARE.
   <arg name="calib_odom_file"           default="$(find nadie_control)/config/calib_odometry.json"/>
 
   <group ns="$(arg camera2)">
-    <include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
       <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
       <arg name="tf_prefix"             value="$(arg tf_prefix_camera2)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
@@ -51,18 +51,12 @@ SOFTWARE.
       <arg name="depth_width"           value="$(arg depth_width)"/>
       <arg name="depth_height"          value="$(arg depth_height)"/>
       <arg name="clip_distance"         value="$(arg clip_distance)"/>
+      <arg name="machine" value="up1b" />
     </include>
   </group>
 
 <group ns="$(arg camera1)">
-    <machine
-        address="192.168.2.103"
-        default="true"
-        env-loader="/home/ros/remote_env.sh"
-        name="up1a"
-        user="ros"
-    />
-    <include if="$(arg do_t265)" file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
       <arg name="serial_no"             value="$(arg serial_no_camera1)"/>
       <arg name="tf_prefix"             value="$(arg tf_prefix_camera1)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
@@ -70,6 +64,7 @@ SOFTWARE.
       <arg name="enable_fisheye2"       value="$(arg enable_fisheye)"/>
       <arg name="topic_odom_in"         value="$(arg topic_odom_in)"/>
       <arg name="calib_odom_file"       value="$(arg calib_odom_file)"/>
+      <arg name="machine" value="up1a" />
     </include>
   </group>
 
