@@ -51,7 +51,6 @@ SOFTWARE.
       <arg name="depth_width"           value="$(arg depth_width)"/>
       <arg name="depth_height"          value="$(arg depth_height)"/>
       <arg name="clip_distance"         value="$(arg clip_distance)"/>
-      <arg name="machine" value="up1b" />
     </include>
   </group>
 
