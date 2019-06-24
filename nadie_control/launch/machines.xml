@@ -2,7 +2,7 @@
     <machine
         address="192.168.2.103"
         default="false"
-        env-loader="/home/ros/foo.sh"
+        env-loader="/opt/ros/melodic/env.sh"
         name="up1a"
         user="ros"
     />
