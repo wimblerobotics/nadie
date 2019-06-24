@@ -26,7 +26,7 @@ SOFTWARE.
   <arg name="serial_no_camera1"    			default="905312111684"/> 			<!-- Note: Replace with actual serial number of t265 -->
   <arg name="serial_no_camera2"    			default="836612072267"/> 			<!-- Note: Replace with actual serial number of d435 -->
   <arg name="camera1"              			default="t265"/>		<!-- Note: Replace with camera name -->
-  <arg name="camera2"              			default="d435"/>		<!-- Note: Replace with camera name -->
+  <arg name="camera2"              			default="d400"/>		<!-- Note: Replace with camera name -->
   <arg name="tf_prefix_camera1"         default="$(arg camera1)"/>
   <arg name="tf_prefix_camera2"         default="$(arg camera2)"/>
   <arg name="initial_reset"             default="true"/>
