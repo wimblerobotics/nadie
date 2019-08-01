@@ -100,6 +100,8 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
     float lowestDist = 1e8;
 
 
+    int left_count = 0;
+    int right_count = 0;
     bool obstacle_left = false;
     bool obstacle_center = false;
     bool obstacle_right = false;
@@ -134,6 +136,8 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
         }
 
         if (dist < kHAZARD_DISTANCE) {
+            if (point.x < 0) left_count += 1;
+            else right_count +=1;
             addMarker(point, i);
             if (point.y > kLEFT_Y) {
                 obstacle_left = true;
@@ -149,13 +153,14 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
     }
 
     if (obstacle_center || obstacle_left || obstacle_right) {
-        ROS_INFO("HAZARD: left: %s [%f, %f, %f], center: %s [%f, %f, %f], right: %s [%f, %f, %f]"
+        ROS_INFO("left: %d, right: %d, HAZARD: left: %s [%f, %f, %f], center: %s [%f, %f, %f], right: %s [%f, %f, %f]"
+                 , left_count, right_count
                     , obstacle_left ? "Y" : "n", left_point.x, left_point.y, left_point.z
                     , obstacle_center ? "Y" : "n", center_point.x, center_point.y, center_point.z
                     , obstacle_right ? "Y" : "n", right_point.x, right_point.y, right_point.z);
     }
 
-    ROS_INFO("%f\tclosest-point", lowestDist);
+    // ROS_INFO("%f\tclosest-point", lowestDist);
 }
 
 int main(int argc, char** argv) {
