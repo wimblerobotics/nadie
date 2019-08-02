@@ -1,14 +1,21 @@
 <launch>
-    <group ns="t265">
-        <machine
-            address="192.168.2.103"
-            default="true"
-            env-loader="/home/ros/remote_env.sh"
-            name="up1a"
-            user="ros"
-        />
-        <include file="$(find realsense2_camera)/launch/rs_t265.launch" >
-             <param name="initial_reset"         value="True"/>
-        </include>
-    </group>
-</launch>
+    <machine
+        address="192.168.2.103"
+        default="true"
+        env-loader="/home/ros/remote_env.sh"
+        name="up1a"
+        user="ros"
+    />
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+        <arg name="calib_odom_file"         value="/home/ros/nadie_ws/src/nadie/nadie_control/config/calib_odometry.json" />
+        <arg name="camera"                  value="t265" />
+        <arg name="initial_reset"         value="True"/>
+        <arg name="serial_no"             value="905312111684" />
+    </include>
+<!--node
+    name="t265_pose_frame_to_base_footprint_link" 
+    pkg="tf" 
+    type="static_transform_publisher" 
+    args="-0.2425 0.0 -0.2101 0 0.0 0 t265_pose_frame base_footprint 200" /-->
+
+ </launch>

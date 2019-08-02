@@ -170,7 +170,7 @@ SOFTWARE.
   <xacro:property name="d435_length" value="0.090" />
   <xacro:property name="d435_width" value="0.025" />
 
-<link name="d435">
+<link name="d435_link">
     <collision>
       <geometry>
         <box size="${d435_width} ${d435_length} ${d435_height}" />
@@ -193,7 +193,7 @@ SOFTWARE.
 
   <joint name="base_to_d435" type="fixed">
     <parent link="base_link" />
-    <child link="d435" />
+    <child link="d435_link" />
     <origin xyz="${(body_length/2)+(0.025/2)} 0 ${(-body_height/2)+0.205}" rpy="0 0 0" />
   </joint>
 
@@ -205,7 +205,7 @@ SOFTWARE.
   <xacro:property name="t265_length" value="0.100" />
   <xacro:property name="t265_width" value="0.008" />
 
-  <link name="t265">
+  <link name="t265_odom_frame">
     <collision>
       <geometry>
         <box size="${t265_width} ${t265_length} ${t265_height}" />
@@ -228,7 +228,7 @@ SOFTWARE.
 
   <joint name="base_to_t265" type="fixed">
     <parent link="base_link" />
-    <child link="t265" />
+    <child link="t265_odom_frame" />
     <origin xyz="${(body_length/2)+(0.008/2)} 0 ${(-body_height/2)+0.166}" rpy="0 0 0" />
   </joint>
 </robot>
