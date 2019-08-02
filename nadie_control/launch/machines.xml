@@ -14,4 +14,13 @@
         name="up1b"
         user="wimble"
     />
+
+    <machine
+        address="192.168.2.102"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="tx2a"
+        user="wimble"
+    />
+
 </launch>
