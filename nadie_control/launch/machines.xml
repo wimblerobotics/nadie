@@ -1,6 +1,22 @@
 <launch>
     <machine
-        address="192.168.2.103"
+        address="nanoa"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="nanoa"
+        user="wimble"
+    />
+
+    <machine
+        address="tx2a"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="tx2a"
+        user="wimble"
+    />
+
+    <machine
+        address="up1a"
         default="false"
         env-loader="/opt/ros/melodic/env.sh"
         name="up1a"
@@ -8,18 +24,10 @@
     />
 
     <machine
-        address="192.168.2.107"
+        address="up1b"
         default="false"
         env-loader="/home/wimble/remote_env.sh"
         name="up1b"
-        user="wimble"
-    />
-
-    <machine
-        address="192.168.2.102"
-        default="false"
-        env-loader="/home/wimble/remote_env.sh"
-        name="tx2a"
         user="wimble"
     />
 
