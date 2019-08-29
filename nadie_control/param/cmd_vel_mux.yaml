@@ -25,11 +25,11 @@ subscribers:
   #   topic:       "input/safety_controller"
   #   timeout:     0.2
   #   priority:    10
-  #  - name:        "Teleoperation"
-  #   topic:       "input/teleop"
-  #   timeout:     1.0
-  #   priority:    7
   - name:        "Navigation"
+    topic:       "/nadie/diff_drive_controller/move_base_cmd_vel"
+    timeout:     1.0
+    priority:    7
+  - name:        "Teleoperation"
     topic:       "/nadie/diff_drive_controller/joystick_cmd_vel"
     timeout:     1.0
-    priority:    10
+    priority:    1

@@ -24,6 +24,7 @@ SOFTWARE.
   <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
   <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
   
+  <arg name="cmd_vel_mux_node_name" value="nadie_cmd_vel_mux" />
   <arg name="do_controller_manager" default="true" />
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_joystick" default="true" />
@@ -96,7 +97,7 @@ SOFTWARE.
     </node>
 
     <node
-      machine="up1b"
+      machine="up1a"
       name="nadie_motor_nodelet_manager" 
       pkg="nodelet" 
       type="nodelet"
@@ -104,13 +105,13 @@ SOFTWARE.
 
     <node
       machine="up1a" 
-      name="nadie_cmd_vel_mux" 
-      pkg="nodelet" 
+      name="$(arg cmd_vel_mux_node_name)" 
+      pkg="nodelet"
       type="nodelet"
       args="load yocs_cmd_vel_mux/CmdVelMuxNodelet nadie_motor_nodelet_manager">
 
-      <param name="yaml_cfg_file" value="$(find nadie_control)/param/cmd_vel_mux.yaml"/>
-      <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+      <param name="yaml_cfg_file" value="/home/ros/nadie_ws/src/nadie/nadie_control/param/cmd_vel_mux.yaml" />
+      <remap from="$(arg robot_namespace)/$(arg cmd_vel_mux_node_name)/output" to="$(arg robot_namespace)/diff_drive_controller/cmd_vel" />
     </node>
 
 
