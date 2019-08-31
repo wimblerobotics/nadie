@@ -20,12 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <launch>
-    <arg name="do_nadie_motor" default="true" />
+    <arg name="do_nadie_motor" default="false" />
     <arg name="do_t265" default="true" />
     <arg name="offline"          default="false"/>
  
+    <include file="$(find nadie_control)/launch/machines.xml" />
+    
     <include unless="$(arg offline)" 
-        file="$(find realsense2_camera)/launch/rs_camera.launch">
+        file="$(find nadie_control)/launch/rs_camera.launch">
         <arg name="align_depth" value="true"/>
         <arg name="camera" value="d435" />
         <arg name="linear_accel_cov" value="1.0"/>
@@ -54,13 +56,6 @@ SOFTWARE.
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
 
     <group>
-        <machine
-            address="192.168.2.102"
-            default="true"
-            env-loader="/home/wimble/remote_env.sh"
-            name="tx2a"
-            user="wimble"
-        />
         <!-- Convenience launch file to launch odometry, rtabmap and rtabmapviz nodes at once -->
 
         <!-- For stereo:=false

@@ -31,10 +31,11 @@ SOFTWARE.
 
   <arg name="robot_namespace" default="/nadie" />
 
-<!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
-<include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/rs_aligned_depth.launch" >
-  <arg name="serial_no" value="836612072267" />
-</include>
+  <include file="$(find nadie_control)/launch/machines.xml" />
+  <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
+  <include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/rs_aligned_depth.launch" >
+    <arg name="serial_no" value="836612072267" />
+  </include>
 
 <group ns="$(arg robot_namespace)">
 
@@ -81,13 +82,6 @@ SOFTWARE.
 
 <!-- Launch rtabmap_ros -->
 <group ns="rtab">
-    <machine
-        address="192.168.2.102"
-        default="true"
-        env-loader="/home/wimble/remote_env.sh"
-        name="tx2a"
-        user="wimble"
-    />
     <include if="$(arg do_rtab_map)" file="$(find rtabmap_ros)/launch/rtabmap.launch" >
       <arg name="camera_info_topic" value="/camera/color/camera_info" />
       <arg name="depth_topic" value="/camera/aligned_depth_to_color/image_raw" />

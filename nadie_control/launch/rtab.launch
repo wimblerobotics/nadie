@@ -20,13 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <launch>
-    <machine
-        address="192.168.2.102"
-        default="true"
-        env-loader="/home/wimble/remote_env.sh"
-        name="tx2a"
-        user="wimble"
-    />
+    <include file="$(find nadie_control)/launch/machines.xml" />
     <include if="$(arg do_rtab_map)" file="$(find rtabmap_ros)/launch/rtabmap.launch" >
       <arg name="rtabmap_args" value="--delete_db_on_start" />
       <arg name="rviz" value="false" /> 

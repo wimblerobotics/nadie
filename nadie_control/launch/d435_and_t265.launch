@@ -39,6 +39,8 @@ SOFTWARE.
   <arg name="topic_odom_in"             default="/nadie/diff_drive_controller/odom"/>
   <arg name="calib_odom_file"           default="/home/ros/nadie_ws/src/nadie/nadie_control/config/calib_odometry.json"/>
 
+  <include file="$(find nadie_control)/launch/machines.xml" />
+  
   <group ns="$(arg camera2)">
     <include if="$(arg do_d435)" file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="serial_no"             value="$(arg serial_no_camera2)"/>
@@ -55,13 +57,6 @@ SOFTWARE.
   </group>
 
 <group ns="$(arg camera1)">
-    <machine
-        address="192.168.2.103"
-        default="true"
-        env-loader="/opt/ros/melodic/env.sh"
-        name="up1a"
-        user="ros"
-    />
     <include if="$(arg do_t265)" file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="serial_no"             value="$(arg serial_no_camera1)"/>
       <arg name="tf_prefix"             value="$(arg tf_prefix_camera1)"/>
