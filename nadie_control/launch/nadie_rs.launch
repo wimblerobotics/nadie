@@ -27,7 +27,7 @@ SOFTWARE.
     <include file="$(find nadie_control)/launch/machines.xml" />
     
     <include unless="$(arg offline)" 
-        file="$(find nadie_control)/launch/rs_camera.launch">
+        file="$(find realsense2_camera)/launch/rs_camera.launch">
         <arg name="align_depth" value="true"/>
         <arg name="camera" value="d435" />
         <arg name="linear_accel_cov" value="1.0"/>
@@ -235,7 +235,7 @@ SOFTWARE.
             <group if="$(arg visual_odometry)">
             
                 <!-- RGB-D Odometry -->
-                <node unless="$(arg stereo)" pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+                <node unless="$(arg stereo)" machine="tx2a" pkg="rtabmap_ros" type="rgbd_odometry" name="rgbd_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
                 <remap from="rgb/image"       to="$(arg rgb_topic_relay)"/>
                 <remap from="depth/image"     to="$(arg depth_topic_relay)"/>
                 <remap from="rgb/camera_info" to="$(arg camera_info_topic)"/>
@@ -259,7 +259,7 @@ SOFTWARE.
                 </node>
 
                 <!-- Stereo Odometry -->
-                <node if="$(arg stereo)" pkg="rtabmap_ros" type="stereo_odometry" name="stereo_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+                <node if="$(arg stereo)" machine="tx2a" pkg="rtabmap_ros" type="stereo_odometry" name="stereo_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
                 <remap from="left/image_rect"        to="$(arg left_image_topic_relay)"/>
                 <remap from="right/image_rect"       to="$(arg right_image_topic_relay)"/>
                 <remap from="left/camera_info"       to="$(arg left_camera_info_topic)"/>
@@ -287,7 +287,7 @@ SOFTWARE.
             </group>
             
             <!-- ICP Odometry -->
-            <node if="$(arg icp_odometry)" pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
+            <node if="$(arg icp_odometry)" machine="tx2a" pkg="rtabmap_ros" type="icp_odometry" name="icp_odometry" output="$(arg output)" args="$(arg rtabmap_args) $(arg odom_args)" launch-prefix="$(arg launch_prefix)">
             <remap from="scan"                   to="$(arg scan_topic)"/>
             <remap from="scan_cloud"             to="$(arg scan_cloud_topic)"/>
             <remap from="odom"                   to="$(arg odom_topic)"/>
@@ -308,7 +308,7 @@ SOFTWARE.
         
             <!-- Visual SLAM (robot side) -->
             <!-- args: "delete_db_on_start" and "udebug" -->
-            <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" output="$(arg output)" args="$(arg rtabmap_args)" launch-prefix="$(arg launch_prefix)">
+            <node name="rtabmap" machine="tx2a" pkg="rtabmap_ros" type="rtabmap" output="$(arg output)" args="$(arg rtabmap_args)" launch-prefix="$(arg launch_prefix)">
             <param     if="$(arg stereo)" name="subscribe_depth"  type="bool" value="false"/>
             <param unless="$(arg stereo)" name="subscribe_depth"  type="bool" value="true"/>
             <param name="subscribe_rgbd"       type="bool"   value="$(arg subscribe_rgbd)"/>
