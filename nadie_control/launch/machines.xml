@@ -12,7 +12,7 @@
         default="false"
         env-loader="/home/wimble/remote_env.sh"
         name="tx2a"
-        user="wimble"
+        user="ros"
     />
 
     <machine
