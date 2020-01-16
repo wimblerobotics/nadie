@@ -13,6 +13,7 @@
   <url type="website">http://wimblerobotics.com</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>map_server</depend>
   <build_depend>roslaunch</build_depend>
   <depend>pointcloud_to_laserscan</depend>
   <depend>rostopic</depend>
