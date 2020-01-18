@@ -1,4 +1,5 @@
 <launch>
+  <arg name="machine"             default="none" />
   <arg name="serial_no"           default=""/>
   <arg name="json_file_path"      default=""/>
   <arg name="camera"              default="camera"/>
@@ -52,6 +53,7 @@
   
   <group ns="$(arg camera)">
     <include file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
+      <arg name="machine"                  value="$(arg machine)" />
       <arg name="tf_prefix"                value="$(arg tf_prefix)"/>
       <!--arg name="external_manager"         value="$(arg external_manager)"/-->
       <arg name="manager"                  value="$(arg manager)"/>

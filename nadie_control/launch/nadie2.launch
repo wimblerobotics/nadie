@@ -24,6 +24,7 @@
     <arg name="do_map_server" default="true" />
     <arg name="do_nadie_motor" default="true" />
     <arg name="do_rviz" default="false" />
+    <arg name="do_t265" default="true" />
 
     <arg name="robot_namespace" default="/nadie" />
 
@@ -37,6 +38,9 @@
     <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie2_motor.launch" >
          <arg name="robot_namespace" value="$(arg robot_namespace)" />
    </include>
+
+    <!-- Launch the T265 tracking camera -->
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
 
     <!-- Launch visualization in rviz --> 
     <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 

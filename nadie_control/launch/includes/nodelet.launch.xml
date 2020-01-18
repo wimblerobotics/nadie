@@ -1,7 +1,7 @@
 <launch>
   <include file="$(find nadie_control)/launch/machines.xml" />
 
-  <arg name="machine" default="up1a" />
+  <arg name="machine" default="none" />
   <arg name="manager"             default="realsense2_camera_manager"/>
   <arg name="serial_no"           default=""/>
   <arg name="tf_prefix"           default=""/>
