@@ -20,36 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <launch>
-    <machine
-        address="nanoa"
-        default="false"
-        env-loader="/home/wimble/remote_env.sh"
-        name="nanoa"
-        user="ros"
-    />
-
-    <machine
-        address="tx2a"
-        default="false"
-        env-loader="/home/wimble/remote_env.sh"
-        name="tx2a"
-        user="ros"
-    />
-
-    <machine
-        address="up1a"
-        default="false"
-         env-loader="/home/ros/remote_env.sh"
-        name="up1a"
-        user="ros"
-    />
-
-    <machine
-        address="up1b"
-        default="false"
-        env-loader="/homeext/ros/remote_env.sh"
-        name="up1b"
-        user="ros"
-    />
-
+    <include file="$(find nadie_control)/launch/machines.xml" />
+    <include file="$(find nadie_control)/launch/rs_camera.launch">
+        <arg name="align_depth"             value="true"/>
+        <arg name="camera"                  value="d435" />
+        <!--arg name="initial_reset"         value="True"/-->
+        <arg name="linear_accel_cov"        value="1.0"/>
+        <arg name="machine"                 value="nanoa" />
+        <arg name="serial_no"               value="836612072267" />
+        <arg name="unite_imu_method"        value="linear_interpolation"/>
+    </include>
 </launch>

@@ -21,6 +21,7 @@
     SOFTWARE.
     -->
 
+    <arg name="do_d435" default="true" />
     <arg name="do_map_server" default="true" />
     <arg name="do_nadie_motor" default="true" />
     <arg name="do_rviz" default="false" />
@@ -28,7 +29,10 @@
 
     <arg name="robot_namespace" default="/nadie" />
 
-    <!-- Load the map -->
+<!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
+<include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435.launch" />
+
+<!-- Load the map -->
     <include if="$(arg do_map_server)" 
              file="$(find snowberry_map)/launch/nadie2.map.launch" >
         <arg name="robot_namespace" value="$(arg robot_namespace)" />
