@@ -26,9 +26,9 @@
     <machine
         address="up1b"
         default="false"
-        env-loader="/home/wimble/remote_env.sh"
+        env-loader="/homeext/ros/remote_env.sh"
         name="up1b"
-        user="wimble"
+        user="ros"
     />
 
 </launch>
