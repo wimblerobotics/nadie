@@ -18,7 +18,7 @@
     <machine
         address="up1a"
         default="false"
-        env-loader="/opt/ros/melodic/env.sh"
+         env-loader="/home/ros/remote_env.sh"
         name="up1a"
         user="ros"
     />
