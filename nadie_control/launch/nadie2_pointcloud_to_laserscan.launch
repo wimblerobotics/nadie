@@ -37,6 +37,6 @@ SOFTWARE.
         pkg="pointcloud_to_laserscan"
         type="pointcloud_to_laserscan_node"
         >
-      <remap from="/d435/dept/image_rect_raw" to="/cloud_in" />
+      <remap to="/d435/depth/color/points" from="/cloud_in" />
     </node>
 </launch>
