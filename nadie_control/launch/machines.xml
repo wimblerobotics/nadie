@@ -23,7 +23,7 @@ SOFTWARE.
     <machine
         address="nanoa"
         default="false"
-        env-loader="/home/wimble/remote_env.sh"
+        env-loader="/home/ros/remote_env.sh"
         name="nanoa"
         user="ros"
     />
