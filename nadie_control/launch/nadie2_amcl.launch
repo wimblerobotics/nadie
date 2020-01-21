@@ -40,7 +40,7 @@
       <param name="update_min_a" value="0.1"/>
       <param name="update_min_d" value="0.05"/>
       <param name="use_map_topic" value="$(arg use_map_topic)"/>
-      <!--remap from="scan" to="/scan" /-->
+      <remap from="scan" to="/d435/laser_scan" />
       <!--remap from="scan" to="$(arg scan_topic)"/-->
     </node>
   </group>

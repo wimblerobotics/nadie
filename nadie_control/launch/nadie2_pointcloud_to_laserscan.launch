@@ -1,7 +1,7 @@
 <!--
 Copyright (c) 2020 Michael Wimble
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
+Permission is hereby granted, free of chparame, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -21,13 +21,32 @@ SOFTWARE.
 -->
 
 <launch>
-    <arg name="do_d435" default="true" />
-    <arg name="do_pointcloud_to_laserscan" default="true" />
+    <arg name="do_d435" default="false" />
+    <arg name="do_depthimage_to_laserscan" default="true" />
+    <arg name="do_pointcloud_to_laserscan" default="false" />
 
     <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
     <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435.launch" />
 
     <include file="$(find nadie_control)/launch/machines.xml" />
+
+    <!-- Launch the pointcould to laserscan node /-->
+    <node
+        if="$(arg do_depthimage_to_laserscan)"
+        machine="up1b"
+        name="depthimage_to_laserscan"
+        pkg="depthimage_to_laserscan"
+        type="depthimage_to_laserscan"
+        >
+        <param name="output_frame_id"   value="base_footprint" />
+        <param name="scan_height"       value="292" />
+        <param name="range_max"         value="3.0" />
+        <param name="range_min"         value="0.0" />
+        <param name="scan_time"         value="0.02" />
+        <remap to="/d435/depth/camera_info" from="/camera_info" />
+        <remap to="/d435/depth/image_rect_raw" from="/image" />
+        <remap to="/d435/laser_scan" from="/scan" />
+    </node>
 
     <!-- Launch the pointcould to laserscan node /-->
     <node
@@ -37,6 +56,12 @@ SOFTWARE.
         pkg="pointcloud_to_laserscan"
         type="pointcloud_to_laserscan_node"
         >
-      <remap to="/d435/depth/color/points" from="/cloud_in" />
+        <param name="angle_max"         value="0.8" />    
+        <param name="angle_min"         value="-0.8" />    
+        <param name="min_height"        value="0.0" />    
+        <param name="max_height"        value="1.0" />
+        <param name="range_max"         value="3.0" />
+        <param name="range_min"         value="0.0" />    
+        <remap to="/d435/depth/color/points" from="/cloud_in" />
     </node>
 </launch>

@@ -21,7 +21,7 @@ SOFTWARE.
 -->
 
 <launch> 
-    <arg name="do_amcl" default="false" />
+    <arg name="do_amcl" default="true" />
     <arg name="do_d435" default="true" />
     <arg name="do_map_server" default="true" />
     <arg name="do_nadie_motor" default="true" />
