@@ -68,7 +68,7 @@ diff_drive_controller:
   # Base frame_id
   base_frame_id: base_link
   odom_frame_id: odom
-  enable_odom_tf: false
+  enable_odom_tf: true
   estimate_velocity_from_position: false
 
   # Velocity and acceleration limits
