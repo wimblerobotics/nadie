@@ -41,7 +41,7 @@ SOFTWARE.
         <param name="output_frame_id"   value="d435_depth_frame" />
         <param name="scan_height"       value="292" />
         <param name="range_max"         value="3.0" />
-        <param name="range_min"         value="0.0" />
+        <param name="range_min"         value="0.04" />
         <param name="scan_time"         value="0.02" />
         <remap to="/d435/depth/camera_info" from="/camera_info" />
         <remap to="/d435/depth/image_rect_raw" from="/image" />
