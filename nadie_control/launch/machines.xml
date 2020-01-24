@@ -52,4 +52,11 @@ SOFTWARE.
         user="ros"
     />
 
+    <machine
+        address="up1c"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="up1c"
+        user="wimble"
+    />
 </launch>
