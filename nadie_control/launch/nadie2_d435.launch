@@ -38,7 +38,7 @@ SOFTWARE.
         <!--arg name="initial_reset"         value="True"/-->
         <arg name="linear_accel_cov"        value="1.0"/>
         <arg name="machine"                 value="nanoa" />
-        <arg name="serial_no"               value="836612072267" />
+        <arg name="serial_no"               value="832112074065" />
         <arg name="tf_prefix"               value="d435" />
         <arg name="unite_imu_method"        value="linear_interpolation"/>
     </include>
