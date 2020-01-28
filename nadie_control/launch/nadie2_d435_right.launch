@@ -23,7 +23,7 @@ SOFTWARE.
     <include file="$(find nadie_control)/launch/machines.xml" />
     <include file="$(find nadie_control)/launch/rs_camera.launch">
         <arg name="align_depth"             value="true"/>
-        <arg name="camera"                  value="d435" />
+        <arg name="camera"                  value="d435_right" />
         <arg name="depth_height"            value="480" />
         <arg name="depth_width"             value="640" />
         <arg name="enable_accel"            value="false" />
@@ -37,9 +37,9 @@ SOFTWARE.
         <arg name="enable_sync"             value="true" />
         <!--arg name="initial_reset"         value="True"/-->
         <arg name="linear_accel_cov"        value="1.0"/>
-        <arg name="machine"                 value="nanoa" />
+        <arg name="machine"                 value="up1c" />
         <arg name="serial_no"               value="832112074065" />
-        <arg name="tf_prefix"               value="d435" />
+        <arg name="tf_prefix"               value="d435_right" />
         <arg name="unite_imu_method"        value="linear_interpolation"/>
     </include>
 </launch>

@@ -26,7 +26,7 @@ SOFTWARE.
     <arg name="do_pointcloud_to_laserscan" default="false" />
 
     <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
-    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435.launch" />
+    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435_left.launch" />
 
     <include file="$(find nadie_control)/launch/machines.xml" />
 
@@ -38,14 +38,14 @@ SOFTWARE.
         pkg="depthimage_to_laserscan"
         type="depthimage_to_laserscan"
         >
-        <param name="output_frame_id"   value="d435_depth_frame" />
+        <param name="output_frame_id"   value="d435_left_depth_frame" />
         <param name="scan_height"       value="292" />
         <param name="range_max"         value="3.0" />
         <param name="range_min"         value="0.04" />
         <param name="scan_time"         value="0.02" />
-        <remap to="/d435/depth/camera_info" from="/camera_info" />
-        <remap to="/d435/depth/image_rect_raw" from="/image" />
-        <remap to="/d435/laser_scan" from="/scan" />
+        <remap to="/d435_left/depth/camera_info" from="/camera_info" />
+        <remap to="/d435_left/depth/image_rect_raw" from="/image" />
+        <remap to="/d435_left/laser_scan" from="/scan" />
     </node>
 
     <!-- Launch the pointcould to laserscan node /-->
@@ -62,6 +62,6 @@ SOFTWARE.
         <param name="max_height"        value="1.0" />
         <param name="range_max"         value="3.0" />
         <param name="range_min"         value="0.0" />    
-        <remap to="/d435/depth/color/points" from="/cloud_in" />
+        <remap to="/d435_left/depth/color/points" from="/cloud_in" />
     </node>
 </launch>

@@ -31,8 +31,11 @@ SOFTWARE.
 
     <arg name="robot_namespace" default="/nadie" />
 
-    <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
-    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435.launch" />
+    <!-- Launch the left D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
+    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435_left.launch" />
+
+    <!-- Launch the right D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
+    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435_right.launch" />
 
     <!-- Load the map -->
     <include if="$(arg do_map_server)" 
@@ -51,8 +54,11 @@ SOFTWARE.
     <!-- Launch visualization in rviz --> 
     <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
 
-    <!-- Launch pointcloud2 to laser scan for use with AMCL -->
-    <include if="$(arg do_pointcloud_to_laserscan)" file="$(find nadie_control)/launch/nadie2_pointcloud_to_laserscan.launch" />
+    <!-- Launch pointcloud2 for the left camera to laser scan for use with AMCL -->
+    <include if="$(arg do_pointcloud_to_laserscan)" file="$(find nadie_control)/launch/nadie2_pointcloud_to_left_laserscan.launch" />
+
+    <!-- Launch pointcloud2 for the right camera to laser scan for use with AMCL -->
+    <include if="$(arg do_pointcloud_to_laserscan)" file="$(find nadie_control)/launch/nadie2_pointcloud_to_right_laserscan.launch" />
 
     <!-- Bring up AMCL -->
     <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/nadie2_amcl.launch" />

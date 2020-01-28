@@ -21,11 +21,11 @@ SOFTWARE.
 -->
 
 <launch>
-    <arg name="do_d435b" default="false" />
+    <arg name="do_d435" default="false" />
     <arg name="do_depthimage_to_laserscan" default="true" />
 
     <!-- Launch the D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
-    <include if="$(arg do_d435b)" file="$(find nadie_control)/launch/nadie2_d435b.launch" />
+    <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435_right.launch" />
 
     <include file="$(find nadie_control)/launch/machines.xml" />
 
@@ -37,14 +37,14 @@ SOFTWARE.
         pkg="depthimage_to_laserscan"
         type="depthimage_to_laserscan"
         >
-        <param name="output_frame_id"   value="d435b_depth_frame" />
+        <param name="output_frame_id"   value="d435_right_depth_frame" />
         <param name="scan_height"       value="292" />
         <param name="range_max"         value="3.0" />
         <param name="range_min"         value="0.04" />
         <param name="scan_time"         value="0.02" />
-        <remap to="/d435b/depth/camera_info" from="/camera_info" />
-        <remap to="/d435b/depth/image_rect_raw" from="/image" />
-        <remap to="/d435b/laser_scan" from="/scan" />
+        <remap to="/d435_right/depth/camera_info" from="/camera_info" />
+        <remap to="/d435_right/depth/image_rect_raw" from="/image" />
+        <remap to="/d435_right/laser_scan" from="/scan" />
     </node>
 
 </launch>
