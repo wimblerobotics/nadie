@@ -44,7 +44,7 @@ SOFTWARE.
         <param name="scan_time"         value="0.02" />
         <remap to="/d435_right/depth/camera_info" from="/camera_info" />
         <remap to="/d435_right/depth/image_rect_raw" from="/image" />
-        <remap to="/d435_right/laser_scan" from="/scan" />
+        <remap to="/d435/laser_scan" from="/scan" />
     </node>
 
 </launch>
