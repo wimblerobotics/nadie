@@ -29,7 +29,7 @@
       <param name="odom_alpha3" value="0.2"/>
       <param name="odom_alpha4" value="0.2"/>
       <param name="odom_alpha5" value="0.1"/>
-      <param name="odom_frame_id" value="odom"/>
+      <param name="odom_frame_id" value="t265_odom_frame"/>
       <param name="odom_model_type" value="diff"/>
       <param name="recovery_alpha_slow" value="0.001"/>
       <param name="recovery_alpha_fast" value="0.01"/>

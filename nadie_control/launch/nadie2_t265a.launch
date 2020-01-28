@@ -22,11 +22,12 @@ SOFTWARE.
 <launch>
     <include file="$(find nadie_control)/launch/machines.xml" />
     <include file="$(find nadie_control)/launch/rs_camera.launch">
-        <arg name="calib_odom_file"         value="/home/ros/nadie_ws/src/nadie/nadie_control/config/calib_odometry.json" />
+        <arg name="calib_odom_file"         value="$(find nadie_control)/config/calib_odometry.json" />
         <arg name="camera"                  value="t265" />
         <arg name="initial_reset"           value="True"/>
         <arg name="machine"                 value="up1a" />
         <arg name="serial_no"               value="905312111684" />
+        <arg name="topic_odom_in"           value="/nadie/diff_drive_controller/odom" />
     </include>
 <!--node
     name="t265_pose_frame_to_base_footprint_link" 

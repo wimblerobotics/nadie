@@ -195,7 +195,7 @@ SOFTWARE.
   <joint name="base_to_d435_left" type="fixed">
     <parent link="base_link" />
     <child link="d435_left_link" />
-    <origin xyz="0.30 0.042 0.180" rpy="${M_PI} 0 0.43" />
+    <origin xyz="0.305 0.042 0.180" rpy="${M_PI} 0 0.43" />
   </joint>
 
 <link name="d435_right_link">
@@ -222,7 +222,7 @@ SOFTWARE.
   <joint name="base_to_d435_right" type="fixed">
     <parent link="base_link" />
     <child link="d435_right_link" />
-    <origin xyz="0.24 -0.042 0.180" rpy="0 0 -0.43" />
+    <origin xyz="0.305 -0.042 0.180" rpy="0 0 -0.43" />
   </joint>
 
   <material name="t265_material">
@@ -257,6 +257,6 @@ SOFTWARE.
   <joint name="base_to_t265" type="fixed">
     <parent link="base_link" />
     <child link="t265_odom_frame" />
-    <origin xyz="${0.18+(0.008/2)} 0 0.15" rpy="0 0 0" />
+    <origin xyz="${0.24+(0.008/2)} 0 0.105" rpy="0 0 0" />
   </joint>
 </robot>
