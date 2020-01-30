@@ -39,7 +39,6 @@ SOFTWARE.
 
     <!-- Merge the lasers -->
     <node 
-        launch-prefix="xterm -e gdb --args"
         if="$(arg do_d435)"
         pkg="ira_laser_tools" 
         name="laserscan_multi_merger" 
