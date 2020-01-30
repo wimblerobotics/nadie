@@ -37,7 +37,7 @@ SOFTWARE.
         pkg="depthimage_to_laserscan"
         type="depthimage_to_laserscan"
         >
-        <param name="output_frame_id"   value="d435_right_depth_frame" />
+        <param name="output_frame_id"   value="laser_frame" />
         <param name="scan_height"       value="292" />
         <param name="range_max"         value="3.0" />
         <param name="range_min"         value="0.04" />
