@@ -38,7 +38,7 @@ SOFTWARE.
         pkg="depthimage_to_laserscan"
         type="depthimage_to_laserscan"
         >
-        <param name="output_frame_id"   value="laser_frame" />
+        <param name="output_frame_id"   value="d435_left_depth_optical_frame" />
         <param name="scan_height"       value="292" />
         <param name="range_max"         value="3.0" />
         <param name="range_min"         value="0.04" />
@@ -46,22 +46,5 @@ SOFTWARE.
         <remap to="/d435_left/depth/camera_info" from="/camera_info" />
         <remap to="/d435_left/depth/image_rect_raw" from="/image" />
         <remap to="/laser_scan_left" from="/scan" />
-    </node>
-
-    <!-- Launch the pointcould to laserscan node /-->
-    <node
-        if="$(arg do_pointcloud_to_laserscan)"
-        machine="up1b"
-        name="pointcloud_to_laserscan_node"
-        pkg="pointcloud_to_laserscan"
-        type="pointcloud_to_laserscan_node"
-        >
-        <param name="angle_max"         value="0.8" />    
-        <param name="angle_min"         value="-0.8" />    
-        <param name="min_height"        value="0.0" />    
-        <param name="max_height"        value="1.0" />
-        <param name="range_max"         value="3.0" />
-        <param name="range_min"         value="0.0" />    
-        <remap to="/d435_left/depth/color/points" from="/cloud_in" />
     </node>
 </launch>
