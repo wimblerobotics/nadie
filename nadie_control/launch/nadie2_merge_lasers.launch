@@ -19,21 +19,23 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-<launch>
-    <include file="$(find nadie_control)/launch/machines.xml" />
-    <include file="$(find nadie_control)/launch/rs_camera.launch">
-        <arg name="calib_odom_file"         value="$(find nadie_control)/config/calib_odometry.json" />
-        <arg name="camera"                  value="t265" />
-        <arg name="initial_reset"           value="True"/>
-        <arg name="machine"                 value="up1a" />
-        <arg name="serial_no"               value="905312111684" />
-        <arg name="topic_odom_in"           value="/nadie/diff_drive_controller/odom" />
-    </include>
 
-    <!--node
-        name="t265_pose_frame_to_base_footprint_link" 
-        pkg="tf" 
-        type="static_transform_publisher" 
-        args="0 -0.105 0.240 0 0.0 0 t265_link base_link 200" /-->
+<launch> 
+    <arg name="do_ira_debug" default="false" />
+    <arg if="$(arg do_ira_debug)" name="ira_launch_prefix" value="xterm -e gdb --args" />
+    <arg unless="$(arg do_ira_debug)" name="ira_launch_prefix" value="" />
 
- </launch>
+    <!-- Merge the lasers -->
+    <node 
+        launch-prefix="$(arg ira_launch_prefix)"
+        pkg="ira_laser_tools" 
+        name="laserscan_multi_merger" 
+        type="laserscan_multi_merger" 
+        output="screen">
+		<param name="destination_frame" value="/base_link"/>
+		<param name="cloud_destination_topic" value="/merged_cloud"/>
+		<param name="scan_destination_topic" value="/scan_multi"/>
+        <param name="laserscan_topics" value ="/laser_scan_left /laser_scan_right" />
+	</node>
+
+</launch>

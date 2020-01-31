@@ -24,6 +24,7 @@ SOFTWARE.
     <arg name="do_amcl" default="true" />
     <arg name="do_d435" default="true" />
     <arg name="do_map_server" default="true" />
+    <arg name="do_merge_lasers" default="true" />
     <arg name="do_nadie_motor" default="true" />
     <arg name="do_pointcloud_to_laserscan" default="true" />
     <arg name="do_rviz" default="false" />
@@ -36,19 +37,6 @@ SOFTWARE.
 
     <!-- Launch the right D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
     <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie2_d435_right.launch" />
-
-    <!-- Merge the lasers -->
-    <node 
-        if="$(arg do_d435)"
-        pkg="ira_laser_tools" 
-        name="laserscan_multi_merger" 
-        type="laserscan_multi_merger" 
-        output="screen">
-		<param name="destination_frame" value="/base_link"/>
-		<param name="cloud_destination_topic" value="/merged_cloud"/>
-		<param name="scan_destination_topic" value="/scan_multi"/>
-        <param name="laserscan_topics" value ="/laser_scan_left /laser_scan_right" />
-	</node>
 
     <!-- Load the map -->
     <include if="$(arg do_map_server)" 
@@ -75,4 +63,7 @@ SOFTWARE.
 
     <!-- Bring up AMCL -->
     <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/nadie2_amcl.launch" />
+
+    <!-- Merge the lasers -->
+    <include if="$(arg do_merge_lasers)" file="$(find nadie_control)/launch/nadie2_merge_lasers.launch" />
 </launch>

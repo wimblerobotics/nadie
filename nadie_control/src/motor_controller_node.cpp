@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
 	ros::AsyncSpinner spinner(50);
 	spinner.start();
 
-  boost::shared_ptr<NadieMotorController> hw;
+  	boost::shared_ptr<NadieMotorController> hw;
 
 	hw.reset(new NadieMotorController(nh));
 
