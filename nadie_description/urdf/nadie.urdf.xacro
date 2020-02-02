@@ -255,8 +255,10 @@ SOFTWARE.
   </link>
 
   <joint name="base_to_t265" type="fixed">
-    <parent link="base_link" />
-    <child link="t265_odom_frame" />
+    <!--parent link="base_link" />
+    <child link="t265_odom_frame" /-->
+    <parent link="t265_odom_frame" />
+    <child link="base_footprint" />
     <origin xyz="${0.24+(0.008/2)} 0 0.105" rpy="0 0 0" />
   </joint>
 </robot>

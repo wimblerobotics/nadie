@@ -1,6 +1,5 @@
 <launch>
-  <arg name="machine"             default="none" />
-  <arg name="external_manager"    default="false"/>
+  <arg name="machine" default="none" />
   <arg name="manager"             default="realsense2_camera_manager"/>
   <arg name="serial_no"           default=""/>
   <arg name="tf_prefix"           default=""/>
@@ -63,7 +62,6 @@
   <arg name="fisheye2_optical_frame_id" default="$(arg tf_prefix)_fisheye2_optical_frame"/>
   <arg name="accel_optical_frame_id"    default="$(arg tf_prefix)_accel_optical_frame"/>
   <arg name="gyro_optical_frame_id"     default="$(arg tf_prefix)_gyro_optical_frame"/>
-  <arg name="imu_optical_frame_id"      default="$(arg tf_prefix)_imu_optical_frame"/>
   <arg name="pose_optical_frame_id"     default="$(arg tf_prefix)_pose_optical_frame"/>
 
   <arg name="aligned_depth_to_color_frame_id"    default="$(arg tf_prefix)_aligned_depth_to_color_frame"/>
@@ -82,10 +80,9 @@
   <arg name="linear_accel_cov"         default="0.01"/>
   <arg name="initial_reset"            default="false"/>
   <arg name="unite_imu_method"         default="none"/> <!-- Options are: [none, copy, linear_interpolation] -->
-  <arg name="allow_no_texture_points"  default="false"/>
 
 
-  <node unless="$(arg external_manager)" machine="$(arg machine)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen"/>
+  <node pkg="nodelet" machine="$(arg machine)" type="nodelet" name="$(arg manager)" args="manager" output="screen"/>
   <node pkg="nodelet" machine="$(arg machine)" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
     <param name="json_file_path"           type="str"  value="$(arg json_file_path)"/>
@@ -146,7 +143,6 @@
     <param name="fisheye2_optical_frame_id" type="str"  value="$(arg fisheye2_optical_frame_id)"/>
     <param name="accel_optical_frame_id"    type="str"  value="$(arg accel_optical_frame_id)"/>
     <param name="gyro_optical_frame_id"     type="str"  value="$(arg gyro_optical_frame_id)"/>
-    <param name="imu_optical_frame_id"      type="str"  value="$(arg imu_optical_frame_id)"/>
     <param name="pose_optical_frame_id"     type="str"  value="$(arg pose_optical_frame_id)"/>
 
     <param name="aligned_depth_to_color_frame_id"    type="str"  value="$(arg aligned_depth_to_color_frame_id)"/>
@@ -165,7 +161,6 @@
     <param name="linear_accel_cov"         type="double" value="$(arg linear_accel_cov)"/>
     <param name="initial_reset"            type="bool"   value="$(arg initial_reset)"/>
     <param name="unite_imu_method"         type="str"    value="$(arg unite_imu_method)"/>
-    <param name="allow_no_texture_points"  type="bool"   value="$(arg allow_no_texture_points)"/>
 
   </node>
 </launch>
