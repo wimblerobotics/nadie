@@ -29,7 +29,7 @@
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_joystick" default="true" />
   <arg name="do_load_urdf" default="true" />
-  <arg name="do_motor_controller" default="false" />
+  <arg name="do_motor_controller" default="true" />
   <arg name="do_robot_state_publisher" default="true" />
   <arg name="use_joint_state_publisher_gui" default="false" />
 
@@ -39,7 +39,7 @@
      <include file="$(find nadie_control)/launch/machines.xml" />
   
      <!-- load the controller yaml -->
-    <rosparam file="$(find nadie_control)/config/nadie_controller.yaml" command="load" />
+     <rosparam file="$(find nadie_control)/config/nadie_controller.yaml" command="load" />
 
 
     <!-- Load the URDF -->

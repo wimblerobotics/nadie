@@ -21,17 +21,6 @@ SOFTWARE.
 -->
 <launch>
     <include file="$(find nadie_control)/launch/machines.xml" />
-    <!--include file="$(find nadie_control)/launch/rs_camera.launch">
-        <arg name="calib_odom_file"         value="$(find nadie_control)/config/calib_odometry.json" />
-        <arg name="camera"                  value="t265" />
-        <arg name="enable_gyro"             value="true"/>
-        <arg name="enable_accel"            value="true"/>
-        <arg name="initial_reset"           value="True"/>
-        <arg name="machine"                 value="up1a" />
-        <arg name="serial_no"               value="905312111684" />
-        <arg name="topic_odom_in"           value="/nadie/diff_drive_controller/odom" />
-    </include-->
-
     <!--node
         name="t265_pose_frame_to_base_footprint_link" 
         pkg="tf" 
@@ -57,7 +46,7 @@ SOFTWARE.
     <arg name="machine"             default="up1a" />
     <arg name="serial_no"           default="905312111684"/>
     <arg name="tf_prefix"           default="$(arg camera)"/>
-    <arg name="unite_imu_method"    default=""/>
+    <arg name="unite_imu_method"    default="linear_interpolation"/>
   
     <group ns="$(arg camera)">
         <include file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
