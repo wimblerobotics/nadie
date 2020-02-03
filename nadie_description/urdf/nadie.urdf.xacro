@@ -26,7 +26,8 @@ SOFTWARE.
 
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <legacyModeNS>true</legacyModeNS>      <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
+      <legacyModeNS>true</legacyModeNS>      
+      <!-- If using DefaultRobotHWSim, set this to "true" to fix namespace issue -->
       <!--robotNamespace>$(arg robot_namespace)</robotNamespace-->
     </plugin>
   </gazebo>
@@ -233,7 +234,7 @@ SOFTWARE.
   <xacro:property name="t265_length" value="0.100" />
   <xacro:property name="t265_width" value="0.008" />
 
-  <link name="t265_odom_frame">
+  <link name="t265_camera_link">
     <collision>
       <geometry>
         <box size="${t265_width} ${t265_length} ${t265_height}" />
@@ -255,10 +256,8 @@ SOFTWARE.
   </link>
 
   <joint name="base_to_t265" type="fixed">
-    <!--parent link="base_link" />
-    <child link="t265_odom_frame" /-->
-    <parent link="t265_odom_frame" />
-    <child link="base_footprint" />
+    <parent link="base_link" />
+    <child link="t265_camera_link" />
     <origin xyz="${0.24+(0.008/2)} 0 0.105" rpy="0 0 0" />
   </joint>
 </robot>
