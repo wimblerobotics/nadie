@@ -25,7 +25,7 @@ SOFTWARE.
         name="t265_pose_frame_to_base_footprint_link" 
         pkg="tf" 
         type="static_transform_publisher" 
-        args="0 -0.105 0.240 0 0.0 0 t265_link base_link 200" /-->
+        args="0 -0.105 0.240 0 0.0 0 base_footprint t265_link 200" /-->
 
  
  
@@ -40,7 +40,7 @@ SOFTWARE.
     <arg name="fisheye_height"      default="800"/>
     <arg name="fisheye_width"       default="848"/> 
     <arg name="gyro_fps"            default="200"/>
-    <arg name="initial_reset"       default="false"/>
+    <arg name="initial_reset"       default="true"/>
     <arg name="json_file_path"      default=""/>
     <arg name="linear_accel_cov"    default="0.01"/>
     <arg name="machine"             default="up1a" />

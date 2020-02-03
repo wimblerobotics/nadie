@@ -21,12 +21,12 @@ SOFTWARE.
 -->
 
 <launch> 
-    <arg name="do_amcl" default="false" />
-    <arg name="do_d435" default="false" />
-    <arg name="do_map_server" default="false" />
-    <arg name="do_merge_lasers" default="false" />
+    <arg name="do_amcl" default="true" />
+    <arg name="do_d435" default="true" />
+    <arg name="do_map_server" default="true" />
+    <arg name="do_merge_lasers" default="true" />
     <arg name="do_nadie_motor" default="true" />
-    <arg name="do_pointcloud_to_laserscan" default="false" />
+    <arg name="do_pointcloud_to_laserscan" default="true" />
     <arg name="do_rviz" default="false" />
     <arg name="do_t265" default="true" />
 
@@ -50,7 +50,7 @@ SOFTWARE.
    </include>
 
     <!-- Launch the T265 tracking camera -->
-    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/t265a.launch" />
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch" />
 
     <!-- Launch visualization in rviz --> 
     <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 
