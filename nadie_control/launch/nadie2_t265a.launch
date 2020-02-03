@@ -50,7 +50,7 @@ SOFTWARE.
   
     <group ns="$(arg camera)">
         <include file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
-            <arg name="calib_odom_file"         value="$(find nadie_control)/config/calib_odometry.json" />
+            <arg name="calib_odom_file"          value="/home/ros/nadie_ws/src/nadie/nadie_control/config/calib_odometry.json" />
             <arg name="enable_accel"             value="$(arg enable_accel)"/>
             <arg name="accel_fps"                value="$(arg accel_fps)"/>
             <arg name="enable_fisheye1"          value="$(arg enable_fisheye1)"/>
