@@ -21,11 +21,11 @@ SOFTWARE.
 -->
 <launch>
     <include file="$(find nadie_control)/launch/machines.xml" />
-    <!--node
+    <node
         name="t265_pose_frame_to_base_footprint_link" 
         pkg="tf" 
         type="static_transform_publisher" 
-        args="0 -0.105 0.240 0 0.0 0 base_footprint t265_link 200" /-->
+        args="0 -0.105 0.240 0 0.0 0 t265_odom_frame base_footprint 200" />
 
  
  
