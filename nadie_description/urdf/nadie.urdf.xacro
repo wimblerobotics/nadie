@@ -172,7 +172,7 @@ SOFTWARE.
   <xacro:property name="d435_width" value="0.025" />
 
 
-<link name="d435_left_link">
+  <link name="d435_left_link">
     <collision>
       <geometry>
         <box size="${d435_width} ${d435_length} ${d435_height}" />
@@ -196,10 +196,10 @@ SOFTWARE.
   <joint name="base_to_d435_left" type="fixed">
     <parent link="base_link" />
     <child link="d435_left_link" />
-    <origin xyz="0.305 0.042 0.180" rpy="${M_PI} 0 0.43" />
+    <origin xyz="0.305 0.042 0.180" rpy="${M_PI} 0 0.69" />
   </joint>
 
-<link name="d435_right_link">
+  <link name="d435_right_link">
     <collision>
       <geometry>
         <box size="${d435_width} ${d435_length} ${d435_height}" />
@@ -223,7 +223,7 @@ SOFTWARE.
   <joint name="base_to_d435_right" type="fixed">
     <parent link="base_link" />
     <child link="d435_right_link" />
-    <origin xyz="0.305 -0.042 0.180" rpy="0 0 -0.43" />
+    <origin xyz="0.305 -0.042 0.180" rpy="0 0 -0.69" />
   </joint>
 
   <material name="t265_material">

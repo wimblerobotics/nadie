@@ -25,7 +25,7 @@ SOFTWARE.
     <arg name="do_d435" default="true" />
     <arg name="do_map_server" default="true" />
     <arg name="do_merge_lasers" default="true" />
-    <arg name="do_nadie_motor" default="true" />
+    <arg name="do_nadie_motor" default="false" />
     <arg name="do_pointcloud_to_laserscan" default="true" />
     <arg name="do_rviz" default="false" />
     <arg name="do_t265" default="true" />
