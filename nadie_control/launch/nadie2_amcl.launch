@@ -1,8 +1,8 @@
 <launch>
   <arg name="robot_namespace" default="/nadie" />
 
-  <arg name="initial_pose_x" default="7.76" />
-  <arg name="initial_pose_y" default="-9.26" />
+  <arg name="initial_pose_x" default="7.822" />
+  <arg name="initial_pose_y" default="-9.653" />
   <arg name="initial_pose_z" default="0.011" />
   <arg name="use_map_topic" default="true"/>
   <arg name="scan_topic" default="/scan_multi" />
