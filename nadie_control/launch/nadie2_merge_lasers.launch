@@ -36,7 +36,7 @@ SOFTWARE.
 		<param name="destination_frame" value="scan"/>
 		<param name="cloud_destination_topic" value="/merged_cloud"/>
 		<param name="scan_destination_topic" value="/scan_multi"/>
-        <param name="laserscan_topics" value ="/laser_scan_left /laser_scan_right" />
+        <param name="laserscan_topics" value ="/plaser_scan_left /plaser_scan_right" />
 	</node>
 
     <node
