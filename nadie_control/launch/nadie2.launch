@@ -21,14 +21,15 @@ SOFTWARE.
 -->
 
 <launch> 
-    <arg name="do_amcl" default="true" />
-    <arg name="do_d435" default="true" />
-    <arg name="do_map_server" default="true" />
-    <arg name="do_merge_lasers" default="true" />
-    <arg name="do_nadie_motor" default="true" />
-    <arg name="do_pointcloud_to_laserscan" default="true" />
-    <arg name="do_rviz" default="false" />
-    <arg name="do_t265" default="true" />
+    <arg name="do_amcl"                     default="true" />
+    <arg name="do_d435"                     default="true" />
+    <arg name="do_map_server"               default="true" />
+    <arg name="do_merge_lasers"             default="true" />
+    <arg name="do_move_base"                default="true" />
+    <arg name="do_nadie_motor"              default="false" />
+    <arg name="do_pointcloud_to_laserscan"  default="true" />
+    <arg name="do_rviz"                     default="false" />
+    <arg name="do_t265"                     default="true" />
 
     <arg name="robot_namespace" default="/nadie" />
 
@@ -66,4 +67,9 @@ SOFTWARE.
 
     <!-- Merge the lasers -->
     <include if="$(arg do_merge_lasers)" file="$(find nadie_control)/launch/nadie2_merge_lasers.launch" />
+
+
+    <!-- Bring up move_base -->
+    <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/nadie2_move_base.launch" />
+
 </launch>

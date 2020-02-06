@@ -59,4 +59,12 @@ SOFTWARE.
         name="up1c"
         user="wimble"
     />
+
+    <machine
+        address="up1d"
+        default="false"
+        env-loader="/home/wimble/remote_env.sh"
+        name="up1d"
+        user="wimble"
+    />
 </launch>
