@@ -44,7 +44,7 @@ SOFTWARE.
     <arg name="json_file_path"      default=""/>
     <arg name="linear_accel_cov"    default="0.01"/>
     <arg name="machine"             default="up1a" />
-    <arg name="serial_no"           default="905312111684"/>
+    <arg name="serial_no"           default="0000905312111684"/>
     <arg name="tf_prefix"           default="$(arg camera)"/>
     <arg name="unite_imu_method"    default="linear_interpolation"/>
   
