@@ -196,7 +196,7 @@ SOFTWARE.
   <joint name="base_to_d435_left" type="fixed">
     <parent link="base_link" />
     <child link="d435_left_link" />
-    <origin xyz="0.305 0.042 0.180" rpy="${M_PI} 0 0.69" />
+    <origin xyz="0.305 0.042 0.180" rpy="0 0 0.69" />
   </joint>
 
   <link name="d435_right_link">
