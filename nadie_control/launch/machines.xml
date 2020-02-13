@@ -67,4 +67,12 @@ SOFTWARE.
         name="up1d"
         user="wimble"
     />
+
+    <machine
+        address="up2b"
+        default="false"
+        env-loader="/home/ros/remote_env.sh"
+        name="up2b"
+        user="ros"
+    />
 </launch>
