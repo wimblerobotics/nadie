@@ -32,7 +32,7 @@ SOFTWARE.
     <!-- Launch the pointcould to laserscan node /-->
     <node
         if="$(arg do_pointcloud_to_laserscan)"
-        machine="up2b"
+        machine="up1c"
         name="left_pointcloud_to_laserscan"
         pkg="pointcloud_to_laserscan"
         type="pointcloud_to_laserscan_node"
