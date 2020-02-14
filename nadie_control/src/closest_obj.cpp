@@ -3,6 +3,7 @@
 #include <geometry_msgs/TransformStamped.h>
 
 #include <pcl_ros/point_cloud.h>
+#include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/PointCloud.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <sensor_msgs/point_cloud_conversion.h>
@@ -163,6 +164,71 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
     // ROS_INFO("%f\tclosest-point", lowestDist);
 }
 
+void laserCallback(const sensor_msgs::LaserScanConstPtr& laser_msg) {
+    float lowestDist = 1e8;
+    int left_count = 0;
+    int right_count = 0;
+    bool obstacle_left = false;
+    bool obstacle_center = false;
+    bool obstacle_right = false;
+    geometry_msgs::Point32 left_point;
+    geometry_msgs::Point32 center_point;
+    geometry_msgs::Point32 right_point;
+    left_point.x = left_point.y = left_point.z = 0.0;
+    center_point.x = center_point.y = center_point.z = 0.0;
+    right_point.x = right_point.y = right_point.z = 0.0;
+
+    bool deletePreviousMarkers = true;
+    float angle;
+    for (int i = 0, angle = laser_msg.angle_min; i < laser_msg.ranges.size(); ++i, angle += laser_msg.angle_increment) {
+        float point = laser_msg.ranges[i];
+        if (point.z > kMAX_Z) continue; // Ignore obstacles above the robot.
+
+        float dist = computeDistance(fromWhere, point);
+        if(dist < lowestDist) {
+            lowestDist = dist;
+        }
+
+        if (deletePreviousMarkers) {
+            visualization_msgs::Marker marker;
+            marker.header.frame_id = "d400_depth_optical_frame";
+            marker.header.stamp = ros::Time::now();
+            marker.ns = "closestNamespace";
+            marker.id = i;
+            marker.type = shape;
+            marker.action = visualization_msgs::Marker::DELETEALL;
+            marker.lifetime = ros::Duration();
+            marker_pub.publish(marker);
+            deletePreviousMarkers = false;
+        }
+
+        if (dist < kHAZARD_DISTANCE) {
+            if (point.x < 0) left_count += 1;
+            else right_count +=1;
+            addMarker(point, i);
+            if (point.y > kLEFT_Y) {
+                obstacle_left = true;
+                left_point = point;
+            } else if (point.y < kRIGHT_Y) {
+                obstacle_right = true;
+                right_point = point;
+            } else {
+                obstacle_center = true;
+                center_point = point;
+            }
+        }
+    }
+
+    if (obstacle_center || obstacle_left || obstacle_right) {
+        ROS_INFO("left: %d, right: %d, HAZARD: left: %s [%f, %f, %f], center: %s [%f, %f, %f], right: %s [%f, %f, %f]"
+                 , left_count, right_count
+                    , obstacle_left ? "Y" : "n", left_point.x, left_point.y, left_point.z
+                    , obstacle_center ? "Y" : "n", center_point.x, center_point.y, center_point.z
+                    , obstacle_right ? "Y" : "n", right_point.x, right_point.y, right_point.z);
+    }
+}
+
+
 int main(int argc, char** argv) {
     kLEFT_COLOR.r = 1.0;
     kLEFT_COLOR.g = 1.0;
@@ -179,7 +245,7 @@ int main(int argc, char** argv) {
     
     ros::init(argc, argv, "closest_obj");
     ros::NodeHandle nh;
-    ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2>("/d400/depth/color/points", 1, callback);
+    ros::Subscriber sub = nh.subscribe<sensor_msgs::LaserScan>("/scanMulti", 1, laserCallback);
     marker_pub = nh.advertise<visualization_msgs::Marker>("closestObjMarker", 1);
     ros::spin();
     return 0;
