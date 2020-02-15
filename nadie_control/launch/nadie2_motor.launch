@@ -25,6 +25,7 @@
   <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
 
   <arg name="cmd_vel_mux_node_name" value="cmd_vel_mux" />
+  <arg name="do_cmd_vel_mux" default="true" />
   <arg name="do_controller_manager" default="true" />
   <arg name="do_joint_state_publisher" default="true" />
   <arg name="do_joystick" default="true" />
@@ -104,15 +105,16 @@
       type="nodelet"
       args="manager" />
 
-    <node
-      machine="up1b" 
-      name="$(arg cmd_vel_mux_node_name)" 
-      pkg="nodelet"
-      type="nodelet"
-      args="load yocs_cmd_vel_mux/CmdVelMuxNodelet nadie_motor_nodelet_manager">
+    <node 
+      if="$(arg do_cmd_vel_mux)"
+      machine="up1b"
+      name="twist_mux"
+      pkg="twist_mux"
+      type="twist_mux"
+      output="screen">
+      <remap from="$(arg robot_namespace)/cmd_vel_out" to="$(arg robot_namespace)/diff_drive_controller/cmd_vel"/>
 
-      <param name="yaml_cfg_file" value="$(find nadie_control)/param/cmd_vel_mux.yaml" />
-      <remap from="$(arg robot_namespace)/$(arg cmd_vel_mux_node_name)/output" to="$(arg robot_namespace)/diff_drive_controller/cmd_vel" />
+      <rosparam file="$(find nadie_control)/param/cmd_vel_mux.yaml" command="load"/>
     </node>
 
 

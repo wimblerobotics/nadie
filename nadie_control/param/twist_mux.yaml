@@ -1,0 +1,11 @@
+topics:
+-
+  name    : navigation
+  topic   : "/nadie/diff_drive_controller/move_base_cmd_vel"
+  timeout : 0.5
+  priority: 10
+-
+  name    : joystick
+  topic   : "/nadie/diff_drive_controller/joystick_cmd_vel"
+  timeout : 0.5
+  priority: 100

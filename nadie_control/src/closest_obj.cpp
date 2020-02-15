@@ -165,6 +165,7 @@ void callback(const sensor_msgs::PointCloud2ConstPtr& cloud2_msg) {
 }
 
 void laserCallback(const sensor_msgs::LaserScanConstPtr& laser_msg) {
+    /*
     float lowestDist = 1e8;
     int left_count = 0;
     int right_count = 0;
@@ -226,6 +227,7 @@ void laserCallback(const sensor_msgs::LaserScanConstPtr& laser_msg) {
                     , obstacle_center ? "Y" : "n", center_point.x, center_point.y, center_point.z
                     , obstacle_right ? "Y" : "n", right_point.x, right_point.y, right_point.z);
     }
+    */
 }
 
 
