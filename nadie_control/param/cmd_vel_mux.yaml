@@ -20,6 +20,14 @@
 # SOFTWARE.
 # 
 
+locks:
+-
+  name    : pause
+  topic   : pause_navigation
+  timeout : 0.0
+  # Same priority as joystick control, so it'll not block it.
+  priority: 100
+
 topics:
 -
   name    : navigation

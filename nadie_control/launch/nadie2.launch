@@ -23,14 +23,18 @@ SOFTWARE.
 <launch> 
     <arg name="do_amcl"                     default="true" />
     <arg name="do_d435"                     default="true" />
+    <arg name="do_gmapping"                 default="false" />
     <arg name="do_map_server"               default="true" />
     <arg name="do_merge_lasers"             default="true" />
+    <arg name="do_motor_controller"         default="true" /> <!-- sub option for do_nadie_motor -->
     <arg name="do_move_base"                default="true" />
     <arg name="do_nadie_motor"              default="false" />
     <arg name="do_pointcloud_to_laserscan"  default="true" />
     <arg name="do_rviz"                     default="false" />
     <arg name="do_t265"                     default="true" />
+    <arg name="use_sim_time"                default="false" />
 
+    <param name="/use_sim_time" value="$(arg use_sim_time)" />
     <arg name="robot_namespace" default="/nadie" />
 
     <!-- Launch the left D435 depth camera. Note this is outside of "nadie" group for name collision avoidance. -->
@@ -45,10 +49,29 @@ SOFTWARE.
         <arg name="robot_namespace" value="$(arg robot_namespace)" />
     </include>
 
+    <node
+        if="$(arg do_gmapping)"
+        name="gmapping_node"
+        pkg="gmapping"
+        type="slam_gmapping"
+        output="screen"
+    >
+        <param name="odom_frame" value="t265_odom_frame" />
+        <remap from="scan" to="/scan_multi" />
+        <remap from="map" to="/nadie/map" />
+    </node>
+
     <!-- Bring up the motor stack -->
     <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie2_motor.launch" >
+         <arg name="do_motor_controller" value="$(arg do_motor_controller)" />
          <arg name="robot_namespace" value="$(arg robot_namespace)" />
-   </include>
+    </include>
+    <include 
+      unless="$(arg do_nadie_motor)"
+      file="$(find nadie_description)/launch/description.launch" >
+      <arg name="robot_namespace" value="$(arg robot_namespace)" />
+    </include>
+
 
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch" />

@@ -21,32 +21,34 @@ SOFTWARE.
 -->
 <launch>
     <include file="$(find nadie_control)/launch/machines.xml" />
-    <node
-        name="t265_pose_frame_to_base_footprint_link" 
+    <!--node
+        name="t265_odom_frame_to_base_link" 
         pkg="tf" 
         type="static_transform_publisher" 
-        args="0 -0.105 0.240 0 0.0 0 t265_odom_frame base_footprint 200" />
+        args="0 -0.105 0.240 0 0.0 0 t265_odom_frame base_link 200" /-->
 
  
  
-    <arg name="accel_fps"           default="62"/>
-    <arg name="camera"              default="t265"/>
-    <arg name="enable_accel"        default="true"/>
-    <arg name="enable_gyro"         default="true"/>
-    <arg name="enable_fisheye1"     default="true"/>
-    <arg name="enable_fisheye2"     default="true"/>
-    <arg name="enable_sync"         default="false"/>
-    <arg name="fisheye_fps"         default="30"/>
-    <arg name="fisheye_height"      default="800"/>
-    <arg name="fisheye_width"       default="848"/> 
-    <arg name="gyro_fps"            default="200"/>
-    <arg name="initial_reset"       default="true"/>
-    <arg name="json_file_path"      default=""/>
-    <arg name="linear_accel_cov"    default="0.01"/>
-    <arg name="machine"             default="up1a" />
-    <arg name="serial_no"           default="0000905312111684"/>
-    <arg name="tf_prefix"           default="$(arg camera)"/>
-    <arg name="unite_imu_method"    default="linear_interpolation"/>
+    <arg name="accel_fps"               default="62"/>
+    <arg name="camera"                  default="t265"/>
+    <arg name="enable_accel"            default="true"/>
+    <arg name="enable_gyro"             default="true"/>
+    <arg name="enable_fisheye1"         default="true"/>
+    <arg name="enable_fisheye2"         default="true"/>
+    <arg name="enable_sync"             default="false"/>
+    <arg name="fisheye_fps"             default="30"/>
+    <arg name="fisheye_height"          default="800"/>
+    <arg name="fisheye_width"           default="848"/> 
+    <arg name="gyro_fps"                default="200"/>
+    <!--arg name="imu_optical_frame_id"    default="base_link" /-->
+    <arg name="initial_reset"           default="true"/>
+    <arg name="json_file_path"          default=""/>
+    <arg name="linear_accel_cov"        default="0.01"/>
+    <arg name="machine"                 default="up1a" />
+    <arg name="odom_frame_id"           default="t265_camera_link" />
+    <arg name="serial_no"               default="0000905312111684"/>
+    <arg name="tf_prefix"               default="$(arg camera)"/>
+    <arg name="unite_imu_method"        default="linear_interpolation"/>
   
     <group ns="$(arg camera)">
         <include file="$(find nadie_control)/launch/includes/nodelet.launch.xml">
@@ -61,10 +63,12 @@ SOFTWARE.
             <arg name="fisheye_height"           value="$(arg fisheye_height)"/>
             <arg name="fisheye_width"            value="$(arg fisheye_width)"/>
             <arg name="gyro_fps"                 value="$(arg gyro_fps)"/>
+            <!--arg name="imu_optical_frame_id"     value="$(arg imu_optical_frame_id)" /-->
             <arg name="initial_reset"            value="$(arg initial_reset)"/>
             <arg name="json_file_path"           value="$(arg json_file_path)"/>
             <arg name="linear_accel_cov"         value="$(arg linear_accel_cov)"/>
             <arg name="machine"                  value="$(arg machine)" />
+            <arg name="odom_frame_id"            value="$(arg odom_frame_id)" />
             <arg name="serial_no"                value="$(arg serial_no)"/>
             <arg name="tf_prefix"                value="$(arg tf_prefix)"/>
             <arg name="topic_odom_in"            value="/nadie/diff_drive_controller/odom" />
