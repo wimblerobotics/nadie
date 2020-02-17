@@ -11,6 +11,7 @@
   <arg name="fisheye_height"      default="480"/>
   <arg name="enable_fisheye"      default="true"/>
 
+  <arg name="depth_frame_id"      default="base_link" />
   <arg name="depth_width"         default="640"/>
   <arg name="depth_height"        default="480"/>
   <arg name="enable_depth"        default="true"/>
@@ -70,6 +71,7 @@
       <arg name="fisheye_height"           value="$(arg fisheye_height)"/>
       <arg name="enable_fisheye"           value="$(arg enable_fisheye)"/>
 
+      <arg name="depth_frame_id"           value="$(arg depth_frame_id)" />
       <arg name="depth_width"              value="$(arg depth_width)"/>
       <arg name="depth_height"             value="$(arg depth_height)"/>
       <arg name="enable_depth"             value="$(arg enable_depth)"/>
