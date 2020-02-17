@@ -33,7 +33,7 @@ SOFTWARE.
         type="laserscan_multi_merger" 
         output="screen">
         <param name="angle_increment" value="0.017453292519943" />
-		<param name="destination_frame" value="scan"/>
+		<param name="destination_frame" value="base_link"/>
 		<param name="cloud_destination_topic" value="/merged_cloud"/>
 		<param name="scan_destination_topic" value="/scan_multi"/>
         <param name="laserscan_topics" value ="/plaser_scan_left /plaser_scan_right" />
