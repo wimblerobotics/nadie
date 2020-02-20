@@ -38,7 +38,6 @@ SOFTWARE.
 
 
   <xacro:property name="M_PI" value="3.14159"/>
-  <xacro:property name="wheel_distance_from_back" value="0.281" />
 
   <xacro:property name="body_height" value="0.235" />
   <xacro:property name="body_length" value="0.460" />
@@ -46,7 +45,6 @@ SOFTWARE.
   <xacro:property name="caster_radius" value="0.05" />
   <xacro:property name="caster_width" value="0.030" />
   <xacro:property name="fwheel_offset" value="${(-body_length/2)+caster_radius}" />
-  <xacro:property name="wheel_forward_of_center_distance" value="${wheel_distance_from_back-(body_length/2)}" />
   <xacro:property name="lidar_height" value="0.05" />
   <xacro:property name="lidar_length" value="0.125" />
   <xacro:property name="lidar_width" value="0.1" />
@@ -88,7 +86,7 @@ SOFTWARE.
         <box size="${body_length} ${body_width} ${body_height}"/>
       </geometry>
       <material name="base" />
-      <origin rpy="0 0 0" xyz="0 0 ${(body_height/2)}"/>
+      <origin rpy="0 0 0" xyz="-0.05 0 ${(body_height/2)}"/>
     </visual>
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -101,12 +99,12 @@ SOFTWARE.
   <link name="base_footprint"/>
 
   <joint name="base_footprint_joint" type="fixed">
-    <origin xyz="0 0 ${wheel_vertical_offset}" rpy="0 -0.07 0" />
-    <parent link="base_footprint" />
-    <child link="base_link" />
+    <origin xyz="0 0 -${wheel_vertical_offset}" rpy="0 -0.009599311 0" />
+    <parent link="base_link" />
+    <child link="base_footprint" />
   </joint>
 
-  <!-- Interial link stores the robot's inertial information -->
+  <!-- inetial_link stores the robot's inertial information -->
   <link name="inertial_link">
     <inertial>
       <mass value="14" />
@@ -122,18 +120,18 @@ SOFTWARE.
   </joint>
 
   <xacro:wheel wheel_prefix="front_left">
-    <origin xyz="${wheel_forward_of_center_distance} ${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
+    <origin xyz="0 ${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
   </xacro:wheel>
 
   <xacro:wheel wheel_prefix="front_right">
-    <origin xyz="${wheel_forward_of_center_distance} -${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
+    <origin xyz="0 -${(body_width/2)+wheel_spacer+(wheel_width/2)} -${gear_box_center_height}" rpy="0 0 0" />
   </xacro:wheel>
 
   <xacro:caster wheel_prefix="lcaster">
-    <origin xyz="${fwheel_offset} 0.135 -${caster_radius}" rpy="0 0 0" />
+    <origin xyz="${fwheel_offset} 0.135 -${wheel_vertical_offset-caster_radius}" rpy="0 0 0" />
   </xacro:caster>
   <xacro:caster wheel_prefix="rcaster">
-    <origin xyz="${fwheel_offset} -0.135 -${caster_radius}" rpy="0 0 0" />
+    <origin xyz="${fwheel_offset} -0.135 -${wheel_vertical_offset-caster_radius}" rpy="0 0 0" />
   </xacro:caster>
 
   <link name="neato">
@@ -196,7 +194,7 @@ SOFTWARE.
   <joint name="base_to_d435_left" type="fixed">
     <parent link="base_link" />
     <child link="d435_left_link" />
-    <origin xyz="0.305 0.0 0.180" rpy="0 0 0.6" />
+    <origin xyz="0.250 0.009 0.210" rpy="0 0 0.6" />
   </joint>
 
   <link name="d435_right_link">
@@ -223,7 +221,7 @@ SOFTWARE.
   <joint name="base_to_d435_right" type="fixed">
     <parent link="base_link" />
     <child link="d435_right_link" />
-    <origin xyz="0.305 -0.0 0.180" rpy="0 0 -0.6" />
+    <origin xyz="0.250 0.0 0.240" rpy="0 0 -0.6" />
   </joint>
 
   <material name="t265_material">
@@ -258,6 +256,6 @@ SOFTWARE.
   <joint name="base_to_t265" type="fixed">
     <parent link="base_link" />
     <child link="t265_camera_link" />
-    <origin xyz="${0.24+(0.008/2)} 0 0.105" rpy="0 0 0" />
+    <origin xyz="${0.180+(0.008/2)} -0.0034 0.106" rpy="0 0 0" />
   </joint>
 </robot>

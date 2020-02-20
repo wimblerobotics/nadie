@@ -56,7 +56,18 @@ SOFTWARE.
         type="slam_gmapping"
         output="screen"
     >
+        <param name="angularUpdate" value="0.1" />
+        <param name="linearUpdate" value="0.1" />
+        <param name="map_update_interval" value="1.0" />
+        <param name="maxRange" value="4.8" />
+        <param name="maxUrange" value="5.0" />
         <param name="odom_frame" value="t265_odom_frame" />
+        <param name="temporalUpdate" value="1.0" />
+        <param name="xmax" value="50.0" />
+        <param name="xmin" value="-50.0" />
+        <param name="ymax" value="50.0" />
+        <param name="ymin" value="-50.0" />
+
         <remap from="scan" to="/scan_multi" />
         <remap from="map" to="/nadie/map" />
     </node>
