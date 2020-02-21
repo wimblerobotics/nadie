@@ -143,6 +143,11 @@ void NadieMotorController::initHardware() {
 	openPort();	
 	setM1PID(m1p_, m1i_, m1d_, m1qpps_);
 	setM2PID(m2p_, m2i_, m2d_, m2qpps_);
+	nadie_control::ResetEncoders::Request resetRequest;
+	resetRequest.left = 0;
+	resetRequest.right = 0;
+	nadie_control::ResetEncoders::Response response;
+	resetEncoders(resetRequest, response);
 	ROS_INFO("[NadieMotorController::NadieMotorController] RoboClaw software version: %s", getVersion().c_str());
 }
 
@@ -860,6 +865,11 @@ void NadieMotorController::read(const ros::Time& time, const ros::Duration& peri
 	
 	jointPosition_[0] = m1Radians;
 	jointPosition_[1] = m2Radians;
+	// ROS_INFO("[NadieMotorController::read] m1:encoder: %d, m2:encoder: %d, m1Radians: %7.4f, m2Radians: %7.4f",
+	// 	m1Encoder,
+	// 	m2Encoder,
+	// 	m1Radians,
+	// 	m2Radians);
 	publishStatus();
 }
 
