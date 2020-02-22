@@ -22,10 +22,10 @@ SOFTWARE.
 <launch>
     <include file="$(find nadie_control)/launch/machines.xml" />
     <node
-        name="t265_odom_frame_to_base_link" 
+        name="t265_pose_frame_to_base_link" 
         pkg="tf" 
         type="static_transform_publisher" 
-        args="-0.24 0 -0.105 0 0.0 0 t265_odom_frame base_link 200" />
+        args="-0.24 0 -0.105 0 0.0 0 t265_pose_frame base_link 200" />
 
  
  
@@ -71,7 +71,7 @@ SOFTWARE.
             <!--arg name="odom_frame_id"            value="$(arg odom_frame_id)" /-->
             <arg name="serial_no"                value="$(arg serial_no)"/>
             <arg name="tf_prefix"                value="$(arg tf_prefix)"/>
-            <!--arg name="topic_odom_in"            value="/nadie/diff_drive_controller/odom" /-->
+            <arg name="topic_odom_in"            value="/nadie/diff_drive_controller/odom" />
             <arg name="unite_imu_method"         value="$(arg unite_imu_method)"/>
         </include>
     </group>
