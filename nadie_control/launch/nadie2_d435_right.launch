@@ -24,7 +24,7 @@ SOFTWARE.
     <include file="$(find nadie_control)/launch/rs_camera.launch">
         <arg name="align_depth"             value="true"/>
         <arg name="camera"                  value="d435_right" />
-        <!--arg name="depth_frame_id"          value="d435_right_link" /-->
+        <arg name="depth_frame_id"          value="d435_right_link" />
         <arg name="depth_height"            value="480" />
         <arg name="depth_width"             value="640" />
         <arg name="enable_accel"            value="false" />

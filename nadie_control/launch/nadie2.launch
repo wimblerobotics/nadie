@@ -21,17 +21,18 @@ SOFTWARE.
 -->
 
 <launch> 
-    <arg name="do_amcl"                     default="false" />
+    <arg name="do_amcl"                     default="true" />
     <arg name="do_d435"                     default="true" />
-    <arg name="do_gmapping"                 default="true" />
-    <arg name="do_map_server"               default="false" />
+    <arg name="do_gmapping"                 default="false" />
+    <arg name="do_map_server"               default="true" />
     <arg name="do_merge_lasers"             default="true" />
     <arg name="do_motor_controller"         default="true" /> <!-- sub option for do_nadie_motor -->
-    <arg name="do_move_base"                default="false" />
+    <arg name="do_move_base"                default="true" />
     <arg name="do_nadie_motor"              default="true" />
     <arg name="do_pointcloud_to_laserscan"  default="true" />
     <arg name="do_rviz"                     default="false" />
     <arg name="do_t265"                     default="true" />
+    <arg name="map_file"                    default="$(find snowberry_map)/maps/Snowberry.yaml" />
     <arg name="use_sim_time"                default="false" />
 
     <param name="/use_sim_time" value="$(arg use_sim_time)" />
@@ -46,6 +47,7 @@ SOFTWARE.
     <!-- Load the map -->
     <include if="$(arg do_map_server)" 
              file="$(find snowberry_map)/launch/nadie2.map.launch" >
+        <arg name="map_file" value="$(arg map_file)" />
         <arg name="robot_namespace" value="$(arg robot_namespace)" />
     </include>
 
