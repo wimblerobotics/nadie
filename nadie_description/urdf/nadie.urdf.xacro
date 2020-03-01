@@ -54,7 +54,7 @@ SOFTWARE.
   <xacro:property name="wheel_spacer" value="0.00254" />
   <xacro:property name="wheel_width" value="0.040" />
 
-  <xacro:property name="lidar_x_offset" value="${0.105 - (body_length/2)}" />
+  <xacro:property name="lidar_x_offset" value="-0.175" />
   <xacro:property name="lidar_z_offset" value="${body_height+(lidar_height/2)}" />
 
   <material name="base">

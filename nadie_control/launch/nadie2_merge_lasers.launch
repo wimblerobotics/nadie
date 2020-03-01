@@ -38,11 +38,4 @@ SOFTWARE.
 		<param name="scan_destination_topic" value="/scan_multi"/>
         <param name="laserscan_topics" value ="/plaser_scan_left /plaser_scan_right" />
 	</node>
-
-    <node
-        name="scan_to_base_link" 
-        pkg="tf" 
-        type="static_transform_publisher" 
-        args="0.305 0 0.180 0 0.0 0 base_link scan 200" />
-
 </launch>

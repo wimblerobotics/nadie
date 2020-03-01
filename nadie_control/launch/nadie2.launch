@@ -24,6 +24,7 @@ SOFTWARE.
     <arg name="do_amcl"                     default="true" />
     <arg name="do_d435"                     default="true" />
     <arg name="do_gmapping"                 default="false" />
+    <arg name="do_lidar"                    default="true" />
     <arg name="do_map_server"               default="true" />
     <arg name="do_merge_lasers"             default="true" />
     <arg name="do_motor_controller"         default="true" /> <!-- sub option for do_nadie_motor -->
@@ -79,12 +80,9 @@ SOFTWARE.
          <arg name="do_motor_controller" value="$(arg do_motor_controller)" />
          <arg name="robot_namespace" value="$(arg robot_namespace)" />
     </include>
-    <include 
-      unless="$(arg do_nadie_motor)"
-      file="$(find nadie_description)/launch/description.launch" >
-      <arg name="robot_namespace" value="$(arg robot_namespace)" />
+    <include unless="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie2_nonmotor.launch" >
+         <arg name="robot_namespace" value="$(arg robot_namespace)" />
     </include>
-
 
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch" />
@@ -107,5 +105,11 @@ SOFTWARE.
 
     <!-- Bring up move_base -->
     <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/nadie2_move_base.launch" />
+
+    <!-- Bring up the LIDAR -->
+    <include
+      if="$(arg do_lidar)"
+      file="$(find nadie_control)/launch/neato_lidar.launch"
+      />
 
 </launch>
