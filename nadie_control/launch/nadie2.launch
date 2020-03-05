@@ -33,6 +33,7 @@ SOFTWARE.
     <arg name="do_pointcloud_to_laserscan"  default="true" />
     <arg name="do_rviz"                     default="false" />
     <arg name="do_t265"                     default="true" />
+    <arg name="do_t265_static_transform"    default="false" />
     <arg name="map_file"                    default="$(find snowberry_map)/maps/Snowberry.yaml" />
     <arg name="use_sim_time"                default="false" />
 
@@ -60,10 +61,11 @@ SOFTWARE.
         output="screen"
     >
         <param name="angularUpdate" value="0.1" />
+        <param name="delta" value="0.0254" />
         <param name="linearUpdate" value="0.1" />
         <param name="map_update_interval" value="1.0" />
         <param name="maxRange" value="4.8" />
-        <param name="maxUrange" value="5.0" />
+        <param name="maxUrange" value="6.0" />
         <param name="odom_frame" value="t265_odom_frame" />
         <param name="temporalUpdate" value="1.0" />
         <param name="xmax" value="50.0" />
@@ -71,7 +73,7 @@ SOFTWARE.
         <param name="ymax" value="50.0" />
         <param name="ymin" value="-50.0" />
 
-        <remap from="scan" to="/scan_multi" />
+        <remap from="scan" to="/nadie/scan" />
         <remap from="map" to="/nadie/map" />
     </node>
 
@@ -85,7 +87,9 @@ SOFTWARE.
     </include>
 
     <!-- Launch the T265 tracking camera -->
-    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch" />
+    <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch">
+        <arg name="do_t265_static_transform" value="$(arg do_t265_static_transform)" />
+    </include>
 
     <!-- Launch visualization in rviz --> 
     <node if="$(arg do_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find nadie_rviz)/control.rviz" required="true" /> 

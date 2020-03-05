@@ -20,8 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
 <launch>
+    <arg name="do_t265_static_transform" default_value="false" />
+
     <include file="$(find nadie_control)/launch/machines.xml" />
     <node
+        if="$(arg do_t265_static_transform)"
         name="t265_pose_frame_to_base_link" 
         pkg="tf" 
         type="static_transform_publisher" 
