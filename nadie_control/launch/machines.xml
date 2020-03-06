@@ -31,6 +31,14 @@ SOFTWARE.
     <machine
         address="tx2a"
         default="false"
+        env-loader="/home/wimble/cartographer_env.sh"
+        name="tx2a_cartographer"
+        user="ros"
+    />
+
+    <machine
+        address="tx2a"
+        default="false"
         env-loader="/home/wimble/remote_env.sh"
         name="tx2a"
         user="ros"

@@ -22,6 +22,7 @@ SOFTWARE.
 
 <launch> 
     <arg name="do_amcl"                     default="true" />
+    <arg name="do_cartographer"             default="false" />
     <arg name="do_d435"                     default="true" />
     <arg name="do_gmapping"                 default="false" />
     <arg name="do_lidar"                    default="true" />
@@ -114,6 +115,11 @@ SOFTWARE.
     <include
       if="$(arg do_lidar)"
       file="$(find nadie_control)/launch/neato_lidar.launch"
+      />
+
+    <include
+      if="$(arg do_cartographer)"
+      file="$(find nadie_control)/launch/nadie2_cartographer.launch"
       />
 
 </launch>
