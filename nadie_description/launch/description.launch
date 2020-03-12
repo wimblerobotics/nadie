@@ -24,8 +24,8 @@ SOFTWARE.
 
   <arg name="robot_namespace" default="" />
 
-  <param name="$(arg robot_namespace)/robot_description" command="$(find xacro)/xacro '$(find nadie_description)/urdf/nadie.urdf.xacro'
- robot_namespace:=$(arg robot_namespace)
+  <param name="$(arg robot_namespace)/robot_description" command="$(find xacro)/xacro --inorder '$(find nadie_description)/urdf/nadie.urdf.xacro'
+ robot_namespace:=$(arg robot_namespace) use_nominal_extrinsics:=true
     " />
 
 </launch>

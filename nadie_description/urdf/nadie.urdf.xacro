@@ -161,68 +161,14 @@ SOFTWARE.
     <origin xyz="${lidar_x_offset} 0  ${lidar_z_offset}" rpy="0 0 0"/>
   </joint>
 
-  <material name="d435_material">
-    <color rgba="0.7 0.8 0.7 1" />
-  </material>
-
-  <xacro:property name="d435_height" value="0.025" />
-  <xacro:property name="d435_length" value="0.090" />
-  <xacro:property name="d435_width" value="0.025" />
-
-
-  <link name="d435_left_link">
-    <collision>
-      <geometry>
-        <box size="${d435_width} ${d435_length} ${d435_height}" />
-        <origin xyz="0 0 0" rpy="0 0 0" />
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="1" />
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <box size="${d435_width} ${d435_length} ${d435_height}" />
-      </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <material name="d435_material" />
-    </visual>
-  </link>
-
-  <joint name="base_to_d435_left" type="fixed">
-    <parent link="base_link" />
-    <child link="d435_left_link" />
+  <xacro:include filename="$(find nadie_description)/urdf/_d435.urdf.xacro" />
+  <sensor_d435 parent="base_link" name="d435_left">
     <origin xyz="0.250 0.009 0.210" rpy="0 0 0.6" />
-  </joint>
+  </sensor_d435>
 
-  <link name="d435_right_link">
-    <collision>
-      <geometry>
-        <box size="${d435_width} ${d435_length} ${d435_height}" />
-        <origin xyz="0 0 0" rpy="0 0 0" />
-      </geometry>
-    </collision>
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="1" />
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
-    </inertial>
-    <visual>
-      <geometry>
-        <box size="${d435_width} ${d435_length} ${d435_height}" />
-      </geometry>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <material name="d435_material" />
-    </visual>
-  </link>
-
-  <joint name="base_to_d435_right" type="fixed">
-    <parent link="base_link" />
-    <child link="d435_right_link" />
+  <sensor_d435 parent="base_link" name="d435_right">
     <origin xyz="0.250 0.0 0.240" rpy="0 0 -0.6" />
-  </joint>
+  </sensor_d435>
 
   <material name="t265_material">
     <color rgba="0.60 0.40 0.60 1" />

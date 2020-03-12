@@ -1,0 +1,27 @@
+<launch>
+    <include file="$(find nadie_control)/launch/machines.xml" />
+
+    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+         <arg name="align_depth"             value="false"/>
+        <arg name="base_frame_id"           value="base_link" />
+        <!--arg name="camera"                  value="cam_left" /-->
+        <!--arg name="depth_frame_id"          value="d435_left_link" /-->
+        <arg name="depth_height"            value="480" />
+        <arg name="depth_width"             value="640" />
+        <arg name="enable_accel"            value="false" />
+        <arg name="enable_color"            value="true" />
+        <arg name="enable_depth"            value="true" />
+        <arg name="enable_fisheye"          value="false" />
+        <arg name="enable_gyro"             value="false" />
+        <arg name="enable_infra1"           value="false" />
+        <arg name="enable_infra2"           value="false" />
+        <arg name="enable_pointcloud"       value="true" />
+        <arg name="enable_sync"             value="true" />
+        <!--arg name="initial_reset"         value="true"/-->
+        <arg name="linear_accel_cov"        value="1.0"/>
+        <arg name="machine"                 value="up1c" />
+        <arg name="serial_no"               value="832112074065" />
+        <!--arg name="tf_prefix"               value="xp" /-->
+        <arg name="unite_imu_method"        value="linear_interpolation" />
+    </include>
+</launch>
