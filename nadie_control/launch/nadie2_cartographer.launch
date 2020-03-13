@@ -23,9 +23,9 @@ limitations under the License.
 		args="
 				-configuration_directory $(find cartographer_ros)/configuration_files
 				-configuration_basename nadie2.lua" output="screen" >
-		<remap from="scan" to="/nadie/scan" />
-		<!--remap from="scan_1" to="/nadie/scan" /-->
-		<!--remap from="scan_2" to="/scan_multi" /-->
+		<!--remap from="scan" to="/nadie/scan" /-->
+		<remap from="scan_1" to="/nadie/scan" />
+		<remap from="scan_2" to="/scan_multi" />
 		<remap from="odom" to="/t265/odom/sample" />
 	</node>
         <node 
