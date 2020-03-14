@@ -21,11 +21,11 @@ limitations under the License.
 		pkg="cartographer_ros" 
 		type="cartographer_node" 
 		args="
-				-configuration_directory $(find cartographer_ros)/configuration_files
+				-configuration_directory $(find nadie_control)/configuration_files
 				-configuration_basename nadie2.lua" output="screen" >
-		<!--remap from="scan" to="/nadie/scan" /-->
-		<remap from="scan_1" to="/nadie/scan" />
-		<remap from="scan_2" to="/scan_multi" />
+		<remap from="scan" to="/nadie/scan" />
+		<remap from="points2_1" to="/d435_left/depth/color/points" />
+		<remap from="points2_2" to="/d435_right/depth/color/points" />
 		<remap from="odom" to="/t265/odom/sample" />
 	</node>
         <node 
