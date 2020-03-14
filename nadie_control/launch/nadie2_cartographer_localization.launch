@@ -30,7 +30,9 @@ SOFTWARE.
 		type="cartographer_node" 
 		args="
 				-configuration_directory $(find nadie_control)/configuration_files
-				-configuration_basename nadie2_localization.lua" output="screen" >
+				-configuration_basename nadie2_localization.lua
+                                -load_state_filename $(arg load_state_filename)"
+                                output="screen" >
 		<remap from="scan" to="/nadie/scan" />
 		<remap from="points2_1" to="/d435_left/depth/color/points" />
 		<remap from="points2_2" to="/d435_right/depth/color/points" />

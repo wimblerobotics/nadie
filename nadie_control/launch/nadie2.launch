@@ -23,6 +23,7 @@ SOFTWARE.
 <launch> 
     <arg name="do_amcl"                     default="false" />
     <arg name="do_cartographer"             default="false" />
+    <arg name="do_cartographer_localization" default="false" />
     <arg name="do_d435"                     default="true" />
     <arg name="do_gmapping"                 default="false" />
     <arg name="do_lidar"                    default="true" />
@@ -105,6 +106,11 @@ SOFTWARE.
     <include
       if="$(arg do_cartographer)"
       file="$(find nadie_control)/launch/nadie2_cartographer.launch"
+      />
+
+    <include
+      if="$(arg do_cartographer_localization)"
+      file="$(find nadie_control)/launch/nadie2_cartographer_localization.launch"
       />
 
 </launch>
