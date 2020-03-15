@@ -19,7 +19,7 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",
-  tracking_frame = "base_link",
+  tracking_frame = "t265_link",
   published_frame = "base_link",
   odom_frame = "t265_odom_frame",
   provide_odom_frame = false,
@@ -48,8 +48,21 @@ TRAJECTORY_BUILDER_2D.submaps.num_range_data = 35
 TRAJECTORY_BUILDER_2D.min_range = 0.3
 TRAJECTORY_BUILDER_2D.max_range = 8.
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
+
+--this will help continue making the map while the robot is static
+--default time is 5 seconds
+TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 0.75
+
+-- tune this value to the amount of samples (i think revolutions) to average over
+--before estimating te position of the walls and features in the environment
+TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
+
 TRAJECTORY_BUILDER_2D.use_imu_data = false
+
+--this one tries to match two laser scans together to estimate the position,
+--I think if not on it will rely more on wheel odometry
 TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
+
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.linear_search_window = 0.1
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.translation_delta_cost_weight = 10.
 TRAJECTORY_BUILDER_2D.real_time_correlative_scan_matcher.rotation_delta_cost_weight = 1e-1
