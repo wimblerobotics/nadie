@@ -1,54 +1,59 @@
 <launch>
-  <arg name="robot_namespace" default="/nadie" />
 
-  <arg name="initial_pose_x"  default="7.822" />
+  <!-- <arg name="initial_pose_x"  default="7.822" />
   <arg name="initial_pose_y"  default="-9.653" />
-  <arg name="initial_pose_z"  default="0.011" />
+  <arg name="initial_pose_z"  default="0.011" /> -->
+  <arg name="initial_pose_x"  default="-0.477" />
+  <arg name="initial_pose_y"  default=".030" />
+  <arg name="initial_pose_z"  default="-0.112" />
   <arg name="use_map_topic"   default="true"/>
   <arg name="scan_topic"      default="/nadie/scan" />
 
-  <group ns="$(arg robot_namespace)">
-    <node pkg="amcl" type="amcl" name="amcl" output="screen" >
-      <!--param name="base_frame_id" value="/base_footprint"/-->
-      <param name="first_map_only" value="false" />
-      <param name="gui_publish_rate" value="1.0"/>
-      <param name="initial_pose_x" value="$(arg initial_pose_x)" />
-      <param name="initial_pose_y" value="$(arg initial_pose_y)" />
-      <param name="initial_pose_z" value="$(arg initial_pose_z)" />
-      <param name="kld_err" value="0.01"/> <!-- 0.01 -->
-      <param name="kld_z" value="0.99"/>
-      <param name="laser_lambda_short" value="0.1"/>
-      <param name="laser_likelihood_max_dist" value="2.0" />
-      <param name="laser_max_beams" value="360"/>
-      <param name="laser_max_range" value="6.0"/>
-      <param name="laser_min_range" value="0.06"/>
-      <param name="laser_model_type" value="likelihood_field"/> 
-      <param name="laser_sigma_hit" value="0.2"/>
-      <param name="laser_z_hit" value="0.95"/>
-      <param name="laser_z_max" value="0.05"/>
-      <param name="laser_z_rand" value="0.05"/>
-      <param name="laser_z_short" value="0.1"/>
-      <param name="laser_likelihood_max_dist" value="2.0"/> <!-- 5.00 -->
-      <param name="max_particles" value="5000"/> <!-- 1000 -->
-      <param name="min_particles" value="500"/>
-      <param name="odom_alpha1" value="0.2"/> <!-- 0.8 -->
-      <param name="odom_alpha2" value="0.2"/> <!-- 0.8 -->
-      <param name="odom_alpha3" value="0.2"/>
-      <param name="odom_alpha4" value="0.2"/>
-      <param name="odom_alpha5" value="0.1"/>
-      <param name="odom_frame_id" value="t265_odom_frame"/>
-      <param name="odom_model_type" value="diff"/>
-      <param name="recovery_alpha_slow" value="0.001"/>
-      <param name="recovery_alpha_fast" value="0.01"/>
-      <param name="resample_interval" value="2"/> <!-- 2 -->
-      <param name="save_pose_rate" value="0.5" />
-      <param name="tf_broadcast" value="true" />
-      <param name="transform_tolerance" value="0.5" /> <!-- 0.5 -->
-      <param name="update_min_a" value="0.1"/>
-      <param name="update_min_d" value="0.05"/>
-      <param name="use_map_topic" value="$(arg use_map_topic)"/>
-      <!--remap from="scan" to="/d435/laser_scan" /-->
-      <remap from="scan" to="$(arg scan_topic)"/>
-    </node>
-  </group>
+  <node 
+    name="amcl"
+    output="screen"
+    pkg="amcl" 
+    type="amcl"  >
+    <!--param name="base_frame_id" value="/base_footprint"/-->
+    <param name="first_map_only" value="false" />
+    <param name="gui_publish_rate" value="1.0"/>
+    <param name="initial_pose_x" value="$(arg initial_pose_x)" />
+    <param name="initial_pose_y" value="$(arg initial_pose_y)" />
+    <param name="initial_pose_z" value="$(arg initial_pose_z)" />
+    <param name="kld_err" value="0.01"/> <!-- 0.01 -->
+    <param name="kld_z" value="0.99"/>
+    <param name="laser_lambda_short" value="0.1"/>
+    <param name="laser_likelihood_max_dist" value="2.0" />
+    <param name="laser_max_beams" value="360"/>
+    <param name="laser_max_range" value="8.0"/>
+    <param name="laser_min_range" value="0.06"/>
+    <param name="laser_model_type" value="likelihood_field"/> 
+    <param name="laser_sigma_hit" value="0.2"/>
+    <param name="laser_z_hit" value="0.95"/>
+    <param name="laser_z_max" value="0.05"/>
+    <param name="laser_z_rand" value="0.05"/>
+    <param name="laser_z_short" value="0.1"/>
+    <param name="laser_likelihood_max_dist" value="2.0"/> <!-- 5.00 -->
+    <param name="max_particles" value="5000"/> <!-- 1000 -->
+    <param name="min_particles" value="500"/>
+    <param name="odom_alpha1" value="0.2"/> <!-- 0.8 -->
+    <param name="odom_alpha2" value="0.2"/> <!-- 0.8 -->
+    <param name="odom_alpha3" value="0.2"/>
+    <param name="odom_alpha4" value="0.2"/>
+    <param name="odom_alpha5" value="0.1"/>
+    <param name="odom_frame_id" value="t265_odom_frame"/>
+    <param name="odom_model_type" value="diff"/>
+    <param name="recovery_alpha_slow" value="0.001"/>
+    <param name="recovery_alpha_fast" value="0.01"/>
+    <param name="resample_interval" value="2"/> <!-- 2 -->
+    <param name="save_pose_rate" value="0.5" />
+    <param name="tf_broadcast" value="true" />
+    <param name="transform_tolerance" value="0.5" /> <!-- 0.5 -->
+    <param name="update_min_a" value="0.1"/>
+    <param name="update_min_d" value="0.05"/>
+    <param name="use_map_topic" value="$(arg use_map_topic)"/>
+    <!--remap from="scan" to="/d435/laser_scan" /-->
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+  
 </launch>
