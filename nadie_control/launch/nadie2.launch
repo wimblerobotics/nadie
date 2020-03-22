@@ -48,7 +48,6 @@ SOFTWARE.
     <include if="$(arg do_map_server)" 
              file="$(find snowberry_map)/launch/nadie2.map.launch" >
         <arg name="map_file" value="$(arg map_file)" />
-        <!--arg name="robot_namespace" value="$(arg robot_namespace)" /-->
     </include>
 
     <node
