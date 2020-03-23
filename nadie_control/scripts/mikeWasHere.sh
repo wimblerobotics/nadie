@@ -1,2 +1,2 @@
 #!/bin/sh
-echo "mikeWasHere"
+echo "mikeWasHere.sh $@"
