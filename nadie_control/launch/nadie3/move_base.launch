@@ -26,6 +26,7 @@
     <rosparam file="$(find nadie_control)/param/nadie3/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find nadie_control)/param/nadie3/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find nadie_control)/param/nadie3/base_local_planner_params.yaml" command="load" />
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
     <remap from="cmd_vel" to="/nadie/diff_drive_controller/move_base_cmd_vel" />
   </node>
 </launch>

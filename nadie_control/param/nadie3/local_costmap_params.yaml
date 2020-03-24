@@ -1,9 +1,9 @@
 local_costmap: 
   # always_send_full_costmap: false
-  global_frame: 'map'
+  global_frame: 't265_odom_frame'
   height: 6.0
   publish_frequency: 2.0
-  resolution: 0.05
+  resolution: 0.0508
   robot_base_frame: 'base_link'
   rolling_window: true
   static_map: false
