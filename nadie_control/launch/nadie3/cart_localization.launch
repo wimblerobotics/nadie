@@ -37,6 +37,8 @@ SOFTWARE.
   <arg name="map_file"                    value="$(find snowberry_map)/maps/Snowberry.yaml" />
   <arg name="use_sim_time"                value="false" />
 
+  <arg name="robot_namespace" default="/nadie" />
+
   <!-- Launch the left and right D435 depth cameras. Note this is outside of "nadie" group for name collision avoidance. -->
   <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie3/d435_pair.launch" />
 

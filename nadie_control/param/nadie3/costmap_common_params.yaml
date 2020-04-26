@@ -1,13 +1,14 @@
 
-footprint: [[-0.29, -0.22], [-0.29, 0.20], [0.26, 0.20], [0.26, -0.22], [-0.29, -0.22]]
-#footprint: [[-0.11, -0.22], [-0.11, 0.20], [0.44, 0.20], [0.44, -0.22], [-0.11, -0.22]]
+#footprint: [[-0.29, -0.22], [-0.29, 0.20], [0.26, 0.20], [0.26, -0.22]]
+footprint: [[-0.31, -0.24], [-0.31, 0.22], [0.28, 0.22], [0.28, -0.24]]
 footprint_padding: .0508
 resolution: 0.014788221343874
 
 inflation_layer:
   cost_scaling_factor: 2.58   # 0.0 .. 100
   enabled: true               # true/false
-  inflation_radius: 0.1016
+#  inflation_radius: 0.1016
+  inflation_radius: 0.2032
   inflate_unknown: false
 
 obstacle_layer:
