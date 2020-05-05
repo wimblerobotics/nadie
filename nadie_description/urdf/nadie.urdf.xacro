@@ -39,22 +39,26 @@ SOFTWARE.
 
   <xacro:property name="M_PI" value="3.14159"/>
 
-  <xacro:property name="body_height" value="0.235" />
-  <xacro:property name="body_length" value="0.460" />
-  <xacro:property name="body_width" value="0.355" />
+  <xacro:property name="body_height" value="0.305" />
+  <xacro:property name="body_length" value="0.455" />
+  <xacro:property name="body_width" value="0.315" />
   <xacro:property name="caster_radius" value="0.05" />
   <xacro:property name="caster_width" value="0.030" />
-  <xacro:property name="fwheel_offset" value="${(-body_length/2)+caster_radius}" />
+  <xacro:property name="fwheel_offset" value="-0.300" />
   <xacro:property name="lidar_height" value="0.05" />
   <xacro:property name="lidar_length" value="0.125" />
-  <xacro:property name="lidar_width" value="0.1" />
+  <xacro:property name="lidar_width" value="0.115" />
   <xacro:property name="gear_box_center_height" value="0.021" />
   <xacro:property name="wheel_radius" value="0.1016" />
   <xacro:property name="wheel_vertical_offset" value="${wheel_radius+gear_box_center_height}" />
   <xacro:property name="wheel_spacer" value="0.00254" />
   <xacro:property name="wheel_width" value="0.040" />
-
-  <xacro:property name="lidar_x_offset" value="-0.175" />
+ 
+  <xacro:property name="stereo_plate_x_offset" value="0.170" />
+  <xacro:property name="stereo_plate_z_offset" value="0.270" />
+  <xacro:property name="d435_y_offset" value="0.077" />
+ 
+  <xacro:property name="lidar_x_offset" value="-0.130" />
   <xacro:property name="lidar_z_offset" value="${body_height+(lidar_height/2)}" />
 
   <material name="base">
@@ -86,7 +90,7 @@ SOFTWARE.
         <box size="${body_length} ${body_width} ${body_height}"/>
       </geometry>
       <material name="base" />
-      <origin rpy="0 0 0" xyz="-0.05 0 ${(body_height/2)}"/>
+      <origin rpy="0 0 0" xyz="${(-body_length/2)+0.125} 0 ${(body_height/2)}"/>
     </visual>
     <!--inertial>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -128,10 +132,10 @@ SOFTWARE.
   </xacro:wheel>
 
   <xacro:caster wheel_prefix="lcaster">
-    <origin xyz="${fwheel_offset} 0.135 -${wheel_vertical_offset-caster_radius}" rpy="0 0 0" />
+    <origin xyz="${fwheel_offset} 0.135 ${-caster_radius}" rpy="0 0 0" />
   </xacro:caster>
   <xacro:caster wheel_prefix="rcaster">
-    <origin xyz="${fwheel_offset} -0.135 -${wheel_vertical_offset-caster_radius}" rpy="0 0 0" />
+    <origin xyz="${fwheel_offset} -0.135 ${-caster_radius}" rpy="0 0 0" />
   </xacro:caster>
 
   <link name="neato">
@@ -163,11 +167,11 @@ SOFTWARE.
 
   <xacro:include filename="$(find nadie_description)/urdf/_d435.urdf.xacro" />
   <xacro:sensor_d435 parent="base_link" name="d435_left">
-    <origin xyz="0.20 0.05 0.220" rpy="0 0 0.35" />
+    <origin xyz="${stereo_plate_x_offset} ${d435_y_offset} ${stereo_plate_z_offset}" rpy="0 0 0.35" />
   </xacro:sensor_d435>
 
   <xacro:sensor_d435 parent="base_link" name="d435_right">
-    <origin xyz="0.20 -0.07 0.220" rpy="0 0 -0.36" />
+    <origin xyz="${stereo_plate_x_offset} ${-d435_y_offset} ${stereo_plate_z_offset}" rpy="0 0 -0.36" />
   </xacro:sensor_d435>
 
   <material name="t265_material">
@@ -202,6 +206,6 @@ SOFTWARE.
   <joint name="base_to_t265" type="fixed">
     <parent link="base_link" />
     <child link="t265_camera_link" />
-    <origin xyz="${0.180+(0.008/2)} -0.0034 0.106" rpy="0 0 0" />
+    <origin xyz="${stereo_plate_x_offset} 0 ${stereo_plate_z_offset-0.030}" rpy="0 0 0" />
   </joint>
 </robot>
