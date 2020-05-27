@@ -22,7 +22,7 @@ options = {
   tracking_frame = "t265_link",
   published_frame = "base_link",
   odom_frame = "t265_odom_frame",
-  provide_odom_frame = false,
+  provide_odom_frame = true,
   publish_frame_projected_to_2d = false,
   use_odometry = false,
   use_nav_sat = false,
@@ -48,6 +48,8 @@ TRAJECTORY_BUILDER_2D.submaps.num_range_data = 35
 TRAJECTORY_BUILDER_2D.min_range = 0.3
 TRAJECTORY_BUILDER_2D.max_range = 8.
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 1.
+TRAJECTORY_BUILDER_2D.min_z = -0.1
+TRAJECTORY_BUILDER_2D.max_z = 1.5
 
 --this will help continue making the map while the robot is static
 --default time is 5 seconds

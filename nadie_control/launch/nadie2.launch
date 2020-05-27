@@ -33,6 +33,7 @@ SOFTWARE.
     <arg name="do_nadie_motor"              default="true" />
     <arg name="do_rviz"                     default="false" />
     <arg name="do_t265"                     default="true" />
+    <arg name="do_t265_odom_transform"      default="false" />
     <arg name="do_t265_static_transform"    default="true" />
     <arg name="map_file"                    default="$(find snowberry_map)/maps/Snowberry.yaml" />
     <arg name="use_sim_time"                default="false" />
@@ -47,7 +48,6 @@ SOFTWARE.
     <include if="$(arg do_map_server)" 
              file="$(find snowberry_map)/launch/nadie2.map.launch" >
         <arg name="map_file" value="$(arg map_file)" />
-        <arg name="robot_namespace" value="$(arg robot_namespace)" />
     </include>
 
     <node
@@ -71,7 +71,7 @@ SOFTWARE.
         <param name="ymin" value="-50.0" />
 
         <remap from="scan" to="/nadie/scan" />
-        <remap from="map" to="/nadie/map" />
+        <!--remap from="map" to="/nadie/map" /-->
     </node>
 
     <!-- Bring up the motor stack -->
@@ -85,6 +85,7 @@ SOFTWARE.
 
     <!-- Launch the T265 tracking camera -->
     <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie2_t265a.launch">
+        <arg name="do_t265_odom_transform" value="$(arg do_t265_odom_transform)" />
         <arg name="do_t265_static_transform" value="$(arg do_t265_static_transform)" />
     </include>
 

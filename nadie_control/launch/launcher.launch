@@ -1,0 +1,56 @@
+<!--
+Copyright (c) 2020 Michael Wimble
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<launch>
+    <arg name="launch" doc="
+        Required by caller, points to launch file name (w/o '.launch' suffix)
+        to be invoked. Launch file will be found in nadie_control/launch/nadie3 folder
+        " />
+
+    <!--
+    Here are defined all the arguments that can be overridden globally for all the
+    nadie3 launch files. The 'launch' arg-passed launch file will then override
+    these args as needed and further launch the system.
+    -->
+    <arg name="do_amcl"                     default="false" />
+    <arg name="do_d435"                     default="true" />
+    <arg name="do_gmapping"                 default="false" />
+    <arg name="do_lidar"                    default="true" />
+    <arg name="do_map_server"               default="false" />
+    <arg name="do_motor_controller"         default="true" /> <!-- sub option for do_nadie_motor -->
+    <arg name="do_move_base"                default="false" />
+    <arg name="do_nadie_motor"              default="true" />
+    <arg name="do_rviz"                     default="false" />
+    <arg name="do_t265"                     default="true" />
+    <arg name="do_t265_odom_transform"      default="false" />
+    <arg name="do_t265_static_transform"    default="true" />
+    <arg name="map_file"                    default="$(find snowberry_map)/maps/Snowberry.yaml" />
+    <arg name="use_sim_time"                default="false" />
+
+    <param name="/use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="robot_namespace" default="/nadie" />
+
+    <include
+        file="$(find nadie_control)/launch/nadie3/$(arg launch).launch"
+        pass_all_args="true"
+    />
+</launch>

@@ -1,0 +1,25 @@
+<launch>
+    <arg name="do_amcl"                     default="false" />
+    <arg name="do_cartographer"             default="false" />
+    <arg name="do_cartographer_localization" default="false" />
+    <arg name="do_d435"                     default="true" />
+    <arg name="do_gmapping"                 default="false" />
+    <arg name="do_lidar"                    default="true" />
+    <arg name="do_map_server"               default="false" />
+    <arg name="do_motor_controller"         default="true" /> <!-- sub option for do_nadie_motor -->
+    <arg name="do_move_base"                default="false" />
+    <arg name="do_nadie_motor"              default="true" />
+    <arg name="do_rviz"                     default="false" />
+    <arg name="do_t265"                     default="true" />
+    <arg name="do_t265_odom_transform"      default="false" />
+    <arg name="do_t265_static_transform"    default="true" />
+    <arg name="map_file"                    default="$(find snowberry_map)/maps/Snowberry.yaml" />
+    <arg name="use_sim_time"                default="false" />
+
+    <arg name="launch" />
+
+    <include
+        file="$(find nadie_control)/launch/$(arg launch)"
+        pass_all_args="true"
+    />
+</launch>

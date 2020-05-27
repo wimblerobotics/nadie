@@ -21,6 +21,8 @@ SOFTWARE.
 -->
 <launch>
     <arg name="do_t265_static_transform" default="false" />
+    <arg name="do_t265_odom_transform" default="false" />
+
 
     <include file="$(find nadie_control)/launch/machines.xml" />
     <node
@@ -29,6 +31,13 @@ SOFTWARE.
         pkg="tf" 
         type="static_transform_publisher" 
         args="-0.24 0 -0.105 0 0.0 0 base_link t265_link 200" />
+
+    <node
+        if="$(arg do_t265_odom_transform)"
+        name="t265_base_link_to_t265_pose_frame" 
+        pkg="tf" 
+        type="static_transform_publisher" 
+        args="-0.24 0 -0.105 0 0.0 0 t265_pose_frame base_link  200" />
 
  
  

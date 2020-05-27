@@ -1,0 +1,87 @@
+gazebo_ros_control:
+  
+  pid_gains:
+    front_left_wheel:
+      p: 200
+      i: 200
+      d: 0
+    front_right_wheel:
+      p: 200
+      i: 200
+      d: 0
+
+motor_controller:
+  control_loop_hz: 10.0
+  m1p: 12.40624
+  m1i: 3.94584
+  m1d: 0.0
+  m1qpps: 937
+  m2p: 12.40624
+  m2i: 4.38229
+  m2d: 0.0
+  m2qpps: 1312
+  max_command_retries: 20
+  max_m1_current: 12
+  max_m2_current: 12
+  max_seconds_uncommanded_travel: 0.5
+  port_address: 128
+
+  # 64 counds / revolution (encoder) * 131:1 gear ration = 8384 pulses per revolution 
+  # 8" wheel dia = 0.2032 m wheel dia
+  # PI * 0.2032m dia = 0.638371627209446 meters / revolution
+  # invert to get 1.566485660353301 revolution/meter
+  # * 8384 pulses/revolution = 13133.415776402075584 pulses / meter
+  quad_pulses_per_meter: 1566 #13133 # 5236
+  quad_pulses_per_revolution: 1000 # 8384  # 3200
+  usb_device_name: /dev/roboclaw
+  vmin: 1
+  vtime: 2
+  wheel_radius: 0.10169
+
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+
+diff_drive_controller:
+  type        : "diff_drive_controller/DiffDriveController"
+  left_wheel  : 'front_left_wheel'
+  right_wheel : 'front_right_wheel'
+  publish_rate: 50.0
+  pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+  twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+
+  # Wheel separation and diameter. These are both optional.
+  # diff_drive_controller will attempt to read either one or both from the
+  # URDF if not specified as a parameter
+  wheel_separation :  0.345 #0.335 #0.369 # 0.349 #0.340
+  wheel_radius : 0.10169
+
+  # Wheel separation and radius multipliers
+  wheel_separation_multiplier: 1 # 0.95 # default: 1.0
+  wheel_radius_multiplier    : 1.0 # default: 1.0
+
+  # Velocity commands timeout [s], default 0.5
+  cmd_vel_timeout: 0.25
+  velocity_rolling_window_size: 2
+
+  # Base frame_id
+  base_frame_id: base_link
+  odom_frame_id: odom
+  enable_odom_tf: false
+  estimate_velocity_from_position: false
+
+  # Velocity and acceleration limits
+  # Whenever a min_* is unspecified, default to -max_*
+  linear:
+    x:
+      has_velocity_limits    : yes
+      max_velocity           : 0.5
+      has_acceleration_limits: true
+      max_acceleration       : 0.25
+  angular:
+    z:
+      has_velocity_limits    : yes
+      max_velocity           : 1.0
+      has_acceleration_limits: true
+      max_acceleration       : 0.5
