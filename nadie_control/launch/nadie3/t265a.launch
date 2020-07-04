@@ -56,7 +56,7 @@ SOFTWARE.
     <arg name="initial_reset"           default="true"/>
     <arg name="json_file_path"          default=""/>
     <arg name="linear_accel_cov"        default="0.01"/>
-    <arg name="machine"                 default="up1a" />
+    <arg name="machine"                 default="nxa" />
     <!--arg name="odom_frame_id"           default="t265_camera_link" /-->
     <arg name="serial_no"               default="905312111684"/>
     <arg name="tf_prefix"               default="$(arg camera)"/>

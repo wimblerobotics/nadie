@@ -29,6 +29,13 @@ SOFTWARE.
     />
 
     <machine
+        address="nxa"
+        default="false"
+        env-loader="/home/ros/remote_env.sh"
+        name="nxa"
+        user="ros"
+    />
+    <machine
         address="tx2a"
         default="false"
         env-loader="/homeext/ros/cartographer_env.sh"
