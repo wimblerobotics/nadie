@@ -35,12 +35,6 @@ find_package( PCL REQUIRED )
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-if(CATKIN_ENABLE_TESTING)
-  find_package(GTest REQUIRED)
-  find_package(rostest REQUIRED)
-  include_directories(${GTest_INCLUDE_DIRS})
-endif()
-
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
@@ -58,9 +52,6 @@ generate_messages(
   DEPENDENCIES
   std_msgs
 )
-
-#generate_dynamic_reconfigure_options( cfg/motor_controller.cfg)
-
 
 catkin_package(
   INCLUDE_DIRS include
@@ -87,7 +78,6 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${GTest_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
 )
 
@@ -164,45 +154,3 @@ target_link_libraries(
   ${catkin_LIBRARIES} 
   boost_system boost_thread
 )
-
-#catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
-
-#if(TARGET M1_test)
-#  target_link_libraries(
-#    ${PROJECT_NAME}-utest
-#    ${PROJECT_NAME}
-#    ${OpenCV_LIBRARIES}
-#  )
-#endif()
-
-#if(CATKIN_ENABLE_TESTING)
-#  catkin_add_gtest(${PROJECT_NAME}-utest test/M1.cpp)
-#  target_link_libraries(
-#    ${PROJECT_NAME}-utest
-#    ${PROJECT_NAME}
-#    ${catkin_LIBRARIES}
-#  )
-
-#  add_rostest_gtest(
-#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
-#    test/launch/M2.test
-#    test/M2.cpp)
-#  add_dependencies(
-#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest 
-#    ${PROJECT_NAME}
-#    ${${PROJECT_NAME}_EXPORTED_TARGETS} 
-#    ${catkin_EXPORTED_TARGETS}
-#  )
-#  target_link_libraries(
-#    ${PROJECT_NAME}-M2_test_from_add_rostest_gtest
-#    ${PROJECT_NAME}
-#    ${catkin_LIBRARIES}
-#  )
-#endif()
-
-## Mark executables and/or libraries for installation
-#install(TARGETS motor_controller_node
-#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-#)
