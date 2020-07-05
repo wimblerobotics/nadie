@@ -1,4 +1,17 @@
 <launch>
-    <node name="closest_obj" pkg="nadie_control" type="closest_obj_node">
-    </node>
+    <arg name="doDebug" default="false" />
+    <arg if="$(arg doDebug)" name="launchPrefix" value="xterm -e gdb --args" />
+    <arg unless="$(arg doDebug)" name="launchPrefix" value="" />
+
+    <arg name="robot_namespace" default="/nadie" />
+
+    <group ns="$(arg robot_namespace)">
+        <node 
+            launch-prefix="$(arg launchPrefix)" 
+            name="closest_obj" 
+            output="screen" 
+            pkg="nadie_control" 
+            type="closest_obj_node">
+        </node>
+    </group>
 </launch>
