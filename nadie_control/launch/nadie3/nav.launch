@@ -19,70 +19,82 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 -->
-
 <launch>
-  <arg name="load_state_filename" default="$(find nadie_control)/param/nadie3/2020-03-08a.pbstream" />
+	<arg name="load_state_filename" default="$(find nadie_control)/param/nadie3/2020-03-08a.pbstream" />
+	<arg name="do_amcl" value="true" />
+	<arg name="do_d435" value="false" />
+	<arg name="do_gmapping" value="false" />
+	<arg name="do_lidar" value="true" />
+	<arg name="do_map_server" value="true" />
+	<arg name="do_motor_controller" value="true" />
+	<!-- sub option for do_nadie_motor -->
+	<arg name="do_move_base" value="true" />
+	<arg name="do_nadie_motor" value="true" />
+	<arg name="do_t265" value="true" />
+	<arg name="do_t265_odom_transform" value="true" />
+	<arg name="do_t265_static_transform" value="true" />
+	<!--arg name="map_file" value="$(find snowberry_map)/maps/Snowberry.yaml" /-->
+	<arg name="map_file" value="$(find snowberry_map)/maps/2020-07-09-10-55-room.map.yaml" />
+	<arg name="use_sim_time" value="false" />
+	<arg name="robot_namespace" default="/nadie" />
 
-  <arg name="do_amcl"                     value="true" />
-  <arg name="do_d435"                     value="true" />
-  <arg name="do_gmapping"                 value="false" />
-  <arg name="do_lidar"                    value="true" />
-  <arg name="do_map_server"               value="true" />
-  <arg name="do_motor_controller"         value="true" /> <!-- sub option for do_nadie_motor -->
-  <arg name="do_move_base"                value="true" />
-  <arg name="do_nadie_motor"              value="true" />
-  <arg name="do_t265"                     value="true" />
-  <arg name="do_t265_odom_transform"      value="true" />
-  <arg name="do_t265_static_transform"    value="true" />
-  <arg name="map_file"                    value="$(find snowberry_map)/maps/Snowberry.yaml" />
-  <arg name="use_sim_time"                value="false" />
-
-  <arg name="robot_namespace" default="/nadie" />
-
-  <!-- Launch the left and right D435 depth cameras. Note this is outside of "nadie" group for name collision avoidance. -->
-  <include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie3/d435_pair.launch" />
-
+	<!-- Launch the left and right D435 depth cameras. Note this is outside of "nadie" group for name collision avoidance. -->
+	<include if="$(arg do_d435)" file="$(find nadie_control)/launch/nadie3/d435_pair.launch" />
+	
   <!-- Launch the T265 tracking camera -->
-  <include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie3/t265a.launch">
-    <arg name="do_t265_odom_transform" value="$(arg do_t265_odom_transform)" />
-    <arg name="do_t265_static_transform" value="$(arg do_t265_static_transform)" />
-  </include>
-
+	<include if="$(arg do_t265)" file="$(find nadie_control)/launch/nadie3/t265a.launch">
+		<arg name="do_t265_odom_transform" value="$(arg do_t265_odom_transform)" />
+		<arg name="do_t265_static_transform" value="$(arg do_t265_static_transform)" />
+	</include>
+	
   <!-- Bring up the LIDAR -->
-  <include
-    if="$(arg do_lidar)"
-    file="$(find nadie_control)/launch/nadie3/lidar.launch"
-    />
-
+	<include if="$(arg do_lidar)" file="$(find nadie_control)/launch/nadie3/lidar.launch" />
+	
   <!-- Bring up the motor stack -->
-  <include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie3/motor.launch" >
-    <arg name="do_motor_controller" value="$(arg do_motor_controller)" />
-    <arg name="robot_namespace" value="$(arg robot_namespace)" />
-  </include>
-  <include unless="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie3/nonmotor.launch" >
-    <arg name="robot_namespace" value="$(arg robot_namespace)" />
-  </include>
-
+	<include if="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie3/motor.launch">
+		<arg name="do_motor_controller" value="$(arg do_motor_controller)" />
+		<arg name="robot_namespace" value="$(arg robot_namespace)" />
+	</include>
+	
+  <include unless="$(arg do_nadie_motor)" file="$(find nadie_control)/launch/nadie3/nonmotor.launch">
+		<arg name="robot_namespace" value="$(arg robot_namespace)" />
+	</include>
+	
   <!-- Load the map -->
-  <include if="$(arg do_map_server)" 
-    file="$(find snowberry_map)/launch/nadie2.map.launch" >
-    <arg name="map_file" value="$(arg map_file)" />
-  </include>
-
+	<include if="$(arg do_map_server)" file="$(find snowberry_map)/launch/nadie2.map.launch">
+		<arg name="map_file" value="$(arg map_file)" />
+	</include>
+	
   <!-- Bring up AMCL -->
-  <include if="$(arg do_amcl)" file="$(find nadie_control)/launch/nadie3/amcl.launch" />
-
+	<include 
+    if="$(arg do_amcl)" 
+    file="$(find nadie_control)/launch/nadie3/amcl.launch" >
+    <arg name="machine" value="nxa" />
+  </include>
+	
   <!-- Bring up move_base -->
-  <include if="$(arg do_move_base)" file="$(find nadie_control)/launch/nadie3/move_base.launch" />
+	<include 
+    if="$(arg do_move_base)" 
+    file="$(find nadie_control)/launch/nadie3/move_base.launch" >
+    <arg name="machine" value="nxa" />
+  </include>
+	
+  <!-- Load gmapping -->
+  <node if="$(arg do_gmapping)" name="gmapping_node" pkg="gmapping" type="slam_gmapping" output="screen">
+		<param name="angularUpdate" value="0.1" />
+		<param name="delta" value="0.0254" />
+		<param name="linearUpdate" value="0.1" />
+		<param name="map_update_interval" value="1.0" />
+		<param name="maxRange" value="4.8" />
+		<param name="maxUrange" value="6.0" />
+		<param name="odom_frame" value="t265_odom_frame" />
+		<param name="temporalUpdate" value="1.0" />
+		<param name="xmax" value="50.0" />
+		<param name="xmin" value="-50.0" />
+		<param name="ymax" value="50.0" />
+		<param name="ymin" value="-50.0" />
+		<remap from="scan" to="/nadie/scan" />
+		<!-- remap from="map" to="/nadie/map" / -->
+	</node>
 
-  <!--
-  <arg name="do_t265" value="New value for do_t265" />
-
-  <node
-      name="TestDummy2"
-      output="screen"
-      pkg="nadie_control"
-      type="trace.py"
-      args="'new value of do_t265'  '$(arg do_t265)'" />
-  -->
 </launch>

@@ -27,8 +27,12 @@ SOFTWARE.
   <arg name="initial_pose_z"  default="-0.112" />
   <arg name="use_map_topic"   default="true"/>
   <arg name="scan_topic"      default="/nadie/scan" />
+  <arg name="machine"         default="up1b" />
 
+  <include file="$(find nadie_control)/launch/nadie3/machines.xml" />
+  
   <node 
+    machine="$(arg machine)"
     name="amcl"
     output="screen"
     pkg="amcl" 
